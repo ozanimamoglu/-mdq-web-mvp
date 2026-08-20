@@ -66,8 +66,13 @@ The model is explicitly instructed:
   - Ideal
   - Suitable
   - Not suitable
-    deployment trigger
 
+## v8.1 diagnostic endpoint
 
-deployment trigger 2
-env trigger 1
+After deployment, open `/api/health`.
+
+Expected on a healthy production deployment:
+- `openaiKeyPresent: true`
+- `vercelEnv: "production"`
+
+The API key value is never returned.
