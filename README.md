@@ -76,3 +76,21 @@ Expected on a healthy production deployment:
 - `vercelEnv: "production"`
 
 The API key value is never returned.
+
+## v8.2 environment diagnostic
+
+Before testing, add this Vercel environment variable:
+
+- Name: `TEST_VAR`
+- Value: `hello123`
+- Scope: Production
+
+Then deploy a fresh Git commit and open `/api/health`.
+
+The health endpoint reports:
+- whether `OPENAI_API_KEY` exists,
+- whether `TEST_VAR` exists,
+- whether TEST_VAR matches `hello123`,
+- only the NAMES of environment variables containing OPENAI or TEST.
+
+It never returns secret values.
