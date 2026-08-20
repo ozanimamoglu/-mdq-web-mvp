@@ -66,3 +66,4 @@ The model is explicitly instructed:
   - Ideal
   - Suitable
   - Not suitable
+    deployment trigger
