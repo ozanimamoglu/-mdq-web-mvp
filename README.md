@@ -70,3 +70,4 @@ The model is explicitly instructed:
 
 
 deployment trigger 2
+env trigger 1
