@@ -177,7 +177,7 @@ function resultSummary(result, vehicle){
 
 
 function cacheKey(query){
-  return 'mdq_vehicle_' + query.trim().toLowerCase().replace(/\s+/g,' ');
+  return 'mdq_v11_vehicle_' + query.trim().toLowerCase().replace(/\s+/g,' ');
 }
 
 function loadCachedVehicle(query){
