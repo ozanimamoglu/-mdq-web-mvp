@@ -3,138 +3,327 @@ const OPENAI_URL = "https://api.openai.com/v1/responses";
 const schema = {
   type: "object",
   additionalProperties: false,
-  properties: {
-    id: { type: "string" },
-    make: { type: "string" },
-    model: { type: "string" },
-    variant: { type: "string" },
-    evidenceCount: { type: "integer", minimum: 1 },
-    evidenceUnit: { type: "string" },
-    evidenceLastUpdated: { type: "string" },
-    evidenceSources: {
-      type: "array",
-      minItems: 1,
-      items: { type: "string" }
-    },
-    evidenceMethod: { type: "string" },
-    questions: {
-      type: "array",
-      minItems: 5,
-      maxItems: 8,
-      items: {
-        type: "object",
-        additionalProperties: false,
-        properties: {
-          id: { type: "string" },
-          condition: { type: "string" },
-          weight: { type: "string", enum: ["medium", "high"] },
-          dealBreakerCapable: { type: "boolean" },
-          text: { type: "string" },
-          answers: {
-            type: "array",
-            minItems: 3,
-            maxItems: 3,
-            items: {
-              type: "object",
-              additionalProperties: false,
-              properties: {
-                label: { type: "string" },
-                impact: {
-                  type: "string",
-                  enum: [
-                    "positive",
-                    "neutral",
-                    "medium_negative",
-                    "high_negative",
-                    "critical_negative"
-                  ]
-                },
-                note: { type: "string" }
-              },
-              required: ["label", "impact", "note"]
-            }
-          }
-        },
-        required: [
-          "id",
-          "condition",
-          "weight",
-          "dealBreakerCapable",
-          "text",
-          "answers"
-        ]
-      }
-    }
+properties: {
+  id: { type: "string" },
+
+  condition: { type: "string" },
+
+  evidenceStrength: {
+    type: "string",
+    enum: ["moderate", "strong", "very_strong"]
   },
-  required: [
-    "id",
-    "make",
-    "model",
-    "variant",
-    "evidenceCount",
-    "evidenceUnit",
-    "evidenceLastUpdated",
-    "evidenceSources",
-    "evidenceMethod",
-    "questions"
-  ]
-};
 
+  evidenceReason: {
+    type: "string"
+  },
+
+  dealBreakerCapable: {
+    type: "boolean"
+  },
+
+  text: {
+    type: "string"
+  },
+
+  clarification: {
+    type: "string"
+  },
+
+  answers: {
+    type: "array",
+    minItems: 3,
+    maxItems: 3,
+    items: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        label: { type: "string" },
+
+        impact: {
+          type: "string",
+          enum: [
+            "positive",
+            "neutral",
+            "medium_negative",
+            "high_negative",
+            "critical_negative"
+          ]
+        },
+
+        impactReason: {
+          type: "string"
+        },
+
+        mitigation: {
+          type: "string"
+        }
+      },
+      required: [
+        "label",
+        "impact",
+        "impactReason",
+        "mitigation"
+      ]
+    }
+  }
+},
+required: [
+  "id",
+  "condition",
+  "evidenceStrength",
+  "evidenceReason",
+  "dealBreakerCapable",
+  "text",
+  "clarification",
+  "answers"
+]
+
+
+  
 const protocol = `
-You are building a vehicle ownership-fit decision model.
+You are building an evidence-grounded vehicle ownership-fit decision model.
 
-Apply this MDQ Generation Protocol exactly and in order:
-1. Define exact product.
-2. Gather real owner evidence.
-3. Extract recurring ownership frictions.
-4. Find the condition behind each friction.
-5. Remove low-decision-impact conditions.
-6. Merge overlapping conditions.
-7. Convert remaining conditions into observable questions.
-8. Define answer -> impact mapping.
-9. Add mitigation-relevant logic where appropriate.
-10. Keep only the strongest 5-8 MDQs.
+The objective is NOT to determine whether a vehicle is good or bad.
+The objective is to determine whether the real ownership conditions that make
+owners love, tolerate, regret, or stop recommending this exact vehicle apply
+to this particular user.
 
-Core product principle:
-We are NOT comparing cars and NOT asking "is this a good car?"
-We ask: for this specific product, what makes real owners love it, tolerate it,
-regret it, or stop recommending it, and do those conditions apply to this user?
+Apply this MDQ Generation Protocol exactly and in order.
 
-Research rules:
-- Search the web for real owner reviews, owner forums, long-term ownership reports,
-  specialist owner communities, and credible used-car reliability discussions.
-- Prefer evidence tied to the exact generation/year/powertrain.
-- Do not mix materially different generations or engines.
-- If the user's vehicle description is ambiguous, choose the most defensible exact
-  product definition and make that explicit in make/model/variant.
-- Count UNIQUE evidence documents, not individual comments in the same thread.
-- evidenceCount must equal the number of unique owner-review/discussion documents
-  actually used to synthesize the model.
-- evidenceSources should list source categories, not invented counts.
-- Do not invent evidence.
-- Avoid generic automotive questions unless real evidence shows they materially
-  change ownership fit for this exact product.
-- Service history / condition of one specific used example belongs to a later PPI
-  layer unless it changes product-level ownership fit.
-- Questions should ask observable reality or realistic tolerance, not vague
-  self-assessment.
-- Each question must genuinely be capable of changing the fit assessment.
-- 5 questions are enough if only 5 strong independent conditions exist. Never pad.
+1. DEFINE THE EXACT PRODUCT
+Identify the most defensible exact year, generation, powertrain, drivetrain,
+trim or market specification supported by the user's query.
 
-Impact mapping:
-positive = clear fit
-neutral = compatible / not decision-changing
-medium_negative = meaningful but usually manageable friction
-high_negative = major ownership mismatch
-critical_negative = fundamental mismatch on a deal-breaker-capable condition
+Do not mix materially different generations, engines, batteries, drivetrains
+or market specifications.
 
-Weight:
-high = core ownership condition
-medium = meaningful secondary ownership condition
+If ambiguity cannot be avoided, make the chosen product definition explicit.
 
-Result engine is handled separately. Do not produce a verdict.
+2. GATHER REAL OWNER EVIDENCE
+Research real owner reviews, owner forums, long-term ownership reports,
+specialist owner communities and credible used-car reliability discussions.
 
-Write concise, user-facing English suitable for a minimalist consumer web app.
+Prefer evidence tied to the exact product definition.
+
+Count UNIQUE evidence documents, not individual comments within one discussion.
+
+Do not invent evidence.
+
+3. EXTRACT RECURRING OWNERSHIP FRICTIONS AND BENEFITS
+Find recurring real-world experiences that materially shape ownership.
+
+Do not simply collect features, specifications or generic pros and cons.
+
+4. FIND THE CONDITION BEHIND EACH FRICTION
+For every recurring ownership friction ask:
+
+"What condition in the user's life, usage, expectations or tolerance determines
+whether this issue actually matters?"
+
+The MDQ must diagnose that condition.
+
+RULE 1 — CONDITION, NOT ACTION
+Questions must diagnose the user's ownership condition, not ask whether they
+have performed a purchase action.
+
+Test drives, inspections, checking service history, verifying equipment,
+getting a PPI, or trying the exact car belong in mitigation, not in the MDQ.
+
+Bad:
+"Have you driven this car for 45 minutes on rough roads?"
+
+Better:
+"How important is ride comfort over broken or uneven roads to you and your
+regular passengers?"
+
+5. APPLY THE CONSEQUENCE THRESHOLD
+A recurring observation does NOT automatically deserve an MDQ.
+
+Include a condition only if materially different answers could realistically
+change whether this exact vehicle is a good ownership fit for the user.
+
+Minor conveniences, interesting features and low-consequence differences must
+not consume an MDQ slot.
+
+Never pad the list.
+
+5 strong MDQs are better than 8 weak ones.
+
+6. MERGE OVERLAPPING CONDITIONS
+Merge conditions only when they represent one coherent diagnostic construct.
+
+RULE 2 — ONE DIAGNOSTIC CONSTRUCT
+Do not bundle different tolerances simply because they appeared together in
+owner evidence.
+
+For example, touchscreen preference, phone-key reliability and software crashes
+must not automatically become one question unless they genuinely represent one
+coherent ownership condition.
+
+7. WRITE THE MDQ
+Questions must ask observable reality, realistic usage or concrete tolerance.
+
+Avoid vague self-assessment.
+
+The user should be able to answer without expert automotive knowledge.
+
+RULE 3 — NO UNEXPLAINED PRODUCT JARGON
+Never assume the user knows manufacturer terminology, package names, acronyms
+or technical concepts.
+
+If a product-specific term is necessary, explain it in plain English before
+asking the question.
+
+Example:
+
+Bad:
+"Is BlueCruise important to you?"
+
+Better:
+"This car offers BlueCruise, a paid system that can steer, accelerate and brake
+hands-free on compatible highways while the driver remains attentive. How
+important would that capability be to you?"
+
+Do not turn the question into a product-knowledge test.
+
+8. BUILD ANSWER -> DECISION IMPACT MAPPING
+Each MDQ must have exactly three answers.
+
+The answers must represent meaningfully different ownership conditions.
+
+For every answer determine its impact on fit:
+
+positive
+= clear compatibility with this vehicle
+
+neutral
+= compatible or not meaningfully decision-changing
+
+medium_negative
+= meaningful friction but usually manageable
+
+high_negative
+= major ownership mismatch
+
+critical_negative
+= fundamental mismatch on a condition capable of changing the purchase decision
+
+Impact must be derived from BOTH:
+a) the evidenced behavior of this exact product
+b) the user's condition represented by the answer
+
+Do not infer impact from evidence frequency alone.
+
+Frequency is not severity.
+Severity is not user impact.
+
+9. ASSESS EVIDENCE STRENGTH SEPARATELY
+For each MDQ assign:
+
+moderate
+strong
+very_strong
+
+This represents confidence that the ownership condition genuinely matters for
+this exact product.
+
+Evidence strength must be based on:
+- recurrence across independent sources
+- consistency of reports
+- relevance to the exact year/generation/powertrain
+- credibility and depth of ownership evidence
+
+Do not use evidence strength as a substitute for user impact.
+
+Also provide a concise evidenceReason explaining why the evidence strength was
+assigned.
+
+10. GENERATE CONDITION-SPECIFIC MITIGATION
+RULE 4 — MITIGATION MUST BE SPECIFIC
+
+For every answer with negative impact, provide an actionable mitigation that
+directly addresses that specific mismatch.
+
+Generic boilerplate such as:
+"test the exact car carefully"
+or
+"prioritise condition and service history"
+
+is not acceptable unless that action specifically reduces the identified
+mismatch.
+
+Examples:
+
+Firm ride:
+"Drive the exact wheel and suspension configuration over poor surfaces before
+buying; smaller wheels may materially improve comfort."
+
+Home charging mismatch:
+"Secure dependable overnight Level 2 charging before purchase."
+
+Subscription feature:
+"Include the ongoing subscription price in expected ownership cost before
+deciding."
+
+For positive or neutral answers, mitigation should be an empty string.
+
+11. FINAL MDQ SELECTION
+Keep only the strongest 5-8 independent MDQs.
+
+Prioritize conditions that can genuinely change:
+- purchase recommendation
+- likelihood of ownership regret
+- daily recurring frustration
+- major cost exposure
+- usability
+- suitability for the user's actual ownership pattern
+
+Do not include a question merely because the topic appeared in owner reviews.
+
+12. PRODUCT-LEVEL VS SPECIFIC USED-CAR CONDITION
+This model evaluates product ownership fit.
+
+Do not turn ordinary wear, maintenance history, accident history or condition
+of one used example into an MDQ unless the issue is a recurring product-level
+ownership characteristic.
+
+Those belong to a later vehicle-condition / PPI layer.
+
+OUTPUT RULES
+
+condition:
+A short plain-English name for the ownership condition.
+
+evidenceStrength:
+moderate, strong or very_strong.
+
+evidenceReason:
+One concise sentence explaining why this condition is sufficiently supported by
+real owner evidence.
+
+text:
+The user-facing MDQ.
+
+clarification:
+Use this only when the question contains a product-specific feature, technical
+term or concept that may require a short plain-English explanation.
+Otherwise return an empty string.
+
+answers:
+Exactly three user-facing answers.
+
+impactReason:
+One concise sentence explaining why that answer changes or does not change fit
+with this exact vehicle.
+
+mitigation:
+A specific action that could reduce a negative mismatch.
+Return an empty string for positive and neutral answers.
+
+Result calculation is handled separately.
+Do not produce a final vehicle verdict.
+
+Write concise, neutral, consumer-facing English suitable for a minimalist web app.
 `;
 
 function extractOutputText(data) {
