@@ -1,6 +1,9 @@
 const vehicles = [
   {
-    id:'bmw-x3-g01-20d', make:'BMW', model:'X3', variant:'G01 · 2018–2021 · 20d',
+    id:'bmw-x3-g01-20d',
+    make:'BMW',
+    model:'X3',
+    variant:'G01 · 2018–2021 · 20d',
     evidenceCount:8,
     evidenceUnit:'owner reviews & discussions',
     evidenceLastUpdated:'20 Aug 2026',
@@ -71,7 +74,10 @@ const vehicles = [
   },
 
   {
-    id:'volvo-xc60-d4', make:'Volvo', model:'XC60', variant:'II · 2018–2021 · D4 AWD',
+    id:'volvo-xc60-d4',
+    make:'Volvo',
+    model:'XC60',
+    variant:'II · 2018–2021 · D4 AWD',
     evidenceCount:8,
     evidenceUnit:'owner reviews & discussions',
     evidenceLastUpdated:'20 Aug 2026',
@@ -142,7 +148,10 @@ const vehicles = [
   },
 
   {
-    id:'mercedes-glc-220d', make:'Mercedes-Benz', model:'GLC', variant:'X253 facelift · 2019–2021 · 220d 4MATIC',
+    id:'mercedes-glc-220d',
+    make:'Mercedes-Benz',
+    model:'GLC',
+    variant:'X253 facelift · 2019–2021 · 220d 4MATIC',
     evidenceCount:5,
     evidenceUnit:'owner reviews & discussions',
     evidenceLastUpdated:'20 Aug 2026',
@@ -225,7 +234,10 @@ const vehicles = [
   },
 
   {
-    id:'porsche-911-sc-1980', make:'Porsche', model:'911 SC', variant:'1980 · 3.0 air-cooled · 915 manual',
+    id:'porsche-911-sc-1980',
+    make:'Porsche',
+    model:'911 SC',
+    variant:'1980 · 3.0 air-cooled · 915 manual',
     evidenceCount:9,
     evidenceUnit:'owner reviews & discussions',
     evidenceLastUpdated:'20 Aug 2026',
@@ -307,10 +319,6 @@ const vehicles = [
     ]
   }
 ];
-
-function evaluateResult(vehicle, answers){
-  const mapped = answers.map((answer, i) => {
-    const q = vehicle.questions[i];
 
 function evaluateResult(vehicle, answers){
   const mapped = answers.map((answer, i) => {
