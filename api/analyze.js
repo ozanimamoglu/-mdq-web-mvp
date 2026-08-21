@@ -213,7 +213,7 @@ not consume an MDQ slot.
 Never pad the list.
 
 5 strong MDQs are better than 8 weak ones.
-RULE 2 — ASYMMETRIC VALUE TEST
+RULE 1B — ASYMMETRIC VALUE TEST
 
 Do not keep an MDQ merely because the vehicle has a recurring ownership
 advantage that some users value.
@@ -246,7 +246,7 @@ affects users who do not need it.
 Prefer conditions where different answers can materially change ownership fit,
 or where at least one realistic answer exposes a genuine ownership mismatch.
 
-6. MERGE OVERLAPPING CONDITIONS
+
 6. MERGE OVERLAPPING CONDITIONS
 Merge conditions only when they represent one coherent diagnostic construct.
 
