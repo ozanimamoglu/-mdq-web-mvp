@@ -158,11 +158,6 @@ function conditionTitle(question, vehicle){
   return question;
 }
 
-function shortMitigation(answer, vehicle){
-  const full = mitigationText(answer, vehicle);
-  return full.replace(/^Mitigation:\s*/,'');
-}
-
 
 function evidenceSummary(vehicle){
   const count = vehicle.evidenceCount ?? 0;
@@ -178,43 +173,6 @@ function resultSummary(result, vehicle){
     return `This ${vehicle.model} can work well for you, but there are a few ownership trade-offs worth knowing before you buy.`;
   }
   return `Some of the conditions that shape real ownership are a poor fit for what you want from this ${vehicle.model}.`;
-}
-
-function reasonTitle(answer){
-  const note = answer.note || '';
-  const sentence = note.split('.')[0];
-  return sentence.length <= 86 ? sentence : 'This condition matters for you';
-}
-
-function mitigationText(answer, vehicle){
-  if(answer.impact === 'positive' || answer.impact === 'neutral') return '';
-  const n = (answer.note || '').toLowerCase();
-
-  if(n.includes('short trip') || n.includes('diesel') || n.includes('emissions')){
-    return 'Mitigation: choose a petrol version, or make sure the car regularly gets longer fully-warmed drives.';
-  }
-  if(n.includes('wheel') || n.includes('rough') || n.includes('comfortable')){
-    return 'Mitigation: prioritise smaller wheels, conventional tyres and the comfort-oriented suspension setup.';
-  }
-  if(n.includes('electronic') || n.includes('glitch') || n.includes('warning')){
-    return 'Mitigation: buy on condition and service history, and confirm all electronic systems during a pre-purchase inspection.';
-  }
-  if(n.includes('gearbox') || n.includes('915')){
-    return 'Mitigation: drive the exact car before buying; this is a character trait you should experience rather than assume you will adapt to.';
-  }
-  if(n.includes('physical') || n.includes('controls') || n.includes('steering')){
-    return 'Mitigation: spend meaningful time driving the car at low speed and in traffic before committing.';
-  }
-  if(n.includes('repair') || n.includes('cost')){
-    return 'Mitigation: keep a dedicated maintenance reserve and prioritise an example with unusually strong history and recent major work.';
-  }
-  if(n.includes('sport') || n.includes('driver') || n.includes('engaging')){
-    return 'Mitigation: test-drive it on roads you know well; this is more about character than a defect that can be fixed.';
-  }
-  if(n.includes('cabin') || n.includes('comfort') || n.includes('a/c')){
-    return 'Mitigation: verify the exact car’s climate system and cabin comfort on a longer drive.';
-  }
-  return 'Mitigation: test the exact car carefully and prioritise condition, specification and service history.';
 }
 
 
@@ -398,6 +356,7 @@ function render(){
         <section class="questionBlock">
           <p class="variant">${esc(vehicle.variant)}</p>
           <h2>${esc(q.text)}</h2>
+          ${q.clarification ? `<p class="questionClarification">${esc(q.clarification)}</p>` : ''}
           <div class="answers">
             ${q.answers.map((a,i)=>{
               const selected = state.selectedIndex===i;
@@ -486,13 +445,24 @@ function render(){
                 <p class="reasonLabel">${labelFor(r)}</p>
                 <h3 class="conditionTitle">${esc(r.condition || conditionTitle(r.question, vehicle))}</h3>
                 <p class="reasonQuestion">${esc(r.question)}</p>
-                <p>${esc(r.note)}</p>
-                ${r.level==='mismatch' ? `<span class="impactMeta">${esc(r.impact.replace('_',' '))} · ${esc(r.weight)} weight</span>` : ''}
+              
+                <p>${esc(r.impactReason)}</p>
+
+                <div class="evidenceMeta">
+                  <span>${esc(r.evidenceStrength.replace('_',' '))} evidence</span>
+                  <p>${esc(r.evidenceReason)}</p>
+                </div>
+
                 ${r.level==='mismatch' ? `
-                  <div class="mitigationBlock">
-                    <p class="mitigationLabel">WHAT COULD REDUCE THE MISMATCH?</p>
-                    <p class="mitigationText">${esc(shortMitigation(r, vehicle))}</p>
-                  </div>` : ''}
+                  <span class="impactMeta">${esc(r.impact.replaceAll('_',' '))}</span>
+                ` : ''}
+
+                ${r.level==='mismatch' && r.mitigation ? `
+                <div class="mitigationBlock">
+                  <p class="mitigationLabel">WHAT COULD REDUCE THE MISMATCH?</p>
+                  <p class="mitigationText">${esc(r.mitigation)}</p>
+                </div>
+              ` : ''}
               </article>
             `).join('')}
           </div>
