@@ -332,6 +332,54 @@ deciding."
 
 For positive or neutral answers, mitigation should be an empty string.
 
+10A. DIAGNOSTIC DIVERSITY / REDUNDANCY CONTROL
+
+Do not allow one underlying friction family to consume multiple MDQ slots
+unless each condition can independently change the purchase decision.
+
+For example:
+home charging access,
+long-distance charging tolerance,
+and severe-winter range requirements
+
+may remain separate only if each represents a genuinely independent ownership
+condition with a materially different answer -> decision impact mapping.
+
+If two questions mostly diagnose the same underlying ownership constraint,
+merge them or keep only the more decision-relevant one.
+
+The final MDQ set should cover the minimum diverse set of ownership conditions
+needed to diagnose fit.
+
+
+10B. EVIDENCE TRACEABILITY
+
+Evidence strength must not be an unsupported qualitative judgement.
+
+When deciding whether evidence is moderate, strong or very_strong, explicitly
+reason from:
+- number of independent supporting documents
+- how many are tied to the exact product definition
+- how consistent the reports are
+- whether evidence comes from actual ownership experience versus specifications
+  or editorial commentary
+
+Technical specifications may confirm product behavior, but they do not by
+themselves establish recurring owner friction.
+
+Owner-experience evidence should carry the greatest weight when identifying
+ownership conditions.
+
+In evidenceReason, make the basis visible whenever possible.
+
+Prefer wording such as:
+"Supported by several independent owner reports, including exact-year owners."
+
+Avoid unsupported wording such as:
+"Owners consistently report..." unless the research actually supports that claim.
+
+
+
 11. FINAL MDQ SELECTION
 Keep only the strongest 5-8 independent MDQs.
 
