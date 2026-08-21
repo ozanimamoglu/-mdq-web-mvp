@@ -448,10 +448,12 @@ function render(){
               
                 <p>${esc(r.impactReason)}</p>
 
-                <div class="evidenceMeta">
-                  <span>${esc(r.evidenceStrength.replace('_',' '))} evidence</span>
-                  <p>${esc(r.evidenceReason)}</p>
-                </div>
+                ${r.evidenceStrength ? `
+                  <div class="evidenceMeta">
+                    <span>${esc(r.evidenceStrength.replaceAll('_',' '))} evidence</span>
+                    ${r.evidenceReason ? `<p>${esc(r.evidenceReason)}</p>` : ''}
+                  </div>
+                ` : ''}
 
                 ${r.level==='mismatch' ? `
                   <span class="impactMeta">${esc(r.impact.replaceAll('_',' '))}</span>
