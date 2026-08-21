@@ -311,12 +311,15 @@ const vehicles = [
 function evaluateResult(vehicle, answers){
   const mapped = answers.map((answer, i) => {
     const q = vehicle.questions[i];
+
     return {
       ...answer,
       condition: q.condition,
-      weight: q.weight,
+      evidenceStrength: q.evidenceStrength || '',
+      evidenceReason: q.evidenceReason || '',
       dealBreakerCapable: q.dealBreakerCapable,
-      question: q.text
+      question: q.text,
+      clarification: q.clarification || ''
     };
   });
 
