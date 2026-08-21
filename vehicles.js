@@ -320,6 +320,8 @@ function evaluateResult(vehicle, answers){
       dealBreakerCapable: q.dealBreakerCapable,
       question: q.text,
       clarification: q.clarification || ''
+      impactReason: answer.impactReason || answer.note || '',
+      mitigation: answer.mitigation || ''
     };
   });
 
