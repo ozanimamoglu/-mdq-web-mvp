@@ -312,6 +312,10 @@ function evaluateResult(vehicle, answers){
   const mapped = answers.map((answer, i) => {
     const q = vehicle.questions[i];
 
+function evaluateResult(vehicle, answers){
+  const mapped = answers.map((answer, i) => {
+    const q = vehicle.questions[i];
+
     return {
       ...answer,
       condition: q.condition,
@@ -319,7 +323,7 @@ function evaluateResult(vehicle, answers){
       evidenceReason: q.evidenceReason || '',
       dealBreakerCapable: q.dealBreakerCapable,
       question: q.text,
-      clarification: q.clarification || ''
+      clarification: q.clarification || '',
       impactReason: answer.impactReason || answer.note || '',
       mitigation: answer.mitigation || ''
     };
@@ -330,24 +334,23 @@ function evaluateResult(vehicle, answers){
   const mediumNegatives = mapped.filter(x => x.impact === 'medium_negative');
   const positives = mapped.filter(x => x.impact === 'positive');
 
-  // A critical mismatch on a deal-breaker-capable condition is enough to rule the fit out.
   if (criticals.some(x => x.dealBreakerCapable)) {
     return { result:'Not suitable', mapped };
   }
 
-  // Two or more high-impact mismatches dominate ownership fit.
   if (highNegatives.length >= 2) {
     return { result:'Not suitable', mapped };
   }
 
-  // One high mismatch plus several medium mismatches also creates a poor overall fit.
   if (highNegatives.length >= 1 && mediumNegatives.length >= 2) {
     return { result:'Not suitable', mapped };
   }
 
-  // Ideal requires no high/critical mismatch and only very limited medium friction.
-  if (criticals.length === 0 && highNegatives.length === 0 && mediumNegatives.length <= 1) {
-    // Require at least half the conditions to be positive, so "all neutral" does not become Ideal.
+  if (
+    criticals.length === 0 &&
+    highNegatives.length === 0 &&
+    mediumNegatives.length <= 1
+  ) {
     if (positives.length >= Math.ceil(vehicle.questions.length / 2)) {
       return { result:'Ideal', mapped };
     }
