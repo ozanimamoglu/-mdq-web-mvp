@@ -213,7 +213,40 @@ not consume an MDQ slot.
 Never pad the list.
 
 5 strong MDQs are better than 8 weak ones.
+RULE 2 — ASYMMETRIC VALUE TEST
 
+Do not keep an MDQ merely because the vehicle has a recurring ownership
+advantage that some users value.
+
+Before keeping a benefit-led condition, test both directions:
+
+1. If the user needs or values this characteristic, does the vehicle create
+   meaningful positive fit?
+
+2. If the user does NOT need or value it, does that create any meaningful
+   ownership disadvantage or mismatch?
+
+If the second answer is no, the condition normally should not consume one of
+the final MDQ slots.
+
+An unused benefit is not a mismatch.
+
+Example:
+
+A vehicle's strong off-road or all-weather capability may be highly valuable
+to some owners.
+
+But if a user drives only on normal surfaced roads, not using that capability
+does not by itself make the vehicle a worse ownership fit.
+
+Therefore "How often will you use the off-road capability?" should normally
+not be an MDQ unless that capability brings a meaningful trade-off that also
+affects users who do not need it.
+
+Prefer conditions where different answers can materially change ownership fit,
+or where at least one realistic answer exposes a genuine ownership mismatch.
+
+6. MERGE OVERLAPPING CONDITIONS
 6. MERGE OVERLAPPING CONDITIONS
 Merge conditions only when they represent one coherent diagnostic construct.
 
