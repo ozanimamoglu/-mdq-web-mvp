@@ -3,83 +3,148 @@ const OPENAI_URL = "https://api.openai.com/v1/responses";
 const schema = {
   type: "object",
   additionalProperties: false,
-properties: {
-  id: { type: "string" },
+  properties: {
+    id: { type: "string" },
+    make: { type: "string" },
+    model: { type: "string" },
+    variant: { type: "string" },
 
-  condition: { type: "string" },
+    evidenceCount: {
+      type: "integer",
+      minimum: 1
+    },
 
-  evidenceStrength: {
-    type: "string",
-    enum: ["moderate", "strong", "very_strong"]
-  },
+    evidenceUnit: {
+      type: "string"
+    },
 
-  evidenceReason: {
-    type: "string"
-  },
+    evidenceLastUpdated: {
+      type: "string"
+    },
 
-  dealBreakerCapable: {
-    type: "boolean"
-  },
+    evidenceSources: {
+      type: "array",
+      minItems: 1,
+      items: {
+        type: "string"
+      }
+    },
 
-  text: {
-    type: "string"
-  },
+    evidenceMethod: {
+      type: "string"
+    },
 
-  clarification: {
-    type: "string"
-  },
+    questions: {
+      type: "array",
+      minItems: 5,
+      maxItems: 8,
+      items: {
+        type: "object",
+        additionalProperties: false,
+        properties: {
+          id: {
+            type: "string"
+          },
 
-  answers: {
-    type: "array",
-    minItems: 3,
-    maxItems: 3,
-    items: {
-      type: "object",
-      additionalProperties: false,
-      properties: {
-        label: { type: "string" },
+          condition: {
+            type: "string"
+          },
 
-        impact: {
-          type: "string",
-          enum: [
-            "positive",
-            "neutral",
-            "medium_negative",
-            "high_negative",
-            "critical_negative"
-          ]
+          evidenceStrength: {
+            type: "string",
+            enum: [
+              "moderate",
+              "strong",
+              "very_strong"
+            ]
+          },
+
+          evidenceReason: {
+            type: "string"
+          },
+
+          dealBreakerCapable: {
+            type: "boolean"
+          },
+
+          text: {
+            type: "string"
+          },
+
+          clarification: {
+            type: "string"
+          },
+
+          answers: {
+            type: "array",
+            minItems: 3,
+            maxItems: 3,
+            items: {
+              type: "object",
+              additionalProperties: false,
+              properties: {
+                label: {
+                  type: "string"
+                },
+
+                impact: {
+                  type: "string",
+                  enum: [
+                    "positive",
+                    "neutral",
+                    "medium_negative",
+                    "high_negative",
+                    "critical_negative"
+                  ]
+                },
+
+                impactReason: {
+                  type: "string"
+                },
+
+                mitigation: {
+                  type: "string"
+                }
+              },
+
+              required: [
+                "label",
+                "impact",
+                "impactReason",
+                "mitigation"
+              ]
+            }
+          }
         },
 
-        impactReason: {
-          type: "string"
-        },
-
-        mitigation: {
-          type: "string"
-        }
-      },
-      required: [
-        "label",
-        "impact",
-        "impactReason",
-        "mitigation"
-      ]
+        required: [
+          "id",
+          "condition",
+          "evidenceStrength",
+          "evidenceReason",
+          "dealBreakerCapable",
+          "text",
+          "clarification",
+          "answers"
+        ]
+      }
     }
-  }
-},
-required: [
-  "id",
-  "condition",
-  "evidenceStrength",
-  "evidenceReason",
-  "dealBreakerCapable",
-  "text",
-  "clarification",
-  "answers"
-]
+  },
 
+  required: [
+    "id",
+    "make",
+    "model",
+    "variant",
+    "evidenceCount",
+    "evidenceUnit",
+    "evidenceLastUpdated",
+    "evidenceSources",
+    "evidenceMethod",
+    "questions"
+  ]
+};
 
-  
 const protocol = `
 You are building an evidence-grounded vehicle ownership-fit decision model.
 
@@ -330,20 +395,27 @@ function extractOutputText(data) {
   if (typeof data.output_text === "string" && data.output_text.trim()) {
     return data.output_text;
   }
+
   const chunks = [];
+
   for (const item of data.output || []) {
     if (item.type === "message") {
       for (const c of item.content || []) {
-        if (c.type === "output_text" && c.text) chunks.push(c.text);
+        if (c.type === "output_text" && c.text) {
+          chunks.push(c.text);
+        }
       }
     }
   }
+
   return chunks.join("\n");
 }
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
-    res.status(405).json({ error: "POST only" });
+    res.status(405).json({
+      error: "POST only"
+    });
     return;
   }
 
@@ -355,28 +427,42 @@ module.exports = async function handler(req, res) {
   }
 
   let body = req.body;
+
   if (typeof body === "string") {
-    try { body = JSON.parse(body); } catch {}
+    try {
+      body = JSON.parse(body);
+    } catch {}
   }
 
   const query = (body?.query || "").trim();
+
   if (!query || query.length < 3) {
-    res.status(400).json({ error: "Please enter a specific vehicle." });
+    res.status(400).json({
+      error: "Please enter a specific vehicle."
+    });
     return;
   }
 
   const requestBody = {
     model: "gpt-5.6-sol",
-    reasoning: { effort: "medium" },
+
+    reasoning: {
+      effort: "medium"
+    },
+
     instructions: protocol,
+
     input: `Research and build the Vehicle Decision Model for: ${query}`,
+
     tools: [
       {
         type: "web_search_preview",
         search_context_size: "medium"
       }
     ],
+
     tool_choice: "auto",
+
     text: {
       format: {
         type: "json_schema",
@@ -384,6 +470,7 @@ module.exports = async function handler(req, res) {
         strict: true,
         schema
       },
+
       verbosity: "low"
     }
   };
@@ -391,45 +478,78 @@ module.exports = async function handler(req, res) {
   try {
     const response = await fetch(OPENAI_URL, {
       method: "POST",
+
       headers: {
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
         "Content-Type": "application/json"
       },
+
       body: JSON.stringify(requestBody)
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("OpenAI error:", JSON.stringify(data));
+      console.error(
+        "OpenAI error:",
+        JSON.stringify(data)
+      );
+
       res.status(response.status).json({
-        error: data?.error?.message || "OpenAI research request failed."
+        error:
+          data?.error?.message ||
+          "OpenAI research request failed."
       });
+
       return;
     }
 
     const outputText = extractOutputText(data);
+
     if (!outputText) {
-      console.error("No output text:", JSON.stringify(data));
-      res.status(502).json({ error: "Research completed without a usable model." });
+      console.error(
+        "No output text:",
+        JSON.stringify(data)
+      );
+
+      res.status(502).json({
+        error:
+          "Research completed without a usable model."
+      });
+
       return;
     }
 
     let vehicle;
+
     try {
       vehicle = JSON.parse(outputText);
     } catch (e) {
-      console.error("JSON parse error:", outputText);
-      res.status(502).json({ error: "Research output could not be parsed." });
+      console.error(
+        "JSON parse error:",
+        outputText
+      );
+
+      res.status(502).json({
+        error:
+          "Research output could not be parsed."
+      });
+
       return;
     }
 
     vehicle.dynamic = true;
     vehicle.researchedQuery = query;
 
-    res.status(200).json({ vehicle });
+    res.status(200).json({
+      vehicle
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Research failed. Please try again." });
+
+    res.status(500).json({
+      error:
+        "Research failed. Please try again."
+    });
   }
 };
