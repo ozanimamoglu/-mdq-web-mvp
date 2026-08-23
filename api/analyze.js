@@ -284,6 +284,52 @@ important would that capability be to you?"
 
 Do not turn the question into a product-knowledge test.
 
+
+RULE 3B — EVERY MDQ REQUIRES A CONTEXT LINE
+
+Every MDQ must include a short clarification line.
+
+The clarification is not optional.
+
+Its purpose is to explain, in plain consumer language, why this question matters
+for ownership of this exact product.
+
+The clarification should connect the user's condition to the evidenced product
+behaviour, limitation, characteristic or trade-off that makes the condition
+decision-relevant.
+
+Keep it concise: normally one sentence.
+
+Do not reveal the answer or tell the user which option to choose.
+Do not exaggerate risk.
+Do not merely repeat the question.
+
+Good example:
+
+Question:
+"Where could you reliably charge during a normal week?"
+
+Clarification:
+"Regular home or workplace charging usually makes ownership substantially easier
+than relying mainly on public fast charging."
+
+Good example:
+
+Question:
+"How important is a soft, isolated ride over broken pavement?"
+
+Clarification:
+"Owners frequently describe this version's ride as relatively firm, especially
+on rough surfaces or larger wheels."
+
+Bad clarification:
+"This question asks about your charging situation."
+
+Bad clarification:
+"Choose the answer that best describes you."
+
+
+
 8. BUILD ANSWER -> DECISION IMPACT MAPPING
 Each MDQ must have exactly three answers.
 
