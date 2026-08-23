@@ -570,6 +570,39 @@ module.exports = async function handler(req, res) {
 
     const data = await response.json();
 
+const usage = data?.usage || {};
+
+const inputTokens =
+  usage.input_tokens ??
+  usage.prompt_tokens ??
+  0;
+
+const outputTokens =
+  usage.output_tokens ??
+  usage.completion_tokens ??
+  0;
+
+const totalTokens =
+  usage.total_tokens ??
+  (inputTokens + outputTokens);
+
+const cachedInputTokens =
+  usage.input_tokens_details?.cached_tokens ??
+  usage.prompt_tokens_details?.cached_tokens ??
+  0;
+
+console.log("RESEARCH_USAGE", JSON.stringify({
+  query,
+  model: requestBody.model,
+  inputTokens,
+  cachedInputTokens,
+  outputTokens,
+  totalTokens,
+  usageRaw: usage
+}));
+
+
+    
     if (!response.ok) {
       console.error(
         "OpenAI error:",
