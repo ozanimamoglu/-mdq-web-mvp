@@ -497,9 +497,15 @@ text:
 The user-facing MDQ.
 
 clarification:
-Use this only when the question contains a product-specific feature, technical
-term or concept that may require a short plain-English explanation.
-Otherwise return an empty string.
+Required for every MDQ.
+
+Provide one concise, plain-English sentence explaining why this question matters
+for ownership of this exact product.
+
+Connect the user's condition to the evidenced product behaviour, limitation,
+characteristic or trade-off behind the question.
+
+Never return an empty string.
 
 answers:
 Exactly three user-facing answers.
