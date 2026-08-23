@@ -618,6 +618,34 @@ module.exports = async function handler(req, res) {
       return;
     }
 
+
+    const webSearchCalls = (data.output || []).filter(
+      item => item.type === "web_search_call"
+    ).length;
+
+    const inputCost = (inputTokens / 1_000_000) * 4;
+    const outputCost = (outputTokens / 1_000_000) * 20;
+    const webSearchCost = webSearchCalls * 0.01;
+
+    const estimatedCost =
+      inputCost +
+      outputCost +
+      webSearchCost;
+
+    console.log("RESEARCH_COST", JSON.stringify({
+      query,
+      inputTokens,
+      outputTokens,
+      reasoningTokens:
+        usage.output_tokens_details?.reasoning_tokens ?? 0,
+      webSearchCalls,
+      inputCost: Number(inputCost.toFixed(4)),
+      outputCost: Number(outputCost.toFixed(4)),
+      webSearchCost: Number(webSearchCost.toFixed(4)),
+      estimatedCostUSD: Number(estimatedCost.toFixed(4))
+    }));
+
+    
     const outputText = extractOutputText(data);
 
     if (!outputText) {
