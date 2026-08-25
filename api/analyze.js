@@ -576,7 +576,7 @@ function buildCanonicalSource(vehicle) {
 }
 
 function buildDisplayName(vehicle) {
-  return [
+  const base = [
     vehicle.make,
     vehicle.model,
     vehicle.variant
@@ -585,6 +585,10 @@ function buildDisplayName(vehicle) {
     .join(" ")
     .replace(/\s+/g, " ")
     .trim();
+
+  return vehicle.year
+    ? `${base} — ${vehicle.year}`
+    : base;
 }
 
 function buildSearchText(vehicle, originalQuery) {
