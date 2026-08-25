@@ -1,3 +1,4 @@
+const { neon } = require("@neondatabase/serverless");
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 
 const schema = {
@@ -7,6 +8,7 @@ const schema = {
     id: { type: "string" },
     make: { type: "string" },
     model: { type: "string" },
+    year: { type: "integer" },
     variant: { type: "string" },
 
     evidenceCount: {
@@ -135,6 +137,7 @@ const schema = {
     "id",
     "make",
     "model",
+    "year",
     "variant",
     "evidenceCount",
     "evidenceUnit",
@@ -482,6 +485,8 @@ ownership characteristic.
 Those belong to a later vehicle-condition / PPI layer.
 
 OUTPUT RULES
+year:
+The exact four-digit model year selected for this product definition.
 
 condition:
 A short plain-English name for the ownership condition.
@@ -544,6 +549,61 @@ function extractOutputText(data) {
   return chunks.join("\n");
 }
 
+function normalizeText(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ");
+}
+
+function normalizeCacheKey(value) {
+  return normalizeText(value)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function buildCanonicalSource(vehicle) {
+  return [
+    vehicle.make,
+    vehicle.model,
+    vehicle.year,
+    vehicle.variant
+  ]
+    .filter(value => value !== undefined && value !== null && value !== "")
+    .join(" ");
+}
+
+function buildDisplayName(vehicle) {
+  return [
+    vehicle.make,
+    vehicle.model,
+    vehicle.variant
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function buildSearchText(vehicle, originalQuery) {
+  return [
+    vehicle.make,
+    vehicle.model,
+    vehicle.year,
+    vehicle.variant,
+    originalQuery
+  ]
+    .filter(value => value !== undefined && value !== null && value !== "")
+    .join(" ")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({
@@ -576,6 +636,60 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+    if (!process.env.DATABASE_URL) {
+    res.status(500).json({
+      error: "DATABASE_URL is not configured in Vercel."
+    });
+    return;
+  }
+
+  const sql = neon(process.env.DATABASE_URL);
+
+  try {
+    const normalizedQuery = normalizeText(query);
+
+    const cachedRows = await sql`
+      SELECT
+        vehicle_data,
+        display_name,
+        cache_key,
+        similarity(search_text, ${normalizedQuery}) AS score
+      FROM vehicles
+      WHERE
+        search_text % ${normalizedQuery}
+        OR search_text ILIKE ${"%" + normalizedQuery + "%"}
+      ORDER BY similarity(search_text, ${normalizedQuery}) DESC
+      LIMIT 1
+    `;
+
+    if (
+      cachedRows.length > 0 &&
+      Number(cachedRows[0].score || 0) >= 0.35
+    ) {
+      console.log("VEHICLE_CACHE_HIT", JSON.stringify({
+        query,
+        displayName: cachedRows[0].display_name,
+        cacheKey: cachedRows[0].cache_key,
+        score: Number(cachedRows[0].score || 0)
+      }));
+
+      res.status(200).json({
+        vehicle: cachedRows[0].vehicle_data,
+        cache: "hit"
+      });
+
+      return;
+    }
+
+    console.log("VEHICLE_CACHE_MISS", JSON.stringify({
+      query
+    }));
+  } catch (err) {
+    console.error("VEHICLE_CACHE_LOOKUP_ERROR", err);
+  }
+
+
+  
   const requestBody = {
     model: "gpt-5.6-sol",
 
@@ -732,18 +846,78 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    vehicle.dynamic = true;
+        vehicle.dynamic = true;
     vehicle.researchedQuery = query;
 
-    res.status(200).json({
-      vehicle
-    });
-  } catch (err) {
-    console.error(err);
+    const canonicalSource = buildCanonicalSource(vehicle);
+    const cacheKey = normalizeCacheKey(canonicalSource);
+    const displayName = buildDisplayName(vehicle);
+    const searchText = buildSearchText(vehicle, query);
 
-    res.status(500).json({
-      error:
-        "Research failed. Please try again."
+    try {
+      await sql`
+        INSERT INTO vehicles (
+          make,
+          model,
+          year,
+          generation,
+          variant,
+          engine,
+          display_name,
+          search_text,
+          cache_key,
+          vehicle_data,
+          researched_query,
+          research_model,
+          research_cost_usd,
+          input_tokens,
+          cached_input_tokens,
+          output_tokens,
+          updated_at
+        )
+        VALUES (
+          ${vehicle.make},
+          ${vehicle.model},
+          ${vehicle.year},
+          NULL,
+          ${vehicle.variant || ""},
+          NULL,
+          ${displayName},
+          ${searchText},
+          ${cacheKey},
+          ${JSON.stringify(vehicle)}::jsonb,
+          ${query},
+          ${requestBody.model},
+          ${Number(estimatedCost.toFixed(6))},
+          ${inputTokens},
+          ${cachedInputTokens},
+          ${outputTokens},
+          NOW()
+        )
+        ON CONFLICT (cache_key)
+        DO UPDATE SET
+          vehicle_data = EXCLUDED.vehicle_data,
+          researched_query = EXCLUDED.researched_query,
+          research_model = EXCLUDED.research_model,
+          research_cost_usd = EXCLUDED.research_cost_usd,
+          input_tokens = EXCLUDED.input_tokens,
+          cached_input_tokens = EXCLUDED.cached_input_tokens,
+          output_tokens = EXCLUDED.output_tokens,
+          search_text = EXCLUDED.search_text,
+          display_name = EXCLUDED.display_name,
+          updated_at = NOW()
+      `;
+
+      console.log("VEHICLE_CACHE_WRITE", JSON.stringify({
+        query,
+        cacheKey,
+        displayName
+      }));
+    } catch (err) {
+      console.error("VEHICLE_CACHE_WRITE_ERROR", err);
+    }
+
+    res.status(200).json({
+      vehicle,
+      cache: "miss"
     });
-  }
-};
