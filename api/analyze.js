@@ -645,50 +645,7 @@ module.exports = async function handler(req, res) {
 
   const sql = neon(process.env.DATABASE_URL);
 
-  try {
-    const normalizedQuery = normalizeText(query);
-
-    const cachedRows = await sql`
-      SELECT
-        vehicle_data,
-        display_name,
-        cache_key,
-        similarity(search_text, ${normalizedQuery}) AS score
-      FROM vehicles
-      WHERE
-        search_text % ${normalizedQuery}
-        OR search_text ILIKE ${"%" + normalizedQuery + "%"}
-      ORDER BY similarity(search_text, ${normalizedQuery}) DESC
-      LIMIT 1
-    `;
-
-    if (
-      cachedRows.length > 0 &&
-      Number(cachedRows[0].score || 0) >= 0.35
-    ) {
-      console.log("VEHICLE_CACHE_HIT", JSON.stringify({
-        query,
-        displayName: cachedRows[0].display_name,
-        cacheKey: cachedRows[0].cache_key,
-        score: Number(cachedRows[0].score || 0)
-      }));
-
-      res.status(200).json({
-        vehicle: cachedRows[0].vehicle_data,
-        cache: "hit"
-      });
-
-      return;
-    }
-
-    console.log("VEHICLE_CACHE_MISS", JSON.stringify({
-      query
-    }));
-  } catch (err) {
-    console.error("VEHICLE_CACHE_LOOKUP_ERROR", err);
-  }
-
-
+ 
   
   const requestBody = {
     model: "gpt-5.6-sol",
@@ -917,7 +874,17 @@ module.exports = async function handler(req, res) {
       console.error("VEHICLE_CACHE_WRITE_ERROR", err);
     }
 
-    res.status(200).json({
+        res.status(200).json({
       vehicle,
       cache: "miss"
     });
+
+  } catch (err) {
+    console.error(err);
+
+    res.status(500).json({
+      error:
+        "Research failed. Please try again."
+    });
+  }
+};
