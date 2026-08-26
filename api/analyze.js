@@ -1,15 +1,31 @@
 const { neon } = require("@neondatabase/serverless");
+
 const OPENAI_URL = "https://api.openai.com/v1/responses";
 
 const schema = {
   type: "object",
   additionalProperties: false,
+
   properties: {
-    id: { type: "string" },
-    make: { type: "string" },
-    model: { type: "string" },
-    year: { type: "integer" },
-    variant: { type: "string" },
+    id: {
+      type: "string"
+    },
+
+    make: {
+      type: "string"
+    },
+
+    model: {
+      type: "string"
+    },
+
+    year: {
+      type: "integer"
+    },
+
+    variant: {
+      type: "string"
+    },
 
     evidenceCount: {
       type: "integer",
@@ -36,13 +52,120 @@ const schema = {
       type: "string"
     },
 
+    productIntegrity: {
+      type: "object",
+      additionalProperties: false,
+
+      properties: {
+        level: {
+          type: "string",
+          enum: [
+            "no_meaningful_signal",
+            "integrity_concern",
+            "serious_integrity_concern"
+          ]
+        },
+
+        summary: {
+          type: "string"
+        },
+
+        overrideFit: {
+          type: "boolean"
+        },
+
+        evidenceReason: {
+          type: "string"
+        },
+
+        issues: {
+          type: "array",
+
+          items: {
+            type: "object",
+            additionalProperties: false,
+
+            properties: {
+              id: {
+                type: "string"
+              },
+
+              functionAffected: {
+                type: "string"
+              },
+
+              failureMode: {
+                type: "string"
+              },
+
+              severity: {
+                type: "string",
+                enum: [
+                  "minor",
+                  "meaningful",
+                  "major"
+                ]
+              },
+
+              recurrence: {
+                type: "string",
+                enum: [
+                  "limited",
+                  "recurring",
+                  "strongly_recurring"
+                ]
+              },
+
+              resolutionPattern: {
+                type: "string"
+              },
+
+              evidenceStrength: {
+                type: "string",
+                enum: [
+                  "moderate",
+                  "strong",
+                  "very_strong"
+                ]
+              },
+
+              evidenceReason: {
+                type: "string"
+              }
+            },
+
+            required: [
+              "id",
+              "functionAffected",
+              "failureMode",
+              "severity",
+              "recurrence",
+              "resolutionPattern",
+              "evidenceStrength",
+              "evidenceReason"
+            ]
+          }
+        }
+      },
+
+      required: [
+        "level",
+        "summary",
+        "overrideFit",
+        "evidenceReason",
+        "issues"
+      ]
+    },
+
     questions: {
       type: "array",
       minItems: 5,
       maxItems: 8,
+
       items: {
         type: "object",
         additionalProperties: false,
+
         properties: {
           id: {
             type: "string"
@@ -81,9 +204,11 @@ const schema = {
             type: "array",
             minItems: 3,
             maxItems: 3,
+
             items: {
               type: "object",
               additionalProperties: false,
+
               properties: {
                 label: {
                   type: "string"
@@ -144,6 +269,7 @@ const schema = {
     "evidenceLastUpdated",
     "evidenceSources",
     "evidenceMethod",
+    "productIntegrity",
     "questions"
   ]
 };
@@ -158,7 +284,9 @@ to this particular user.
 
 Apply this MDQ Generation Protocol exactly and in order.
 
+
 1. DEFINE THE EXACT PRODUCT
+
 Identify the most defensible exact year, generation, powertrain, drivetrain,
 trim or market specification supported by the user's query.
 
@@ -167,7 +295,9 @@ or market specifications.
 
 If ambiguity cannot be avoided, make the chosen product definition explicit.
 
+
 2. GATHER REAL OWNER EVIDENCE
+
 Research real owner reviews, owner forums, long-term ownership reports,
 specialist owner communities and credible used-car reliability discussions.
 
@@ -177,14 +307,16 @@ Count UNIQUE evidence documents, not individual comments within one discussion.
 
 Do not invent evidence.
 
+
 2A. CLASSIFY EVIDENCE BEFORE MDQ GENERATION
 
 Before converting owner evidence into ownership conditions or MDQs, distinguish
 between two fundamentally different evidence classes.
 
+
 A. FIT EVIDENCE
 
-Evidence belongs to the fit channel when the product is substantially performing
+Evidence belongs to the Fit channel when the product is substantially performing
 as intended, but an evidenced characteristic, trade-off, behaviour, limitation
 or ownership burden may fit some users better than others.
 
@@ -199,7 +331,8 @@ Examples include:
 - driving effort
 - software usability friction
 
-FIT EVIDENCE may proceed through the MDQ Generation Protocol.
+Fit Evidence may proceed through the MDQ Generation Protocol.
+
 
 B. PRODUCT INTEGRITY EVIDENCE
 
@@ -217,7 +350,7 @@ Examples include:
 - recurring owner reports that the product becomes unusable or materially
   impaired
 
-Do NOT convert Product Integrity evidence into an MDQ.
+Do NOT convert Product Integrity Evidence into an MDQ.
 
 Never ask the user whether they would tolerate product failure.
 
@@ -229,11 +362,12 @@ Bad:
 
 These are not user-fit conditions.
 
-Product Integrity evidence must instead be evaluated separately under the
+Product Integrity Evidence must instead be evaluated separately under the
 Product Integrity Risk Protocol below.
 
 IMPORTANT:
-Negative owner evidence is not automatically Product Integrity evidence.
+
+Negative owner evidence is not automatically Product Integrity Evidence.
 
 Dislike, inconvenience, expected wear, subjective preference, normal product
 characteristics and ordinary maintenance burden normally remain Fit Evidence.
@@ -242,16 +376,21 @@ A return or refund is not by itself evidence of Product Integrity Risk.
 Determine why the product was returned.
 
 Evidence may contribute to both channels only when it genuinely contains two
-distinct signals. Do not duplicate the same negative observation merely to make
-the integrity signal appear stronger.
+distinct signals.
+
+Do not duplicate the same negative observation merely to make the integrity
+signal appear stronger.
 
 
 3. EXTRACT RECURRING OWNERSHIP FRICTIONS AND BENEFITS
+
 Find recurring real-world experiences that materially shape ownership.
 
 Do not simply collect features, specifications or generic pros and cons.
 
+
 4. FIND THE CONDITION BEHIND EACH FRICTION
+
 For every recurring ownership friction ask:
 
 "What condition in the user's life, usage, expectations or tolerance determines
@@ -259,7 +398,9 @@ whether this issue actually matters?"
 
 The MDQ must diagnose that condition.
 
+
 RULE 1 — CONDITION, NOT ACTION
+
 Questions must diagnose the user's ownership condition, not ask whether they
 have performed a purchase action.
 
@@ -273,7 +414,9 @@ Better:
 "How important is ride comfort over broken or uneven roads to you and your
 regular passengers?"
 
+
 5. APPLY THE CONSEQUENCE THRESHOLD
+
 A recurring observation does NOT automatically deserve an MDQ.
 
 Include a condition only if materially different answers could realistically
@@ -285,6 +428,8 @@ not consume an MDQ slot.
 Never pad the list.
 
 5 strong MDQs are better than 8 weak ones.
+
+
 RULE 1B — ASYMMETRIC VALUE TEST
 
 Do not keep an MDQ merely because the vehicle has a recurring ownership
@@ -311,18 +456,23 @@ to some owners.
 But if a user drives only on normal surfaced roads, not using that capability
 does not by itself make the vehicle a worse ownership fit.
 
-Therefore "How often will you use the off-road capability?" should normally
-not be an MDQ unless that capability brings a meaningful trade-off that also
-affects users who do not need it.
+Therefore:
+"How often will you use the off-road capability?"
+
+should normally not be an MDQ unless that capability brings a meaningful
+trade-off that also affects users who do not need it.
 
 Prefer conditions where different answers can materially change ownership fit,
 or where at least one realistic answer exposes a genuine ownership mismatch.
 
 
 6. MERGE OVERLAPPING CONDITIONS
+
 Merge conditions only when they represent one coherent diagnostic construct.
 
+
 RULE 2 — ONE DIAGNOSTIC CONSTRUCT
+
 Do not bundle different tolerances simply because they appeared together in
 owner evidence.
 
@@ -330,14 +480,18 @@ For example, touchscreen preference, phone-key reliability and software crashes
 must not automatically become one question unless they genuinely represent one
 coherent ownership condition.
 
+
 7. WRITE THE MDQ
+
 Questions must ask observable reality, realistic usage or concrete tolerance.
 
 Avoid vague self-assessment.
 
 The user should be able to answer without expert automotive knowledge.
 
+
 RULE 3 — NO UNEXPLAINED PRODUCT JARGON
+
 Never assume the user knows manufacturer terminology, package names, acronyms
 or technical concepts.
 
@@ -401,8 +555,8 @@ Bad clarification:
 "Choose the answer that best describes you."
 
 
-
 8. BUILD ANSWER -> DECISION IMPACT MAPPING
+
 Each MDQ must have exactly three answers.
 
 The answers must represent meaningfully different ownership conditions.
@@ -425,6 +579,7 @@ critical_negative
 = fundamental mismatch on a condition capable of changing the purchase decision
 
 Impact must be derived from BOTH:
+
 a) the evidenced behavior of this exact product
 b) the user's condition represented by the answer
 
@@ -433,7 +588,9 @@ Do not infer impact from evidence frequency alone.
 Frequency is not severity.
 Severity is not user impact.
 
+
 9. ASSESS EVIDENCE STRENGTH SEPARATELY
+
 For each MDQ assign:
 
 moderate
@@ -454,15 +611,21 @@ Do not use evidence strength as a substitute for user impact.
 Also provide a concise evidenceReason explaining why the evidence strength was
 assigned.
 
+
 10. GENERATE CONDITION-SPECIFIC MITIGATION
+
+
 RULE 4 — MITIGATION MUST BE SPECIFIC
 
 For every answer with negative impact, provide an actionable mitigation that
 directly addresses that specific mismatch.
 
 Generic boilerplate such as:
+
 "test the exact car carefully"
+
 or
+
 "prioritise condition and service history"
 
 is not acceptable unless that action specifically reduces the identified
@@ -483,12 +646,14 @@ deciding."
 
 For positive or neutral answers, mitigation should be an empty string.
 
+
 10A. DIAGNOSTIC DIVERSITY / REDUNDANCY CONTROL
 
 Do not allow one underlying friction family to consume multiple MDQ slots
 unless each condition can independently change the purchase decision.
 
 For example:
+
 home charging access,
 long-distance charging tolerance,
 and severe-winter range requirements
@@ -527,11 +692,13 @@ Prefer wording such as:
 "Supported by several independent owner reports, including exact-year owners."
 
 Avoid unsupported wording such as:
-"Owners consistently report..." unless the research actually supports that claim.
+"Owners consistently report..."
 
+unless the research actually supports that claim.
 
 
 11. FINAL MDQ SELECTION
+
 Keep only the strongest 5-8 independent MDQs.
 
 Prioritize conditions that can genuinely change:
@@ -544,7 +711,9 @@ Prioritize conditions that can genuinely change:
 
 Do not include a question merely because the topic appeared in owner reviews.
 
+
 12. PRODUCT-LEVEL VS SPECIFIC USED-CAR CONDITION
+
 This model evaluates product ownership fit.
 
 Do not turn ordinary wear, maintenance history, accident history or condition
@@ -565,6 +734,7 @@ make a legal or regulatory determination.
 Its purpose is only to identify meaningful owner-evidence signals that the exact
 product may fail to perform an intended or reasonably expected function.
 
+
 1. IDENTIFY THE FAILURE MODE
 
 For each candidate integrity issue determine what function is failing.
@@ -572,12 +742,14 @@ For each candidate integrity issue determine what function is failing.
 Distinguish actual functional failure from dissatisfaction, preference,
 maintenance burden or expected product behaviour.
 
+
 2. DETERMINE FUNCTIONAL IMPORTANCE
 
 Assess whether the affected function is:
 - peripheral or minor
 - meaningful to normal ownership
 - central to the product's intended use
+
 
 3. ESTABLISH RECURRENCE
 
@@ -587,17 +759,21 @@ owner evidence.
 Do not infer recurrence merely because many comments appear inside one forum
 thread, article or discussion.
 
+
 4. ASSESS SEVERITY
 
 minor:
 A real malfunction with limited effect on normal ownership.
 
 meaningful:
-A malfunction that materially impairs normal use or requires significant repair.
+A malfunction that materially impairs normal use or requires significant repair
+because an important function has failed.
 
 major:
-A failure that removes a core function, renders the product unusable, creates
-major repair exposure, or repeatedly prevents normal use.
+A failure that removes a core function, renders the product unusable, repeatedly
+prevents normal use, or requires a major repair because an important function
+has failed.
+
 
 5. EXAMINE THE RESOLUTION PATTERN
 
@@ -613,9 +789,11 @@ Consider whether the issue:
 Repeated failed resolution is stronger evidence than a single successfully
 repaired fault.
 
+
 6. ASSESS EVIDENCE STRENGTH
 
 Use:
+
 moderate
 strong
 very_strong
@@ -629,6 +807,7 @@ Base this on:
 - evidence of repeated failed repair or replacement where available
 
 Do not infer prevalence from raw web visibility alone.
+
 
 7. DETERMINE PRODUCT INTEGRITY LEVEL
 
@@ -647,6 +826,7 @@ pattern affecting an important product function, especially where failures are
 major, persistent, difficult to resolve, or repeatedly lead to replacement,
 return or loss of normal use.
 
+
 8. DETERMINE WHETHER INTEGRITY OVERRIDES FIT
 
 Set overrideFit to true only when the evidence supports a serious integrity
@@ -657,7 +837,8 @@ Be conservative.
 
 A few isolated failures must not override fit.
 
-A common annoyance must not override fit.
+A common annoyance, usability friction or non-failing product characteristic
+must not override fit.
 
 Expensive maintenance alone must not override fit.
 
@@ -668,7 +849,7 @@ overrideFit should normally require a combination of:
 - recurrence across independent owner evidence
 - strong relevance to the exact product
 - credible evidence quality
-- and evidence that the problem is difficult to resolve, persistent, premature,
+- evidence that the problem is difficult to resolve, persistent, premature,
   or otherwise consequential
 
 Do not make legal claims such as:
@@ -677,9 +858,17 @@ Do not make legal claims such as:
 "unfit for sale"
 or equivalent legal conclusions.
 
+
 OUTPUT REQUIREMENTS FOR PRODUCT INTEGRITY
 
 Always return a productIntegrity object.
+
+productIntegrity.level must be exactly one of:
+- no_meaningful_signal
+- integrity_concern
+- serious_integrity_concern
+
+productIntegrity.overrideFit must be a boolean.
 
 If no meaningful integrity signal is found:
 - level = "no_meaningful_signal"
@@ -691,8 +880,30 @@ If no meaningful integrity signal is found:
 
 Do not manufacture integrity issues merely to populate the output.
 
+If issues are returned, each issue must describe a specific recurring functional
+failure pattern rather than a broad reliability category.
+
+For example:
+
+Prefer:
+"12-volt battery failures causing repeated no-start conditions"
+
+Avoid:
+"electrical problems"
+
+Prefer:
+"infotainment display repeatedly becoming inoperative"
+
+Avoid:
+"software issues"
+
+Do not use Product Integrity Risk as a substitute for general reliability,
+maintenance cost, expected wear, age-related deterioration or purchase-condition
+risk.
+
 
 OUTPUT RULES
+
 year:
 The exact four-digit model year selected for this product definition.
 
@@ -729,16 +940,21 @@ with this exact vehicle.
 
 mitigation:
 A specific action that could reduce a negative mismatch.
+
 Return an empty string for positive and neutral answers.
 
 Result calculation is handled separately.
+
 Do not produce a final vehicle verdict.
 
 Write concise, neutral, consumer-facing English suitable for a minimalist web app.
 `;
 
 function extractOutputText(data) {
-  if (typeof data.output_text === "string" && data.output_text.trim()) {
+  if (
+    typeof data.output_text === "string" &&
+    data.output_text.trim()
+  ) {
     return data.output_text;
   }
 
@@ -747,7 +963,10 @@ function extractOutputText(data) {
   for (const item of data.output || []) {
     if (item.type === "message") {
       for (const c of item.content || []) {
-        if (c.type === "output_text" && c.text) {
+        if (
+          c.type === "output_text" &&
+          c.text
+        ) {
           chunks.push(c.text);
         }
       }
@@ -779,7 +998,12 @@ function buildCanonicalSource(vehicle) {
     vehicle.year,
     vehicle.variant
   ]
-    .filter(value => value !== undefined && value !== null && value !== "")
+    .filter(
+      value =>
+        value !== undefined &&
+        value !== null &&
+        value !== ""
+    )
     .join(" ");
 }
 
@@ -807,14 +1031,17 @@ function buildSearchText(vehicle, originalQuery) {
     vehicle.variant,
     originalQuery
   ]
-    .filter(value => value !== undefined && value !== null && value !== "")
+    .filter(
+      value =>
+        value !== undefined &&
+        value !== null &&
+        value !== ""
+    )
     .join(" ")
     .toLowerCase()
     .replace(/\s+/g, " ")
     .trim();
 }
-
-
 
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
@@ -826,7 +1053,16 @@ module.exports = async function handler(req, res) {
 
   if (!process.env.OPENAI_API_KEY) {
     res.status(500).json({
-      error: "OPENAI_API_KEY is not configured in Vercel."
+      error:
+        "OPENAI_API_KEY is not configured in Vercel."
+    });
+    return;
+  }
+
+  if (!process.env.DATABASE_URL) {
+    res.status(500).json({
+      error:
+        "DATABASE_URL is not configured in Vercel."
     });
     return;
   }
@@ -836,10 +1072,12 @@ module.exports = async function handler(req, res) {
   if (typeof body === "string") {
     try {
       body = JSON.parse(body);
-    } catch {}
+    } catch {
+      body = {};
+    }
   }
 
-  const query = (body?.query || "").trim();
+  const query = String(body?.query || "").trim();
 
   if (!query || query.length < 3) {
     res.status(400).json({
@@ -848,17 +1086,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-    if (!process.env.DATABASE_URL) {
-    res.status(500).json({
-      error: "DATABASE_URL is not configured in Vercel."
-    });
-    return;
-  }
-
   const sql = neon(process.env.DATABASE_URL);
 
- 
-  
   const requestBody = {
     model: "gpt-5.6-sol",
 
@@ -868,7 +1097,8 @@ module.exports = async function handler(req, res) {
 
     instructions: protocol,
 
-    input: `Research and build the Vehicle Decision Model for: ${query}`,
+    input:
+      `Research and build the Vehicle Decision Model for: ${query}`,
 
     tools: [
       {
@@ -892,16 +1122,22 @@ module.exports = async function handler(req, res) {
   };
 
   try {
-    const response = await fetch(OPENAI_URL, {
-      method: "POST",
+    const response = await fetch(
+      OPENAI_URL,
+      {
+        method: "POST",
 
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        "Content-Type": "application/json"
-      },
+        headers: {
+          Authorization:
+            `Bearer ${process.env.OPENAI_API_KEY}`,
 
-      body: JSON.stringify(requestBody)
-    });
+          "Content-Type":
+            "application/json"
+        },
+
+        body: JSON.stringify(requestBody)
+      }
+    );
 
     const data = await response.json();
 
@@ -919,25 +1155,26 @@ module.exports = async function handler(req, res) {
 
     const totalTokens =
       usage.total_tokens ??
-      (inputTokens + outputTokens);
+      inputTokens + outputTokens;
 
     const cachedInputTokens =
       usage.input_tokens_details?.cached_tokens ??
       usage.prompt_tokens_details?.cached_tokens ??
       0;
 
-    console.log("RESEARCH_USAGE", JSON.stringify({
-      query,
-      model: requestBody.model,
-      inputTokens,
-      cachedInputTokens,
-      outputTokens,
-      totalTokens,
-      usageRaw: usage
-    }));
+    console.log(
+      "RESEARCH_USAGE",
+      JSON.stringify({
+        query,
+        model: requestBody.model,
+        inputTokens,
+        cachedInputTokens,
+        outputTokens,
+        totalTokens,
+        usageRaw: usage
+      })
+    );
 
-
-    
     if (!response.ok) {
       console.error(
         "OpenAI error:",
@@ -953,35 +1190,54 @@ module.exports = async function handler(req, res) {
       return;
     }
 
+    const webSearchCalls =
+      (data.output || []).filter(
+        item => item.type === "web_search_call"
+      ).length;
 
-    const webSearchCalls = (data.output || []).filter(
-      item => item.type === "web_search_call"
-    ).length;
+    const inputCost =
+      (inputTokens / 1_000_000) * 4;
 
-    const inputCost = (inputTokens / 1_000_000) * 4;
-    const outputCost = (outputTokens / 1_000_000) * 20;
-    const webSearchCost = webSearchCalls * 0.01;
+    const outputCost =
+      (outputTokens / 1_000_000) * 20;
+
+    const webSearchCost =
+      webSearchCalls * 0.01;
 
     const estimatedCost =
       inputCost +
       outputCost +
       webSearchCost;
 
-    console.log("RESEARCH_COST", JSON.stringify({
-      query,
-      inputTokens,
-      outputTokens,
-      reasoningTokens:
-        usage.output_tokens_details?.reasoning_tokens ?? 0,
-      webSearchCalls,
-      inputCost: Number(inputCost.toFixed(4)),
-      outputCost: Number(outputCost.toFixed(4)),
-      webSearchCost: Number(webSearchCost.toFixed(4)),
-      estimatedCostUSD: Number(estimatedCost.toFixed(4))
-    }));
+    console.log(
+      "RESEARCH_COST",
+      JSON.stringify({
+        query,
+        inputTokens,
+        outputTokens,
 
-    
-    const outputText = extractOutputText(data);
+        reasoningTokens:
+          usage.output_tokens_details
+            ?.reasoning_tokens ?? 0,
+
+        webSearchCalls,
+
+        inputCost:
+          Number(inputCost.toFixed(4)),
+
+        outputCost:
+          Number(outputCost.toFixed(4)),
+
+        webSearchCost:
+          Number(webSearchCost.toFixed(4)),
+
+        estimatedCostUSD:
+          Number(estimatedCost.toFixed(4))
+      })
+    );
+
+    const outputText =
+      extractOutputText(data);
 
     if (!outputText) {
       console.error(
@@ -1015,13 +1271,20 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-        vehicle.dynamic = true;
+    vehicle.dynamic = true;
     vehicle.researchedQuery = query;
 
-    const canonicalSource = buildCanonicalSource(vehicle);
-    const cacheKey = normalizeCacheKey(canonicalSource);
-    const displayName = buildDisplayName(vehicle);
-    const searchText = buildSearchText(vehicle, query);
+    const canonicalSource =
+      buildCanonicalSource(vehicle);
+
+    const cacheKey =
+      normalizeCacheKey(canonicalSource);
+
+    const displayName =
+      buildDisplayName(vehicle);
+
+    const searchText =
+      buildSearchText(vehicle, query);
 
     try {
       await sql`
@@ -1065,34 +1328,65 @@ module.exports = async function handler(req, res) {
         )
         ON CONFLICT (cache_key)
         DO UPDATE SET
-          vehicle_data = EXCLUDED.vehicle_data,
-          researched_query = EXCLUDED.researched_query,
-          research_model = EXCLUDED.research_model,
-          research_cost_usd = EXCLUDED.research_cost_usd,
-          input_tokens = EXCLUDED.input_tokens,
-          cached_input_tokens = EXCLUDED.cached_input_tokens,
-          output_tokens = EXCLUDED.output_tokens,
-          search_text = EXCLUDED.search_text,
-          display_name = EXCLUDED.display_name,
-          updated_at = NOW()
+          vehicle_data =
+            EXCLUDED.vehicle_data,
+
+          researched_query =
+            EXCLUDED.researched_query,
+
+          research_model =
+            EXCLUDED.research_model,
+
+          research_cost_usd =
+            EXCLUDED.research_cost_usd,
+
+          input_tokens =
+            EXCLUDED.input_tokens,
+
+          cached_input_tokens =
+            EXCLUDED.cached_input_tokens,
+
+          output_tokens =
+            EXCLUDED.output_tokens,
+
+          search_text =
+            EXCLUDED.search_text,
+
+          display_name =
+            EXCLUDED.display_name,
+
+          updated_at =
+            NOW()
       `;
 
-      console.log("VEHICLE_CACHE_WRITE", JSON.stringify({
-        query,
-        cacheKey,
-        displayName
-      }));
+      console.log(
+        "VEHICLE_CACHE_WRITE",
+        JSON.stringify({
+          query,
+          cacheKey,
+          displayName,
+          productIntegrityLevel:
+            vehicle.productIntegrity?.level,
+          productIntegrityOverride:
+            vehicle.productIntegrity?.overrideFit
+        })
+      );
     } catch (err) {
-      console.error("VEHICLE_CACHE_WRITE_ERROR", err);
+      console.error(
+        "VEHICLE_CACHE_WRITE_ERROR",
+        err
+      );
     }
 
-        res.status(200).json({
+    res.status(200).json({
       vehicle,
       cache: "miss"
     });
-
   } catch (err) {
-    console.error(err);
+    console.error(
+      "RESEARCH_HANDLER_ERROR",
+      err
+    );
 
     res.status(500).json({
       error:
