@@ -1,6 +1,19 @@
 const { neon } = require("@neondatabase/serverless");
+const crypto = require("crypto");
 
 const OPENAI_URL = "https://api.openai.com/v1/responses";
+
+const RESEARCH_RATE_LIMIT_HOURLY =
+  Number.parseInt(
+    process.env.RESEARCH_RATE_LIMIT_HOURLY || "10",
+    10
+  );
+
+const RESEARCH_RATE_LIMIT_DAILY =
+  Number.parseInt(
+    process.env.RESEARCH_RATE_LIMIT_DAILY || "30",
+    10
+  );
 
 const schema = {
   type: "object",
@@ -1301,6 +1314,238 @@ function hasUsableMarketPrice(vehicle) {
   return true;
 }
 
+
+function getClientIp(req) {
+  const forwarded =
+    req.headers["x-forwarded-for"];
+
+  if (Array.isArray(forwarded)) {
+    const first = forwarded[0];
+
+    if (first) {
+      return String(first)
+        .split(",")[0]
+        .trim();
+    }
+  }
+
+  if (
+    typeof forwarded === "string" &&
+    forwarded.trim()
+  ) {
+    return forwarded
+      .split(",")[0]
+      .trim();
+  }
+
+  const realIp =
+    req.headers["x-real-ip"];
+
+  if (
+    typeof realIp === "string" &&
+    realIp.trim()
+  ) {
+    return realIp.trim();
+  }
+
+  return "unknown";
+}
+
+function buildRateLimitIdentifier(req) {
+  const ip = getClientIp(req);
+
+  /*
+   * Do not store the raw client IP in the database.
+   * Store a one-way hash instead.
+   */
+  return crypto
+    .createHash("sha256")
+    .update(`vehicle-research:${ip}`)
+    .digest("hex");
+}
+
+async function consumeResearchRateLimit(
+  sql,
+  req
+) {
+  const identifier =
+    buildRateLimitIdentifier(req);
+
+  /*
+   * Both counters are incremented atomically
+   * inside one PostgreSQL statement.
+   *
+   * This rate limit is consumed ONLY after a
+   * vehicle cache miss, immediately before a
+   * new OpenAI research request.
+   */
+  const rows = await sql`
+    WITH hourly AS (
+      INSERT INTO research_rate_limits (
+        identifier,
+        window_type,
+        window_start,
+        request_count,
+        created_at,
+        updated_at
+      )
+      VALUES (
+        ${identifier},
+        'hour',
+        DATE_TRUNC('hour', NOW()),
+        1,
+        NOW(),
+        NOW()
+      )
+
+      ON CONFLICT (
+        identifier,
+        window_type,
+        window_start
+      )
+
+      DO UPDATE SET
+        request_count =
+          research_rate_limits.request_count + 1,
+
+        updated_at =
+          NOW()
+
+      RETURNING
+        request_count,
+        window_start
+    ),
+
+    daily AS (
+      INSERT INTO research_rate_limits (
+        identifier,
+        window_type,
+        window_start,
+        request_count,
+        created_at,
+        updated_at
+      )
+      VALUES (
+        ${identifier},
+        'day',
+        DATE_TRUNC('day', NOW()),
+        1,
+        NOW(),
+        NOW()
+      )
+
+      ON CONFLICT (
+        identifier,
+        window_type,
+        window_start
+      )
+
+      DO UPDATE SET
+        request_count =
+          research_rate_limits.request_count + 1,
+
+        updated_at =
+          NOW()
+
+      RETURNING
+        request_count,
+        window_start
+    )
+
+    SELECT
+      hourly.request_count
+        AS hourly_count,
+
+      hourly.window_start
+        AS hourly_window_start,
+
+      daily.request_count
+        AS daily_count,
+
+      daily.window_start
+        AS daily_window_start
+
+    FROM hourly
+    CROSS JOIN daily
+  `;
+
+  const row = rows[0];
+
+  const hourlyCount =
+    Number(row?.hourly_count || 0);
+
+  const dailyCount =
+    Number(row?.daily_count || 0);
+
+  const hourlyExceeded =
+    hourlyCount >
+    RESEARCH_RATE_LIMIT_HOURLY;
+
+  const dailyExceeded =
+    dailyCount >
+    RESEARCH_RATE_LIMIT_DAILY;
+
+  let retryAfterSeconds = 0;
+
+  if (dailyExceeded) {
+    const dayStart =
+      new Date(
+        row.daily_window_start
+      ).getTime();
+
+    const resetAt =
+      dayStart +
+      24 * 60 * 60 * 1000;
+
+    retryAfterSeconds =
+      Math.max(
+        1,
+        Math.ceil(
+          (resetAt - Date.now()) / 1000
+        )
+      );
+  } else if (hourlyExceeded) {
+    const hourStart =
+      new Date(
+        row.hourly_window_start
+      ).getTime();
+
+    const resetAt =
+      hourStart +
+      60 * 60 * 1000;
+
+    retryAfterSeconds =
+      Math.max(
+        1,
+        Math.ceil(
+          (resetAt - Date.now()) / 1000
+        )
+      );
+  }
+
+  return {
+    allowed:
+      !hourlyExceeded &&
+      !dailyExceeded,
+
+    hourlyCount,
+    dailyCount,
+
+    hourlyLimit:
+      RESEARCH_RATE_LIMIT_HOURLY,
+
+    dailyLimit:
+      RESEARCH_RATE_LIMIT_DAILY,
+
+    hourlyExceeded,
+    dailyExceeded,
+    retryAfterSeconds
+  };
+}
+
+
+
+
 async function findCachedVehicle(sql, query) {
   const normalizedQuery = normalizeDbQuery(query);
   const queryKey = normalizeCacheKey(query);
@@ -1574,6 +1819,108 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  /*
+   * RESEARCH RATE LIMIT
+   *
+   * IMPORTANT:
+   * We reach this point only when the shared
+   * vehicle database did NOT provide a usable
+   * cached result.
+   *
+   * Cache hits therefore remain effectively
+   * unrestricted.
+   *
+   * Only requests that are about to create
+   * a new OpenAI research cost consume the
+   * research quota.
+   */
+  try {
+    const rateLimit =
+      await consumeResearchRateLimit(
+        sql,
+        req
+      );
+
+    console.log(
+      "RESEARCH_RATE_LIMIT",
+      JSON.stringify({
+        query,
+
+        allowed:
+          rateLimit.allowed,
+
+        hourlyCount:
+          rateLimit.hourlyCount,
+
+        hourlyLimit:
+          rateLimit.hourlyLimit,
+
+        dailyCount:
+          rateLimit.dailyCount,
+
+        dailyLimit:
+          rateLimit.dailyLimit,
+
+        hourlyExceeded:
+          rateLimit.hourlyExceeded,
+
+        dailyExceeded:
+          rateLimit.dailyExceeded
+      })
+    );
+
+    if (!rateLimit.allowed) {
+      if (
+        rateLimit.retryAfterSeconds > 0
+      ) {
+        res.setHeader(
+          "Retry-After",
+          String(
+            rateLimit.retryAfterSeconds
+          )
+        );
+      }
+
+      res.status(429).json({
+        error:
+          "Too many new vehicle research requests. Please try again later.",
+
+        code:
+          "RESEARCH_RATE_LIMIT_EXCEEDED"
+      });
+
+      return;
+    }
+  } catch (err) {
+    /*
+     * Fail closed here.
+     *
+     * If we cannot verify the research quota,
+     * do not start a paid OpenAI research request.
+     *
+     * This protects against an unexpected database
+     * or rate-limit failure creating uncontrolled
+     * OpenAI spend.
+     */
+    console.error(
+      "RESEARCH_RATE_LIMIT_ERROR",
+      err
+    );
+
+    res.status(503).json({
+      error:
+        "Vehicle research is temporarily unavailable. Please try again shortly.",
+
+      code:
+        "RESEARCH_RATE_LIMIT_UNAVAILABLE"
+    });
+
+    return;
+  }
+
+  const requestBody = {
+
+  
   const requestBody = {
     model: "gpt-5.6-sol",
 
