@@ -1072,14 +1072,10 @@ async function findCachedVehicle(sql, query) {
   const queryKey = normalizeCacheKey(query);
 
   /*
-   * PASS 1:
-   * Very conservative lookup.
-   *
-   * We accept either:
-   * - the raw query normalizing to an existing canonical cache key
-   * - the exact previously researched query
+   * PASS 1A:
+   * Exact canonical cache-key match.
    */
-  const exactRows = await sql`
+  const keyRows = await sql`
     SELECT
       vehicle_data,
       cache_key,
@@ -1087,34 +1083,127 @@ async function findCachedVehicle(sql, query) {
       researched_query,
       updated_at
     FROM vehicles
-    WHERE
-      cache_key = ${queryKey}
-      OR LOWER(
-        REGEXP_REPLACE(
-          TRIM(researched_query),
-          '[[:space:]]+',
-          ' ',
-          'g'
-        )
-      ) = ${normalizedQuery}
-    ORDER BY updated_at DESC
+    WHERE cache_key = ${queryKey}
     LIMIT 1
   `;
 
-  if (exactRows.length === 1) {
+  if (keyRows.length === 1) {
     const vehicle = parseVehicleData(
-      exactRows[0].vehicle_data
+      keyRows[0].vehicle_data
     );
 
     if (vehicle) {
       return {
         vehicle,
-        matchType: "exact",
-        cacheKey: exactRows[0].cache_key,
-        displayName: exactRows[0].display_name
+        matchType: "exact_cache_key",
+        cacheKey: keyRows[0].cache_key,
+        displayName: keyRows[0].display_name
       };
     }
   }
+
+  /*
+   * PASS 1B:
+   * Exact previously researched query.
+   *
+   * Only use automatically when exactly one
+   * canonical vehicle matches that query.
+   */
+  const queryRows = await sql`
+    SELECT
+      vehicle_data,
+      cache_key,
+      display_name,
+      researched_query,
+      updated_at
+    FROM vehicles
+    WHERE LOWER(
+      REGEXP_REPLACE(
+        TRIM(researched_query),
+        '[[:space:]]+',
+        ' ',
+        'g'
+      )
+    ) = ${normalizedQuery}
+    ORDER BY updated_at DESC
+    LIMIT 2
+  `;
+
+  if (queryRows.length === 1) {
+    const vehicle = parseVehicleData(
+      queryRows[0].vehicle_data
+    );
+
+    if (vehicle) {
+      return {
+        vehicle,
+        matchType: "exact_researched_query",
+        cacheKey: queryRows[0].cache_key,
+        displayName: queryRows[0].display_name
+      };
+    }
+  }
+
+  /*
+   * PASS 2:
+   * PostgreSQL full-text lookup.
+   *
+   * Automatically use only when exactly one
+   * cached vehicle matches all query terms.
+   */
+  const candidateRows = await sql`
+    SELECT
+      vehicle_data,
+      cache_key,
+      display_name,
+      researched_query,
+      updated_at,
+      TS_RANK_CD(
+        TO_TSVECTOR(
+          'simple',
+          COALESCE(search_text, '')
+        ),
+        PLAINTO_TSQUERY(
+          'simple',
+          ${query}
+        )
+      ) AS match_rank
+    FROM vehicles
+    WHERE
+      TO_TSVECTOR(
+        'simple',
+        COALESCE(search_text, '')
+      )
+      @@
+      PLAINTO_TSQUERY(
+        'simple',
+        ${query}
+      )
+    ORDER BY
+      match_rank DESC,
+      updated_at DESC
+    LIMIT 2
+  `;
+
+  if (candidateRows.length !== 1) {
+    return null;
+  }
+
+  const vehicle = parseVehicleData(
+    candidateRows[0].vehicle_data
+  );
+
+  if (!vehicle) {
+    return null;
+  }
+
+  return {
+    vehicle,
+    matchType: "unique_full_text",
+    cacheKey: candidateRows[0].cache_key,
+    displayName: candidateRows[0].display_name
+  };
+}
 
   /*
    * PASS 2:
@@ -1190,13 +1279,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  if (!process.env.OPENAI_API_KEY) {
-    res.status(500).json({
-      error:
-        "OPENAI_API_KEY is not configured in Vercel."
-    });
-    return;
-  }
+
 
   if (!process.env.DATABASE_URL) {
     res.status(500).json({
@@ -1289,6 +1372,15 @@ try {
   );
 }
 
+
+
+    if (!process.env.OPENAI_API_KEY) {
+    res.status(500).json({
+      error:
+        "OPENAI_API_KEY is not configured in Vercel."
+    });
+    return;
+    }
 
 
   const requestBody = {
