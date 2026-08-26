@@ -177,6 +177,75 @@ Count UNIQUE evidence documents, not individual comments within one discussion.
 
 Do not invent evidence.
 
+2A. CLASSIFY EVIDENCE BEFORE MDQ GENERATION
+
+Before converting owner evidence into ownership conditions or MDQs, distinguish
+between two fundamentally different evidence classes.
+
+A. FIT EVIDENCE
+
+Evidence belongs to the fit channel when the product is substantially performing
+as intended, but an evidenced characteristic, trade-off, behaviour, limitation
+or ownership burden may fit some users better than others.
+
+Examples include:
+- firm ride
+- limited cargo space
+- expensive routine maintenance
+- touchscreen-heavy controls
+- low-speed transmission hesitation that represents normal operating character
+- charging convenience
+- cabin noise
+- driving effort
+- software usability friction
+
+FIT EVIDENCE may proceed through the MDQ Generation Protocol.
+
+B. PRODUCT INTEGRITY EVIDENCE
+
+Evidence belongs to the Product Integrity channel when it indicates that the
+product may fail to perform an intended or reasonably expected function,
+independent of the user's preference, lifestyle or tolerance.
+
+Examples include:
+- repeated component failure
+- loss of a core product function
+- premature major mechanical or electrical failure
+- repeated repair attempts that do not resolve the same fault
+- replacement units developing the same fault
+- returns, refunds or buybacks specifically caused by functional failure
+- recurring owner reports that the product becomes unusable or materially
+  impaired
+
+Do NOT convert Product Integrity evidence into an MDQ.
+
+Never ask the user whether they would tolerate product failure.
+
+Bad:
+"Would repeated transmission failure bother you?"
+
+Bad:
+"How comfortable are you with returning the product if it stops working?"
+
+These are not user-fit conditions.
+
+Product Integrity evidence must instead be evaluated separately under the
+Product Integrity Risk Protocol below.
+
+IMPORTANT:
+Negative owner evidence is not automatically Product Integrity evidence.
+
+Dislike, inconvenience, expected wear, subjective preference, normal product
+characteristics and ordinary maintenance burden normally remain Fit Evidence.
+
+A return or refund is not by itself evidence of Product Integrity Risk.
+Determine why the product was returned.
+
+Evidence may contribute to both channels only when it genuinely contains two
+distinct signals. Do not duplicate the same negative observation merely to make
+the integrity signal appear stronger.
+
+
 3. EXTRACT RECURRING OWNERSHIP FRICTIONS AND BENEFITS
 Find recurring real-world experiences that materially shape ownership.
 
@@ -483,6 +552,145 @@ of one used example into an MDQ unless the issue is a recurring product-level
 ownership characteristic.
 
 Those belong to a later vehicle-condition / PPI layer.
+
+
+
+PRODUCT INTEGRITY RISK PROTOCOL
+
+This protocol is separate from MDQ generation.
+
+Its purpose is not to decide whether the product is legally defective and not to
+make a legal or regulatory determination.
+
+Its purpose is only to identify meaningful owner-evidence signals that the exact
+product may fail to perform an intended or reasonably expected function.
+
+1. IDENTIFY THE FAILURE MODE
+
+For each candidate integrity issue determine what function is failing.
+
+Distinguish actual functional failure from dissatisfaction, preference,
+maintenance burden or expected product behaviour.
+
+2. DETERMINE FUNCTIONAL IMPORTANCE
+
+Assess whether the affected function is:
+- peripheral or minor
+- meaningful to normal ownership
+- central to the product's intended use
+
+3. ESTABLISH RECURRENCE
+
+Determine whether substantially the same failure appears across independent
+owner evidence.
+
+Do not infer recurrence merely because many comments appear inside one forum
+thread, article or discussion.
+
+4. ASSESS SEVERITY
+
+minor:
+A real malfunction with limited effect on normal ownership.
+
+meaningful:
+A malfunction that materially impairs normal use or requires significant repair.
+
+major:
+A failure that removes a core function, renders the product unusable, creates
+major repair exposure, or repeatedly prevents normal use.
+
+5. EXAMINE THE RESOLUTION PATTERN
+
+Consider whether the issue:
+- resolves easily
+- requires significant repair
+- repeatedly returns after repair
+- leads to component or product replacement
+- persists in replacement products
+- leads to return, refund or buyback because normal function could not be
+  restored
+
+Repeated failed resolution is stronger evidence than a single successfully
+repaired fault.
+
+6. ASSESS EVIDENCE STRENGTH
+
+Use:
+moderate
+strong
+very_strong
+
+Base this on:
+- recurrence across independent evidence documents
+- relevance to the exact product definition
+- consistency of the described failure mode
+- actual owner experience
+- quality and specificity of the reports
+- evidence of repeated failed repair or replacement where available
+
+Do not infer prevalence from raw web visibility alone.
+
+7. DETERMINE PRODUCT INTEGRITY LEVEL
+
+no_meaningful_signal:
+No sufficiently recurring and consequential product-integrity pattern is
+supported by the available evidence.
+
+integrity_concern:
+A credible recurring functional-failure pattern exists, but its severity,
+recurrence, scope or resolution record is not strong enough to independently
+invalidate an otherwise good ownership fit.
+
+serious_integrity_concern:
+Credible independent owner evidence shows a recurring and consequential failure
+pattern affecting an important product function, especially where failures are
+major, persistent, difficult to resolve, or repeatedly lead to replacement,
+return or loss of normal use.
+
+8. DETERMINE WHETHER INTEGRITY OVERRIDES FIT
+
+Set overrideFit to true only when the evidence supports a serious integrity
+concern strong enough that asking whether the user's ownership conditions fit
+the product would materially understate the purchase risk.
+
+Be conservative.
+
+A few isolated failures must not override fit.
+
+A common annoyance must not override fit.
+
+Expensive maintenance alone must not override fit.
+
+Ordinary age-related wear in individual used examples must not override fit.
+
+overrideFit should normally require a combination of:
+- meaningful or major functional severity
+- recurrence across independent owner evidence
+- strong relevance to the exact product
+- credible evidence quality
+- and evidence that the problem is difficult to resolve, persistent, premature,
+  or otherwise consequential
+
+Do not make legal claims such as:
+"defective product"
+"faulty by law"
+"unfit for sale"
+or equivalent legal conclusions.
+
+OUTPUT REQUIREMENTS FOR PRODUCT INTEGRITY
+
+Always return a productIntegrity object.
+
+If no meaningful integrity signal is found:
+- level = "no_meaningful_signal"
+- overrideFit = false
+- issues = []
+- summary should state concisely that no meaningful recurring integrity pattern
+  was established from the researched owner evidence
+- evidenceReason should briefly explain the basis
+
+Do not manufacture integrity issues merely to populate the output.
+
 
 OUTPUT RULES
 year:
