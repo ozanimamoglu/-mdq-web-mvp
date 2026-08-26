@@ -96,4 +96,4 @@ The health endpoint reports:
 It never returns secret values.
 
 
-Deployment refresh
+Deployment refresh - OpenAI key
