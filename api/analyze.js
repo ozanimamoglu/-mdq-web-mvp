@@ -1043,6 +1043,145 @@ function buildSearchText(vehicle, originalQuery) {
     .trim();
 }
 
+
+function normalizeDbQuery(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function parseVehicleData(value) {
+  if (!value) {
+    return null;
+  }
+
+  if (typeof value === "object") {
+    return value;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+}
+
+async function findCachedVehicle(sql, query) {
+  const normalizedQuery = normalizeDbQuery(query);
+  const queryKey = normalizeCacheKey(query);
+
+  /*
+   * PASS 1:
+   * Very conservative lookup.
+   *
+   * We accept either:
+   * - the raw query normalizing to an existing canonical cache key
+   * - the exact previously researched query
+   */
+  const exactRows = await sql`
+    SELECT
+      vehicle_data,
+      cache_key,
+      display_name,
+      researched_query,
+      updated_at
+    FROM vehicles
+    WHERE
+      cache_key = ${queryKey}
+      OR LOWER(
+        REGEXP_REPLACE(
+          TRIM(researched_query),
+          '[[:space:]]+',
+          ' ',
+          'g'
+        )
+      ) = ${normalizedQuery}
+    ORDER BY updated_at DESC
+    LIMIT 1
+  `;
+
+  if (exactRows.length === 1) {
+    const vehicle = parseVehicleData(
+      exactRows[0].vehicle_data
+    );
+
+    if (vehicle) {
+      return {
+        vehicle,
+        matchType: "exact",
+        cacheKey: exactRows[0].cache_key,
+        displayName: exactRows[0].display_name
+      };
+    }
+  }
+
+  /*
+   * PASS 2:
+   * PostgreSQL full-text lookup.
+   *
+   * We only accept this result automatically when
+   * exactly ONE cached vehicle matches all meaningful
+   * query terms.
+   *
+   * If several vehicles match, we deliberately do NOT
+   * guess which vehicle the user meant.
+   */
+  const candidateRows = await sql`
+    SELECT
+      vehicle_data,
+      cache_key,
+      display_name,
+      researched_query,
+      updated_at,
+      TS_RANK_CD(
+        TO_TSVECTOR(
+          'simple',
+          COALESCE(search_text, '')
+        ),
+        PLAINTO_TSQUERY(
+          'simple',
+          ${query}
+        )
+      ) AS match_rank
+    FROM vehicles
+    WHERE
+      TO_TSVECTOR(
+        'simple',
+        COALESCE(search_text, '')
+      )
+      @@
+      PLAINTO_TSQUERY(
+        'simple',
+        ${query}
+      )
+    ORDER BY
+      match_rank DESC,
+      updated_at DESC
+    LIMIT 3
+  `;
+
+  if (candidateRows.length !== 1) {
+    return null;
+  }
+
+  const vehicle = parseVehicleData(
+    candidateRows[0].vehicle_data
+  );
+
+  if (!vehicle) {
+    return null;
+  }
+
+  return {
+    vehicle,
+    matchType: "unique_full_text",
+    cacheKey: candidateRows[0].cache_key,
+    displayName: candidateRows[0].display_name
+  };
+}
+
+
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({
@@ -1086,7 +1225,71 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const sql = neon(process.env.DATABASE_URL);
+ const sql = neon(process.env.DATABASE_URL);
+
+/*
+ * CENTRAL CACHE LOOKUP
+ *
+ * Always check the shared database before starting
+ * a new OpenAI research request.
+ */
+try {
+  const cached = await findCachedVehicle(
+    sql,
+    query
+  );
+
+  if (cached) {
+    const cachedVehicle = {
+      ...cached.vehicle,
+      dynamic: true,
+      researchedQuery:
+        cached.vehicle.researchedQuery ||
+        cached.vehicle.researched_query ||
+        query
+    };
+
+    console.log(
+      "VEHICLE_CACHE_HIT",
+      JSON.stringify({
+        query,
+        cacheKey: cached.cacheKey,
+        displayName: cached.displayName,
+        matchType: cached.matchType
+      })
+    );
+
+    res.status(200).json({
+      vehicle: cachedVehicle,
+      cache: "hit",
+      cacheMatchType: cached.matchType
+    });
+
+    return;
+  }
+
+  console.log(
+    "VEHICLE_CACHE_MISS",
+    JSON.stringify({
+      query
+    })
+  );
+} catch (err) {
+  /*
+   * Cache lookup failure should not make the whole
+   * research endpoint unusable.
+   *
+   * If DB lookup unexpectedly fails here, continue to
+   * research. The later DB write already has its own
+   * error handling.
+   */
+  console.error(
+    "VEHICLE_CACHE_LOOKUP_ERROR",
+    err
+  );
+}
+
+
 
   const requestBody = {
     model: "gpt-5.6-sol",
