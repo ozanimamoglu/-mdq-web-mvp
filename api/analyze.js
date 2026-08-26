@@ -1918,8 +1918,6 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const requestBody = {
-
   
   const requestBody = {
     model: "gpt-5.6-sol",
