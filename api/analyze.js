@@ -1144,66 +1144,7 @@ async function findCachedVehicle(sql, query) {
     }
   }
 
-  /*
-   * PASS 2:
-   * PostgreSQL full-text lookup.
-   *
-   * Automatically use only when exactly one
-   * cached vehicle matches all query terms.
-   */
-  const candidateRows = await sql`
-    SELECT
-      vehicle_data,
-      cache_key,
-      display_name,
-      researched_query,
-      updated_at,
-      TS_RANK_CD(
-        TO_TSVECTOR(
-          'simple',
-          COALESCE(search_text, '')
-        ),
-        PLAINTO_TSQUERY(
-          'simple',
-          ${query}
-        )
-      ) AS match_rank
-    FROM vehicles
-    WHERE
-      TO_TSVECTOR(
-        'simple',
-        COALESCE(search_text, '')
-      )
-      @@
-      PLAINTO_TSQUERY(
-        'simple',
-        ${query}
-      )
-    ORDER BY
-      match_rank DESC,
-      updated_at DESC
-    LIMIT 2
-  `;
 
-  if (candidateRows.length !== 1) {
-    return null;
-  }
-
-  const vehicle = parseVehicleData(
-    candidateRows[0].vehicle_data
-  );
-
-  if (!vehicle) {
-    return null;
-  }
-
-  return {
-    vehicle,
-    matchType: "unique_full_text",
-    cacheKey: candidateRows[0].cache_key,
-    displayName: candidateRows[0].display_name
-  };
-}
 
   /*
    * PASS 2:
