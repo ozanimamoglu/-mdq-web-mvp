@@ -94,3 +94,6 @@ The health endpoint reports:
 - only the NAMES of environment variables containing OPENAI or TEST.
 
 It never returns secret values.
+
+
+Deployment refresh
