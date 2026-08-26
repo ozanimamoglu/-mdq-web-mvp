@@ -27,6 +27,57 @@ const schema = {
       type: "string"
     },
 
+    marketPrice: {
+      type: "object",
+      additionalProperties: false,
+
+      properties: {
+        currency: {
+          type: "string"
+        },
+
+        low: {
+          type: "integer",
+          minimum: 0
+        },
+
+        high: {
+          type: "integer",
+          minimum: 0
+        },
+
+        market: {
+          type: "string"
+        },
+
+        basis: {
+          type: "string"
+        },
+
+        asOf: {
+          type: "string"
+        },
+
+        sources: {
+          type: "array",
+          minItems: 1,
+          items: {
+            type: "string"
+          }
+        }
+      },
+
+      required: [
+        "currency",
+        "low",
+        "high",
+        "market",
+        "basis",
+        "asOf",
+        "sources"
+      ]
+    },
+
     evidenceCount: {
       type: "integer",
       minimum: 1
@@ -264,6 +315,7 @@ const schema = {
     "model",
     "year",
     "variant",
+    "marketPrice",
     "evidenceCount",
     "evidenceUnit",
     "evidenceLastUpdated",
@@ -294,6 +346,106 @@ Do not mix materially different generations, engines, batteries, drivetrains
 or market specifications.
 
 If ambiguity cannot be avoided, make the chosen product definition explicit.
+
+
+1A. ESTABLISH CURRENT MARKET PRICE CONTEXT
+
+Separately from owner evidence and MDQ generation, establish the current
+real-world used-market asking-price range for the exact vehicle definition.
+
+This is a PRE-PURCHASE MARKET CONTEXT layer.
+
+It is not Fit Evidence.
+It is not Product Integrity Evidence.
+It must not become one of the 5-8 owner-evidence MDQs.
+
+The purpose is to show the user what this specific vehicle currently costs
+before asking how that price level feels to them.
+
+Never ask for, estimate or infer the user's budget.
+
+Do not ask:
+"What is your budget?"
+"How much can you afford?"
+"What is the maximum you would spend?"
+
+Budget is not treated as a fixed user attribute.
+
+Instead, the application will present the researched market price of this
+specific vehicle and measure the user's reaction to that price level.
+
+Use the same market or geography as the exact vehicle definition whenever
+possible.
+
+Research current asking prices for genuinely comparable used examples.
+
+Prefer examples matching as closely as practical:
+- model year
+- generation
+- engine or powertrain
+- drivetrain
+- major variant
+- relevant market specification
+
+Do not allow one unusually cheap or unusually expensive advertisement to define
+the range.
+
+Exclude clearly non-comparable examples where identifiable, including:
+- materially different generations or powertrains
+- salvage or accident-damaged vehicles
+- obvious project cars
+- misleading finance-only headline prices
+- new vehicles when researching a used vehicle
+- extreme collector or exceptional-condition outliers unless that is the
+  product being researched
+
+Return a defensible typical asking-price RANGE rather than a single price.
+
+marketPrice.currency:
+Use the standard three-letter currency code appropriate to the researched
+market, for example GBP, EUR or USD.
+
+marketPrice.low:
+The lower end of the defensible typical asking-price range, expressed as a whole
+currency-unit integer.
+
+marketPrice.high:
+The upper end of the defensible typical asking-price range, expressed as a whole
+currency-unit integer.
+
+marketPrice.market:
+Clearly state the geography represented by the price range, for example:
+"United Kingdom"
+"Germany"
+"United States"
+
+marketPrice.basis:
+In one concise sentence, explain what comparable vehicles the range represents.
+
+Example:
+"Typical asking prices for UK-market 2019 Discovery Sport TD4 180 AWD automatic
+examples in normal used condition."
+
+marketPrice.asOf:
+Return the date on which the market-price research was performed in YYYY-MM-DD
+form.
+
+marketPrice.sources:
+Return the web sources actually used to establish the current price context.
+
+Use at least one genuine current-market source.
+
+Do not fabricate price sources.
+
+Do not use owner-review evidence merely as a substitute for current market-price
+evidence.
+
+The marketPrice range is descriptive market context, not a judgement about
+whether the vehicle is cheap, expensive, good value or affordable.
+
+Do not produce a price-fit verdict.
+
+The user's reaction to this price level is handled separately by the application.
 
 
 2. GATHER REAL OWNER EVIDENCE
@@ -907,6 +1059,30 @@ OUTPUT RULES
 year:
 The exact four-digit model year selected for this product definition.
 
+marketPrice:
+Return the current used-market asking-price context separately from the MDQs.
+
+marketPrice.currency:
+Three-letter currency code.
+
+marketPrice.low:
+Lower end of the typical current asking-price range.
+
+marketPrice.high:
+Upper end of the typical current asking-price range.
+
+marketPrice.market:
+Market/geography represented by the range.
+
+marketPrice.basis:
+One concise sentence describing the comparable vehicles represented.
+
+marketPrice.asOf:
+Date of the market-price research in YYYY-MM-DD format.
+
+marketPrice.sources:
+Current market sources actually used to establish the range.
+
 condition:
 A short plain-English name for the ownership condition.
 
@@ -1043,7 +1219,6 @@ function buildSearchText(vehicle, originalQuery) {
     .trim();
 }
 
-
 function normalizeDbQuery(value) {
   return String(value || "")
     .trim()
@@ -1065,6 +1240,65 @@ function parseVehicleData(value) {
   } catch {
     return null;
   }
+}
+
+function hasUsableMarketPrice(vehicle) {
+  const price = vehicle?.marketPrice;
+
+  if (!price || typeof price !== "object") {
+    return false;
+  }
+
+  if (
+    typeof price.currency !== "string" ||
+    !price.currency.trim()
+  ) {
+    return false;
+  }
+
+  if (
+    !Number.isFinite(price.low) ||
+    !Number.isFinite(price.high)
+  ) {
+    return false;
+  }
+
+  if (
+    price.low < 0 ||
+    price.high <= price.low
+  ) {
+    return false;
+  }
+
+  if (
+    typeof price.market !== "string" ||
+    !price.market.trim()
+  ) {
+    return false;
+  }
+
+  if (
+    typeof price.basis !== "string" ||
+    !price.basis.trim()
+  ) {
+    return false;
+  }
+
+  if (
+    typeof price.asOf !== "string" ||
+    !price.asOf.trim()
+  ) {
+    return false;
+  }
+
+  if (
+    !Array.isArray(price.sources) ||
+    price.sources.length < 1
+  ) {
+    return false;
+  }
+
+  return true;
 }
 
 async function findCachedVehicle(sql, query) {
@@ -1144,8 +1378,6 @@ async function findCachedVehicle(sql, query) {
     }
   }
 
-
-
   /*
    * PASS 2:
    * PostgreSQL full-text lookup.
@@ -1211,7 +1443,6 @@ async function findCachedVehicle(sql, query) {
   };
 }
 
-
 module.exports = async function handler(req, res) {
   if (req.method !== "POST") {
     res.status(405).json({
@@ -1219,8 +1450,6 @@ module.exports = async function handler(req, res) {
     });
     return;
   }
-
-
 
   if (!process.env.DATABASE_URL) {
     res.status(500).json({
@@ -1249,80 +1478,101 @@ module.exports = async function handler(req, res) {
     return;
   }
 
- const sql = neon(process.env.DATABASE_URL);
+  const sql = neon(process.env.DATABASE_URL);
 
-/*
- * CENTRAL CACHE LOOKUP
- *
- * Always check the shared database before starting
- * a new OpenAI research request.
- */
-try {
-  const cached = await findCachedVehicle(
-    sql,
-    query
-  );
-
-  if (cached) {
-    const cachedVehicle = {
-      ...cached.vehicle,
-      dynamic: true,
-      researchedQuery:
-        cached.vehicle.researchedQuery ||
-        cached.vehicle.researched_query ||
-        query
-    };
-
-    console.log(
-      "VEHICLE_CACHE_HIT",
-      JSON.stringify({
-        query,
-        cacheKey: cached.cacheKey,
-        displayName: cached.displayName,
-        matchType: cached.matchType
-      })
+  /*
+   * CENTRAL CACHE LOOKUP
+   *
+   * Always check the shared database before starting
+   * a new OpenAI research request.
+   */
+  try {
+    const cached = await findCachedVehicle(
+      sql,
+      query
     );
 
-    res.status(200).json({
-      vehicle: cachedVehicle,
-      cache: "hit",
-      cacheMatchType: cached.matchType
-    });
+    if (cached) {
+      /*
+       * Legacy cache entries created before the
+       * market-price layer was introduced must not
+       * be served as complete vehicle models.
+       *
+       * Allow the request to continue to OpenAI research.
+       * The resulting vehicle will overwrite the existing
+       * canonical database record.
+       */
+      if (!hasUsableMarketPrice(cached.vehicle)) {
+        console.log(
+          "VEHICLE_CACHE_STALE",
+          JSON.stringify({
+            query,
+            cacheKey: cached.cacheKey,
+            displayName: cached.displayName,
+            matchType: cached.matchType,
+            reason: "missing_or_invalid_market_price"
+          })
+        );
+      } else {
+        const cachedVehicle = {
+          ...cached.vehicle,
+          dynamic: true,
+          researchedQuery:
+            cached.vehicle.researchedQuery ||
+            cached.vehicle.researched_query ||
+            query
+        };
 
-    return;
+        console.log(
+          "VEHICLE_CACHE_HIT",
+          JSON.stringify({
+            query,
+            cacheKey: cached.cacheKey,
+            displayName: cached.displayName,
+            matchType: cached.matchType,
+            marketPriceAsOf:
+              cached.vehicle.marketPrice?.asOf
+          })
+        );
+
+        res.status(200).json({
+          vehicle: cachedVehicle,
+          cache: "hit",
+          cacheMatchType: cached.matchType
+        });
+
+        return;
+      }
+    }
+
+    console.log(
+      "VEHICLE_CACHE_MISS",
+      JSON.stringify({
+        query
+      })
+    );
+  } catch (err) {
+    /*
+     * Cache lookup failure should not make the whole
+     * research endpoint unusable.
+     *
+     * If DB lookup unexpectedly fails here, continue to
+     * research. The later DB write already has its own
+     * error handling.
+     */
+    console.error(
+      "VEHICLE_CACHE_LOOKUP_ERROR",
+      err
+    );
   }
 
-  console.log(
-    "VEHICLE_CACHE_MISS",
-    JSON.stringify({
-      query
-    })
-  );
-} catch (err) {
-  /*
-   * Cache lookup failure should not make the whole
-   * research endpoint unusable.
-   *
-   * If DB lookup unexpectedly fails here, continue to
-   * research. The later DB write already has its own
-   * error handling.
-   */
-  console.error(
-    "VEHICLE_CACHE_LOOKUP_ERROR",
-    err
-  );
-}
-
-
-
-    if (!process.env.OPENAI_API_KEY) {
+  if (!process.env.OPENAI_API_KEY) {
     res.status(500).json({
       error:
         "OPENAI_API_KEY is not configured in Vercel."
     });
     return;
-    }
-
+  }
 
   const requestBody = {
     model: "gpt-5.6-sol",
@@ -1601,8 +1851,25 @@ try {
           query,
           cacheKey,
           displayName,
+
+          marketPrice: vehicle.marketPrice
+            ? {
+                currency:
+                  vehicle.marketPrice.currency,
+                low:
+                  vehicle.marketPrice.low,
+                high:
+                  vehicle.marketPrice.high,
+                market:
+                  vehicle.marketPrice.market,
+                asOf:
+                  vehicle.marketPrice.asOf
+              }
+            : null,
+
           productIntegrityLevel:
             vehicle.productIntegrity?.level,
+
           productIntegrityOverride:
             vehicle.productIntegrity?.overrideFit
         })
