@@ -1400,8 +1400,69 @@ function hasUsableMarketPrice(vehicle) {
   return true;
 }
 
+
 function hasUsableVehicleSchema(vehicle) {
   if (!vehicle || typeof vehicle !== "object") {
+    return false;
+  }
+
+  const isNonEmptyString = value =>
+    typeof value === "string" &&
+    value.trim().length > 0;
+
+  const validEvidenceStrengths = new Set([
+    "moderate",
+    "strong",
+    "very_strong"
+  ]);
+
+  const validImpacts = new Set([
+    "positive",
+    "neutral",
+    "medium_negative",
+    "high_negative",
+    "critical_negative"
+  ]);
+
+  const validIntegrityLevels = new Set([
+    "no_meaningful_signal",
+    "integrity_concern",
+    "serious_integrity_concern"
+  ]);
+
+  const validIntegritySeverities = new Set([
+    "minor",
+    "meaningful",
+    "major"
+  ]);
+
+  const validIntegrityRecurrence = new Set([
+    "limited",
+    "recurring",
+    "strongly_recurring"
+  ]);
+
+  /*
+   * TOP-LEVEL VEHICLE IDENTITY
+   */
+
+  if (!isNonEmptyString(vehicle.id)) {
+    return false;
+  }
+
+  if (!isNonEmptyString(vehicle.make)) {
+    return false;
+  }
+
+  if (!isNonEmptyString(vehicle.model)) {
+    return false;
+  }
+
+  if (
+    !Number.isInteger(vehicle.year) ||
+    vehicle.year < 1900 ||
+    vehicle.year > 2100
+  ) {
     return false;
   }
 
@@ -1409,44 +1470,179 @@ function hasUsableVehicleSchema(vehicle) {
     return false;
   }
 
-  if (
-    typeof vehicle.generation !== "string" ||
-    !vehicle.generation.trim()
-  ) {
+  if (!isNonEmptyString(vehicle.generation)) {
     return false;
   }
 
-  if (
-    typeof vehicle.engine !== "string" ||
-    !vehicle.engine.trim()
-  ) {
+  if (!isNonEmptyString(vehicle.variant)) {
     return false;
   }
 
-  if (
-    typeof vehicle.drivetrain !== "string" ||
-    !vehicle.drivetrain.trim()
-  ) {
+  if (!isNonEmptyString(vehicle.engine)) {
     return false;
   }
 
-  if (
-    typeof vehicle.market !== "string" ||
-    !vehicle.market.trim()
-  ) {
+  if (!isNonEmptyString(vehicle.drivetrain)) {
     return false;
   }
+
+  if (!isNonEmptyString(vehicle.market)) {
+    return false;
+  }
+
+  /*
+   * MARKET PRICE
+   */
 
   if (!hasUsableMarketPrice(vehicle)) {
     return false;
   }
 
+  /*
+   * EVIDENCE BASE
+   */
+
   if (
-    !vehicle.productIntegrity ||
-    typeof vehicle.productIntegrity !== "object"
+    !Number.isInteger(vehicle.evidenceCount) ||
+    vehicle.evidenceCount < 1
   ) {
     return false;
   }
+
+  if (!isNonEmptyString(vehicle.evidenceUnit)) {
+    return false;
+  }
+
+  if (!isNonEmptyString(vehicle.evidenceLastUpdated)) {
+    return false;
+  }
+
+  if (
+    !Array.isArray(vehicle.evidenceSources) ||
+    vehicle.evidenceSources.length < 1 ||
+    vehicle.evidenceSources.some(
+      source => !isNonEmptyString(source)
+    )
+  ) {
+    return false;
+  }
+
+  if (!isNonEmptyString(vehicle.evidenceMethod)) {
+    return false;
+  }
+
+  /*
+   * PRODUCT INTEGRITY
+   */
+
+  const integrity = vehicle.productIntegrity;
+
+  if (
+    !integrity ||
+    typeof integrity !== "object" ||
+    Array.isArray(integrity)
+  ) {
+    return false;
+  }
+
+  if (!validIntegrityLevels.has(integrity.level)) {
+    return false;
+  }
+
+  if (!isNonEmptyString(integrity.summary)) {
+    return false;
+  }
+
+  if (typeof integrity.overrideFit !== "boolean") {
+    return false;
+  }
+
+  if (!isNonEmptyString(integrity.evidenceReason)) {
+    return false;
+  }
+
+  if (!Array.isArray(integrity.issues)) {
+    return false;
+  }
+
+  /*
+   * Integrity consistency:
+   * no_meaningful_signal should never override fit
+   * or contain fabricated issues.
+   */
+
+  if (
+    integrity.level === "no_meaningful_signal" &&
+    (
+      integrity.overrideFit !== false ||
+      integrity.issues.length !== 0
+    )
+  ) {
+    return false;
+  }
+
+  /*
+   * Only serious integrity concern may override fit.
+   */
+
+  if (
+    integrity.overrideFit === true &&
+    integrity.level !== "serious_integrity_concern"
+  ) {
+    return false;
+  }
+
+  for (const issue of integrity.issues) {
+    if (
+      !issue ||
+      typeof issue !== "object" ||
+      Array.isArray(issue)
+    ) {
+      return false;
+    }
+
+    if (!isNonEmptyString(issue.id)) {
+      return false;
+    }
+
+    if (!isNonEmptyString(issue.functionAffected)) {
+      return false;
+    }
+
+    if (!isNonEmptyString(issue.failureMode)) {
+      return false;
+    }
+
+    if (!validIntegritySeverities.has(issue.severity)) {
+      return false;
+    }
+
+    if (
+      !validIntegrityRecurrence.has(issue.recurrence)
+    ) {
+      return false;
+    }
+
+    if (!isNonEmptyString(issue.resolutionPattern)) {
+      return false;
+    }
+
+    if (
+      !validEvidenceStrengths.has(
+        issue.evidenceStrength
+      )
+    ) {
+      return false;
+    }
+
+    if (!isNonEmptyString(issue.evidenceReason)) {
+      return false;
+    }
+  }
+
+  /*
+   * MDQs
+   */
 
   if (
     !Array.isArray(vehicle.questions) ||
@@ -1456,8 +1652,140 @@ function hasUsableVehicleSchema(vehicle) {
     return false;
   }
 
+  const questionIds = new Set();
+
+  for (const question of vehicle.questions) {
+    if (
+      !question ||
+      typeof question !== "object" ||
+      Array.isArray(question)
+    ) {
+      return false;
+    }
+
+    if (!isNonEmptyString(question.id)) {
+      return false;
+    }
+
+    /*
+     * Duplicate MDQ IDs indicate malformed schema.
+     */
+
+    if (questionIds.has(question.id)) {
+      return false;
+    }
+
+    questionIds.add(question.id);
+
+    if (!isNonEmptyString(question.condition)) {
+      return false;
+    }
+
+    if (
+      !validEvidenceStrengths.has(
+        question.evidenceStrength
+      )
+    ) {
+      return false;
+    }
+
+    if (!isNonEmptyString(question.evidenceReason)) {
+      return false;
+    }
+
+    if (
+      typeof question.dealBreakerCapable !== "boolean"
+    ) {
+      return false;
+    }
+
+    if (!isNonEmptyString(question.text)) {
+      return false;
+    }
+
+    /*
+     * Clarification is mandatory.
+     */
+
+    if (!isNonEmptyString(question.clarification)) {
+      return false;
+    }
+
+    /*
+     * Exactly three answers.
+     */
+
+    if (
+      !Array.isArray(question.answers) ||
+      question.answers.length !== 3
+    ) {
+      return false;
+    }
+
+    for (const answer of question.answers) {
+      if (
+        !answer ||
+        typeof answer !== "object" ||
+        Array.isArray(answer)
+      ) {
+        return false;
+      }
+
+      if (!isNonEmptyString(answer.label)) {
+        return false;
+      }
+
+      if (!validImpacts.has(answer.impact)) {
+        return false;
+      }
+
+      if (!isNonEmptyString(answer.impactReason)) {
+        return false;
+      }
+
+      if (typeof answer.mitigation !== "string") {
+        return false;
+      }
+
+      /*
+       * Positive / neutral answers must not contain
+       * mitigation according to Vehicle Schema v1.0.
+       */
+
+      if (
+        (
+          answer.impact === "positive" ||
+          answer.impact === "neutral"
+        ) &&
+        answer.mitigation.trim() !== ""
+      ) {
+        return false;
+      }
+
+      /*
+       * Negative answers require a specific mitigation.
+       */
+
+      if (
+        (
+          answer.impact === "medium_negative" ||
+          answer.impact === "high_negative" ||
+          answer.impact === "critical_negative"
+        ) &&
+        !answer.mitigation.trim()
+      ) {
+        return false;
+      }
+    }
+  }
+
   return true;
 }
+
+
+
+
+
 
 function getClientIp(req) {
   const forwarded =
