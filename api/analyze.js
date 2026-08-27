@@ -36,10 +36,34 @@ const schema = {
       type: "integer"
     },
 
+
+    schemaVersion: {
+      type: "string",
+      enum: ["1.0"]
+    },
+
+    generation: {
+      type: "string"
+    },
+
+  
     variant: {
       type: "string"
     },
 
+    engine: {
+      type: "string"
+    },
+
+    drivetrain: {
+      type: "string"
+    },
+
+    market: {
+      type: "string"
+    },
+
+    
     marketPrice: {
       type: "object",
       additionalProperties: false,
