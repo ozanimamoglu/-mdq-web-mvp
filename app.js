@@ -184,11 +184,13 @@ function resultSummary(result, vehicle){
 
 
 
-function addDynamicVehicle(vehicle){
+function upsertVehicle(vehicle){
   const existing = vehicles.findIndex(v => v.id === vehicle.id);
+
   if(existing >= 0) vehicles[existing] = vehicle;
   else vehicles.push(vehicle);
 }
+
 
 async function loadCanonicalVehicle(query){
   state.researchStatus = 'researching';
@@ -212,7 +214,7 @@ async function loadCanonicalVehicle(query){
 
     const vehicle = data.vehicle;
 
-    addDynamicVehicle(vehicle);
+    upsertVehicle(vehicle);
 
     state.vehicleId = vehicle.id;
     state.step = 0;
