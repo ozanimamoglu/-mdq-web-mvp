@@ -251,34 +251,6 @@ async function researchUnknownVehicle(){
   await loadCanonicalVehicle(query);
 }
 
-  state.researchStatus = 'researching';
-  render();
-
-  try{
-    const response = await fetch('/api/analyze', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({query})
-    });
-    const data = await response.json();
-    if(!response.ok) throw new Error(data.error || 'Research failed.');
-
-    const vehicle = data.vehicle;
-    addDynamicVehicle(vehicle);
-    saveCachedVehicle(query, vehicle);
-
-    state.vehicleId = vehicle.id;
-    state.step = 0;
-    state.answers = [];
-    state.showWhy = false;
-    state.researchStatus = 'idle';
-    render();
-  }catch(err){
-    state.researchStatus = 'error';
-    state.researchError = err.message || 'Research failed.';
-    render();
-  }
-}
 
 function render(){
   const app = document.getElementById('app');
