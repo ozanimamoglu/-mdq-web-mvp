@@ -1868,7 +1868,8 @@ module.exports = async function handler(req, res) {
   }
 
   const sql = neon(process.env.DATABASE_URL);
-
+  let staleCacheKey = null;
+  
   /*
    * CENTRAL CACHE LOOKUP
    *
@@ -1892,6 +1893,8 @@ module.exports = async function handler(req, res) {
        * canonical database record.
        */
       if (!hasUsableVehicleSchema(cached.vehicle)) {
+        staleCacheKey = cached.cacheKey;
+        
         console.log(
           "VEHICLE_CACHE_STALE",
           JSON.stringify({
@@ -2343,6 +2346,25 @@ module.exports = async function handler(req, res) {
             NOW()
       `;
 
+      if (
+        staleCacheKey &&
+        staleCacheKey !== cacheKey
+      ) {
+        await sql`
+          DELETE FROM vehicles
+          WHERE cache_key = ${staleCacheKey}
+        `;
+
+        console.log(
+          "VEHICLE_CACHE_STALE_REMOVED",
+          JSON.stringify({
+            query,
+            oldCacheKey: staleCacheKey,
+            newCacheKey: cacheKey
+          })
+        );
+      }
+      
       console.log(
         "VEHICLE_CACHE_WRITE",
         JSON.stringify({
