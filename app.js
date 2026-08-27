@@ -59,16 +59,22 @@ function setSelection(field,value){
   render();
 }
 
-function beginSelected(){
+async function beginSelected(){
   const match = filteredCatalogue();
+
   if(match.length===1 && state.selection.version){
-    state.vehicleId = match[0].id;
-    state.step = 0;
-    state.answers = [];
-    state.showWhy = false;
-    state.selectedIndex = null;
-    state.transitioning = false;
-    render();
+    const selected = match[0];
+
+    const query = [
+      selected.make,
+      selected.model,
+      selected.generation,
+      selected.version
+    ]
+      .filter(Boolean)
+      .join(' ');
+
+    await loadCanonicalVehicle(query);
   }
 }
 
@@ -176,24 +182,7 @@ function resultSummary(result, vehicle){
 }
 
 
-function cacheKey(query){
-  return 'mdq_v11_vehicle_' + query.trim().toLowerCase().replace(/\s+/g,' ');
-}
 
-function loadCachedVehicle(query){
-  try{
-    const raw = localStorage.getItem(cacheKey(query));
-    return raw ? JSON.parse(raw) : null;
-  }catch{
-    return null;
-  }
-}
-
-function saveCachedVehicle(query, vehicle){
-  try{
-    localStorage.setItem(cacheKey(query), JSON.stringify(vehicle));
-  }catch{}
-}
 
 function addDynamicVehicle(vehicle){
   const existing = vehicles.findIndex(v => v.id === vehicle.id);
@@ -201,25 +190,66 @@ function addDynamicVehicle(vehicle){
   else vehicles.push(vehicle);
 }
 
-async function researchUnknownVehicle(){
-  const input = document.getElementById('unknownVehicle');
-  const query = (input?.value || '').trim();
-  if(!query) return;
-
-  state.researchQuery = query;
+async function loadCanonicalVehicle(query){
+  state.researchStatus = 'researching';
   state.researchError = '';
+  render();
 
-  const cached = loadCachedVehicle(query);
-  if(cached){
-    addDynamicVehicle(cached);
-    state.vehicleId = cached.id;
+  try{
+    const response = await fetch('/api/analyze', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({query})
+    });
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(
+        data.error || 'Research failed.'
+      );
+    }
+
+    const vehicle = data.vehicle;
+
+    addDynamicVehicle(vehicle);
+
+    state.vehicleId = vehicle.id;
     state.step = 0;
     state.answers = [];
     state.showWhy = false;
+    state.selectedIndex = null;
+    state.transitioning = false;
     state.researchStatus = 'idle';
+    state.researchError = '';
+
     render();
-    return;
+
+  }catch(err){
+    state.researchStatus = 'error';
+    state.researchError =
+      err.message || 'Research failed.';
+
+    render();
   }
+}
+
+
+
+
+async function researchUnknownVehicle(){
+  const input =
+    document.getElementById('unknownVehicle');
+
+  const query =
+    (input?.value || '').trim();
+
+  if(!query) return;
+
+  state.researchQuery = query;
+
+  await loadCanonicalVehicle(query);
+}
 
   state.researchStatus = 'researching';
   render();
@@ -279,7 +309,13 @@ function render(){
 
         <div class="startRow">
           <p class="micro">MVP dataset · ${vehicles.filter(v=>!v.dynamic).length} prepared vehicle definitions</p>
-          <button class="primary" id="startBtn" ${ready?'':'disabled'}>Start questions</button>
+          <button
+            class="primary"
+            id="startBtn"
+            ${ready && state.researchStatus!=='researching' ? '' : 'disabled'}
+          >
+            ${state.researchStatus==='researching' ? 'Loading vehicle…' : 'Start questions'}
+          </button>
         </div>
 
         <section class="unknownSection">
@@ -310,7 +346,7 @@ function render(){
               </div>` : ''}
             ${state.researchStatus==='error' ? `
               <div class="researchError">${esc(state.researchError)}</div>` : ''}
-            <p class="micro unknownNote">First analysis may take a while. Once researched, this browser reuses the saved model instantly.</p>
+            <p class="micro unknownNote">First analysis may take a while. Once researched, the saved model can be reused instantly.</p>
           </div>
         </section>
       </main>`;
