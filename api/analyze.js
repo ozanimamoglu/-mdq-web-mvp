@@ -1884,13 +1884,13 @@ module.exports = async function handler(req, res) {
 
     if (cached) {
       /*
-       * Legacy cache entries created before the
-       * market-price layer was introduced must not
+       * Legacy or incomplete cache entries that do not
+       * conform to canonical Vehicle Schema v1.0 must not
        * be served as complete vehicle models.
        *
        * Allow the request to continue to OpenAI research.
-       * The resulting vehicle will overwrite the existing
-       * canonical database record.
+       * After the new canonical record is written successfully,
+       * the stale cache record is removed if its key differs.
        */
       if (!hasUsableVehicleSchema(cached.vehicle)) {
         staleCacheKey = cached.cacheKey;
