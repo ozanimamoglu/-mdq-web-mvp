@@ -351,7 +351,12 @@ const schema = {
     "make",
     "model",
     "year",
+    "schemaVersion",
+    "generation",
     "variant",
+    "engine",
+    "drivetrain",
+    "market",
     "marketPrice",
     "evidenceCount",
     "evidenceUnit",
@@ -1093,6 +1098,54 @@ risk.
 
 OUTPUT RULES
 
+schemaVersion:
+Always return exactly "1.0".
+
+generation:
+Return the clearest generation or major product phase relevant to the researched
+vehicle.
+
+Examples:
+"L550 pre-facelift"
+"G01"
+"X253 facelift"
+
+Do not include engine or drivetrain information here.
+
+variant:
+Return only the principal model variant or trim designation needed to identify
+the researched vehicle.
+
+Do not duplicate generation, engine, drivetrain or market information here when
+those are already represented by their dedicated fields.
+
+engine:
+Return the researched engine or powertrain in concise consumer-readable form.
+
+Examples:
+"2.0-litre Ingenium TD4 180 diesel"
+"2.0-litre turbo petrol"
+"Dual-motor electric"
+
+drivetrain:
+Return the relevant drivetrain and transmission configuration in concise form.
+
+Examples:
+"AWD, 9-speed automatic"
+"RWD, 6-speed manual"
+"Dual-motor AWD"
+
+market:
+Return the primary market specification used for the vehicle research.
+
+Examples:
+"United Kingdom"
+"Germany"
+"United States"
+
+Do not mix materially different market specifications merely to broaden the
+evidence base.
+
 year:
 The exact four-digit model year selected for this product definition.
 
@@ -1209,7 +1262,11 @@ function buildCanonicalSource(vehicle) {
     vehicle.make,
     vehicle.model,
     vehicle.year,
-    vehicle.variant
+    vehicle.generation,
+    vehicle.variant,
+    vehicle.engine,
+    vehicle.drivetrain,
+    vehicle.market
   ]
     .filter(
       value =>
@@ -1241,7 +1298,11 @@ function buildSearchText(vehicle, originalQuery) {
     vehicle.make,
     vehicle.model,
     vehicle.year,
+    vehicle.generation,
     vehicle.variant,
+    vehicle.engine,
+    vehicle.drivetrain,
+    vehicle.market,
     originalQuery
   ]
     .filter(
