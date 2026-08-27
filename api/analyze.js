@@ -1906,14 +1906,6 @@ module.exports = async function handler(req, res) {
           })
         );
       } else {
-        const cachedVehicle = {
-          ...cached.vehicle,
-          dynamic: true,
-          researchedQuery:
-            cached.vehicle.researchedQuery ||
-            cached.vehicle.researched_query ||
-            query
-        };
 
         console.log(
           "VEHICLE_CACHE_HIT",
@@ -1928,7 +1920,7 @@ module.exports = async function handler(req, res) {
         );
 
         res.status(200).json({
-          vehicle: cachedVehicle,
+          vehicle: cached.vehicle,
           cache: "hit",
           cacheMatchType: cached.matchType
         });
@@ -2249,9 +2241,27 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    vehicle.dynamic = true;
-    vehicle.researchedQuery = query;
 
+
+
+if (!hasUsableVehicleSchema(vehicle)) {
+  console.error(
+    "INVALID_VEHICLE_SCHEMA",
+    JSON.stringify({
+      query,
+      schemaVersion: vehicle?.schemaVersion
+    })
+  );
+
+  res.status(502).json({
+    error:
+      "Research returned an incomplete vehicle model."
+  });
+
+  return;
+}    
+
+    
     const canonicalSource =
       buildCanonicalSource(vehicle);
 
