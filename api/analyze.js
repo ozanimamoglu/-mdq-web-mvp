@@ -2227,9 +2227,9 @@ module.exports = async function handler(req, res) {
           ${vehicle.make},
           ${vehicle.model},
           ${vehicle.year},
-          NULL,
+          ${vehicle.generation || ""},
           ${vehicle.variant || ""},
-          NULL,
+          ${vehicle.engine || ""},
           ${displayName},
           ${searchText},
           ${cacheKey},
@@ -2246,6 +2246,15 @@ module.exports = async function handler(req, res) {
         DO UPDATE SET
           vehicle_data =
             EXCLUDED.vehicle_data,
+
+          generation =
+            EXCLUDED.generation,
+
+          variant =
+            EXCLUDED.variant,
+
+          engine =
+            EXCLUDED.engine,
 
           researched_query =
             EXCLUDED.researched_query,
