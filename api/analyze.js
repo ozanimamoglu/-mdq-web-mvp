@@ -1343,6 +1343,7 @@ function parseVehicleData(value) {
 function hasUsableMarketPrice(vehicle) {
   const price = vehicle?.marketPrice;
 
+
   if (!price || typeof price !== "object") {
     return false;
   }
@@ -1399,6 +1400,64 @@ function hasUsableMarketPrice(vehicle) {
   return true;
 }
 
+function hasUsableVehicleSchema(vehicle) {
+  if (!vehicle || typeof vehicle !== "object") {
+    return false;
+  }
+
+  if (vehicle.schemaVersion !== "1.0") {
+    return false;
+  }
+
+  if (
+    typeof vehicle.generation !== "string" ||
+    !vehicle.generation.trim()
+  ) {
+    return false;
+  }
+
+  if (
+    typeof vehicle.engine !== "string" ||
+    !vehicle.engine.trim()
+  ) {
+    return false;
+  }
+
+  if (
+    typeof vehicle.drivetrain !== "string" ||
+    !vehicle.drivetrain.trim()
+  ) {
+    return false;
+  }
+
+  if (
+    typeof vehicle.market !== "string" ||
+    !vehicle.market.trim()
+  ) {
+    return false;
+  }
+
+  if (!hasUsableMarketPrice(vehicle)) {
+    return false;
+  }
+
+  if (
+    !vehicle.productIntegrity ||
+    typeof vehicle.productIntegrity !== "object"
+  ) {
+    return false;
+  }
+
+  if (
+    !Array.isArray(vehicle.questions) ||
+    vehicle.questions.length < 5 ||
+    vehicle.questions.length > 8
+  ) {
+    return false;
+  }
+
+  return true;
+}
 
 function getClientIp(req) {
   const forwarded =
@@ -1832,7 +1891,7 @@ module.exports = async function handler(req, res) {
        * The resulting vehicle will overwrite the existing
        * canonical database record.
        */
-      if (!hasUsableMarketPrice(cached.vehicle)) {
+      if (!hasUsableVehicleSchema(cached.vehicle)) {
         console.log(
           "VEHICLE_CACHE_STALE",
           JSON.stringify({
@@ -1840,7 +1899,7 @@ module.exports = async function handler(req, res) {
             cacheKey: cached.cacheKey,
             displayName: cached.displayName,
             matchType: cached.matchType,
-            reason: "missing_or_invalid_market_price"
+            reason: "legacy_or_invalid_vehicle_schema"
           })
         );
       } else {
