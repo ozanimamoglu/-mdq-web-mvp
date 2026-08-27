@@ -18,7 +18,6 @@ const resultCopy = {
 };
 
 function productMeta(v){
-  const p = v.variant.split('·').map(s=>s.trim());
   if(v.id==='bmw-x3-g01-20d') return {make:v.make,model:v.model,generation:'G01 · 2018–2021',version:'20d'};
   if(v.id==='volvo-xc60-d4') return {make:v.make,model:v.model,generation:'II · 2018–2021',version:'D4 AWD'};
   if(v.id==='mercedes-glc-220d') return {make:v.make,model:v.model,generation:'X253 facelift · 2019–2021',version:'220d 4MATIC'};
