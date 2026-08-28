@@ -1506,7 +1506,6 @@ productIntegrity.level must be exactly one of:
 productIntegrity.overrideFit must be a boolean.
 
 If no meaningful integrity signal is found:
-- level = "no_meaning_signal" is WRONG
 - level must be "no_meaningful_signal"
 - overrideFit = false
 - issues = []
@@ -1896,12 +1895,6 @@ function buildCanonicalWatchSource(watch) {
     watch.brand,
     watch.model,
     watch.reference,
-
-    watch.year !== null &&
-    watch.year !== undefined
-      ? watch.year
-      : null,
-
     watch.variant
   ]
     .filter(
