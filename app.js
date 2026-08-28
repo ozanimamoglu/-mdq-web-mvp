@@ -325,6 +325,16 @@ if(!vehicle){
             <span class="comingSoon">Coming soon</span>
           </div>
 
+<div class="categoryCard disabledCategory">
+  <span class="categoryIcon" aria-hidden="true">🍷</span>
+  <span class="categoryContent">
+    <strong>Wine</strong>
+    <span>Wine fit and drinking-experience evidence</span>
+  </span>
+  <span class="comingSoon">Coming soon</span>
+</div>
+
+
         </div>
       </section>
 
