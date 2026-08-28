@@ -513,6 +513,22 @@ if(integrityOverride){
   result = 'Not suitable';
 }
 
+let finalSummary;
+
+if(integrityOverride){
+  finalSummary =
+    `Recurring owner evidence indicates a serious product-integrity concern that outweighs an otherwise acceptable ownership fit for this ${vehicle.model}.`;
+}
+else if(state.priceAnswer === 'too_high'){
+  finalSummary =
+    `The ownership fit may work, but at the current market price this ${vehicle.model} does not make sense for you.`;
+}
+else{
+  finalSummary =
+    resultSummary(result, vehicle);
+}
+
+  
 
 const reasons = evaluation.mapped.map(a=>({
   ...a,
@@ -643,7 +659,7 @@ const labelFor = r => {
         </div>
 
         <h1 class="result ${result==='Not suitable'?'long':''}">${esc(result)}</h1>
-        <p class="lede resultLead">${esc(resultSummary(result, vehicle))}</p>
+        <p class="lede resultLead">${esc(finalSummary)}</p>
 
         <div class="resultActions">
           <button class="primary" id="whyBtn">${state.showWhy ? 'Hide why' : 'Why?'}</button>
