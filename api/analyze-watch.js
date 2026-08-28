@@ -2574,23 +2574,8 @@ function hasUsableWatchSchema(watch) {
 
 
 
-/*
- * CLIENT IP
- */
 
 
-
-  const realIp = req.headers["x-real-ip"];
-
-  if (
-    typeof realIp === "string" &&
-    realIp.trim()
-  ) {
-    return realIp.trim();
-  }
-
-  return "unknown";
-}
 
 
 /*
@@ -3291,6 +3276,7 @@ module.exports = async function handler(req, res) {
    * Cache hits never reach this point.
    */
 
+
 let rateLimit;
 
 try {
@@ -3316,13 +3302,52 @@ try {
   });
 }
 
-    return res.status(429).json({
-      error:
-        "Research limit reached. Please try again later."
-    });
-  }
+
+if (!rateLimit.allowed) {
+  console.warn(
+    "WATCH_RESEARCH_RATE_LIMITED",
+    JSON.stringify({
+      query,
+
+      hourlyCount:
+        rateLimit.hourlyCount,
+
+      hourlyLimit:
+        rateLimit.hourlyLimit,
+
+      dailyCount:
+        rateLimit.dailyCount,
+
+      dailyLimit:
+        rateLimit.dailyLimit,
+
+      hourlyExceeded:
+        rateLimit.hourlyExceeded,
+
+      dailyExceeded:
+        rateLimit.dailyExceeded,
+
+      retryAfterSeconds:
+        rateLimit.retryAfterSeconds
+    })
+  );
+
+  res.setHeader(
+    "Retry-After",
+    String(
+      rateLimit.retryAfterSeconds || 60
+    )
+  );
+
+  return res.status(429).json({
+    error:
+      "Research limit reached. Please try again later."
+  });
+}
+  
 
 
+  
   /*
    * OPENAI RESPONSES API REQUEST
    */
