@@ -351,6 +351,12 @@ function render(){
     vehicle.marketPrice &&
     !state.priceAnswer;
 
+  console.log('PRICE_DEBUG', {
+  finished,
+  marketPrice: vehicle.marketPrice,
+  priceAnswer: state.priceAnswer,
+  needsPriceQuestion
+});
   
   if(!finished){
     const q = vehicle.questions[state.step];
