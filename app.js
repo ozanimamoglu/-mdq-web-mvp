@@ -2,6 +2,7 @@ let state = {
   vehicleId:'',
   step:0,
   answers:[],
+  priceAnswer:null,
   showWhy:false,
   selectedIndex:null,
   transitioning:false,
@@ -104,6 +105,7 @@ function reset(){
     vehicleId:'',
     step:0,
     answers:[],
+    priceAnswer:null,
     showWhy:false,
     selectedIndex:null,
     transitioning:false,
@@ -218,6 +220,7 @@ async function loadCanonicalVehicle(query){
     state.vehicleId = vehicle.id;
     state.step = 0;
     state.answers = [];
+    state.priceAnswer = null;
     state.showWhy = false;
     state.selectedIndex = null;
     state.transitioning = false;
@@ -343,7 +346,12 @@ function render(){
   }
 
   const finished = state.step >= vehicle.questions.length;
+  const needsPriceQuestion =
+    finished &&
+    vehicle.marketPrice &&
+    !state.priceAnswer;
 
+  
   if(!finished){
     const q = vehicle.questions[state.step];
     app.innerHTML = `
@@ -388,6 +396,104 @@ function render(){
     return;
   }
 
+if(needsPriceQuestion){
+  const price = vehicle.marketPrice;
+
+  const formatter = new Intl.NumberFormat('en-GB', {
+    style: 'currency',
+    currency: price.currency,
+    maximumFractionDigits: 0
+  });
+
+  const priceRange =
+    `${formatter.format(price.low)}–${formatter.format(price.high)}`;
+
+  app.innerHTML = `
+    <main class="shell compact">
+      <div class="questionTop">
+        <div class="navRow">
+          <button class="textButton" id="changeCar">← Change car</button>
+          <button class="textButton" id="backQuestion">Back</button>
+        </div>
+        <span class="micro">PRICE CONTEXT</span>
+      </div>
+
+      <div class="progressRow">
+        <span>${esc(vehicle.make)} ${esc(vehicle.model)}</span>
+        <span>100%</span>
+      </div>
+
+      <div class="progress">
+        <span style="width:100%"></span>
+      </div>
+
+      <section class="questionBlock">
+        <p class="variant">${esc(vehicle.variant)}</p>
+
+        <h2>
+          This car typically costs around
+          ${esc(priceRange)}
+          in today’s market. How does that price level feel to you?
+        </h2>
+
+        <p class="questionClarification">
+          This reflects typical current asking prices for comparable examples in ${esc(price.market)}.
+        </p>
+
+        <div class="answers">
+          <button class="answer" data-price-answer="comfortable">
+            <span class="letter">A</span>
+            <span>Comfortable — that price level feels reasonable for this car.</span>
+          </button>
+
+          <button class="answer" data-price-answer="stretch">
+            <span class="letter">B</span>
+            <span>A stretch — I could consider it, but the price matters.</span>
+          </button>
+
+          <button class="answer" data-price-answer="too_high">
+            <span class="letter">C</span>
+            <span>Too high — at that price level I would probably not choose this car.</span>
+          </button>
+        </div>
+      </section>
+    </main>
+  `;
+
+  document
+    .getElementById('changeCar')
+    .addEventListener('click', reset);
+
+  document
+    .getElementById('backQuestion')
+    .addEventListener('click', ()=>{
+      state.step = Math.max(
+        0,
+        vehicle.questions.length - 1
+      );
+
+      state.answers =
+        state.answers.slice(0, state.step);
+
+      render();
+    });
+
+  document
+    .querySelectorAll('[data-price-answer]')
+    .forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        state.priceAnswer =
+          btn.dataset.priceAnswer;
+
+        render();
+      });
+    });
+
+  return;
+}
+
+
+  
 const evaluation = evaluateResult(vehicle, state.answers);
 
 const integrityOverride =
