@@ -1,5 +1,6 @@
 let state = {
   vehicleId:'',
+  category:'',
   step:0,
   answers:[],
   priceAnswer:null,
@@ -103,6 +104,7 @@ function backQuestion(){
 function reset(){
   state = {
     vehicleId:'',
+    category:'',
     step:0,
     answers:[],
     priceAnswer:null,
@@ -115,6 +117,19 @@ function reset(){
     selection:{make:'',model:'',generation:'',version:''}
   };
   render();
+}
+
+
+function selectCategory(category){
+  if(category !== 'car') return;
+
+  state.category = category;
+  state.researchError = '';
+  render();
+
+  requestAnimationFrame(()=>{
+    document.getElementById('unknownVehicle')?.focus();
+  });
 }
 
 function toggleWhy(){
@@ -260,90 +275,157 @@ function render(){
   const app = document.getElementById('app');
   const vehicle = getVehicle();
 
-  if(!vehicle){
-    const s = state.selection;
-    const makes = uniq(catalogue.map(x=>x.make));
-    const models = s.make ? uniq(catalogue.filter(x=>x.make===s.make).map(x=>x.model)) : [];
-    const generations = (s.make && s.model) ? uniq(catalogue.filter(x=>x.make===s.make && x.model===s.model).map(x=>x.generation)) : [];
-    const versions = (s.make && s.model && s.generation) ? uniq(catalogue.filter(x=>x.make===s.make && x.model===s.model && x.generation===s.generation).map(x=>x.version)) : [];
-    const ready = !!(s.make && s.model && s.generation && s.version);
+if(!vehicle){
+  app.innerHTML = `
+    <main class="shell productHome">
 
-    app.innerHTML = `
-      <main class="shell">
-        <section class="hero">
-          <p class="eyebrow">OWNER-EVIDENCE FIT</p>
-          <h1>Is this car right for you?</h1>
-          <p class="lede">Not the best car. Not a comparison. Just whether this specific car fits the way you will actually own it.</p>
-        </section>
+      <section class="productHero">
+        <h1>Is this product right for you?</h1>
+        <p class="lede">
+          Choose what you're considering. We’ll use real owner evidence
+          to see whether the product fits the way you’ll actually use it.
+        </p>
+      </section>
 
-        <section class="selectionWrap">
-          ${selector('Make','make','Choose make',true,makes)}
-          ${selector('Model','model','Choose model',!!s.make,models)}
-          ${selector('Year / generation','generation','Choose year or generation',!!s.model,generations)}
-          ${selector('Engine / version','version','Choose engine or version',!!s.generation,versions)}
-        </section>
+      <section class="categorySection">
+        <p class="categoryPrompt">Choose a product category</p>
 
-        <div class="startRow">
-          <p class="micro">MVP dataset · ${vehicles.filter(v=>!v.dynamic).length} prepared vehicle definitions</p>
+        <div class="categoryGrid">
+
           <button
-            class="primary"
-            id="startBtn"
-            ${ready && state.researchStatus!=='researching' ? '' : 'disabled'}
+            class="categoryCard ${state.category==='car' ? 'selected' : ''}"
+            id="categoryCar"
+            type="button"
           >
-            ${state.researchStatus==='researching' ? 'Loading vehicle…' : 'Start questions'}
+            <span class="categoryIcon" aria-hidden="true">🚗</span>
+            <span class="categoryContent">
+              <strong>Car</strong>
+              <span>Find the exact car you're considering</span>
+            </span>
+            <span class="categoryStatus">
+              ${state.category==='car' ? 'Selected' : 'Choose'}
+            </span>
           </button>
-        </div>
 
-        <section class="unknownSection">
-          <div class="unknownDivider"><span>OR</span></div>
-          <div class="unknownCard">
-            <p class="eyebrow">ANY OTHER CAR</p>
-            <h2>Can't find your car?</h2>
-            <p>Enter the exact vehicle you are considering. We’ll research real owner evidence and build its questions now.</p>
-            <div class="unknownInputRow">
-              <input
-                id="unknownVehicle"
-                type="text"
-                placeholder="e.g. 2007 Saab 9-3 1.9 TiD"
-                value="${esc(state.researchQuery || '')}"
-                ${state.researchStatus==='researching'?'disabled':''}
-              />
-              <button class="primary" id="researchBtn" ${state.researchStatus==='researching'?'disabled':''}>
-                ${state.researchStatus==='researching'?'Researching…':'Analyze this car'}
-              </button>
-            </div>
-            ${state.researchStatus==='researching' ? `
-              <div class="researchState">
-                <div class="researchSpinner"></div>
-                <div>
-                  <strong>Analyzing owner evidence…</strong>
-                  <p>Searching owner reviews and discussions, extracting recurring ownership conditions, then building 5–8 diagnostic questions.</p>
-                </div>
-              </div>` : ''}
-            ${state.researchStatus==='error' ? `
-              <div class="researchError">${esc(state.researchError)}</div>` : ''}
-            <p class="micro unknownNote">First analysis may take a while. Once researched, the saved model can be reused instantly.</p>
+          <div class="categoryCard disabledCategory">
+            <span class="categoryIcon" aria-hidden="true">👓</span>
+            <span class="categoryContent">
+              <strong>Glasses</strong>
+              <span>Eyewear fit and ownership evidence</span>
+            </span>
+            <span class="comingSoon">Coming soon</span>
           </div>
-        </section>
-      </main>`;
 
-    ['make','model','generation','version'].forEach(field=>{
-      const el = document.getElementById(field);
-      if(el && !el.disabled){
-        el.addEventListener('change', e=>setSelection(field,e.target.value));
-      }
-    });
-    document.getElementById('startBtn').addEventListener('click', beginSelected);
-    const researchBtn = document.getElementById('researchBtn');
-    const unknownVehicle = document.getElementById('unknownVehicle');
-    if(researchBtn) researchBtn.addEventListener('click', researchUnknownVehicle);
-    if(unknownVehicle){
-      unknownVehicle.addEventListener('keydown', e=>{
-        if(e.key==='Enter') researchUnknownVehicle();
-      });
-    }
-    return;
+          <div class="categoryCard disabledCategory">
+            <span class="categoryIcon" aria-hidden="true">⌚</span>
+            <span class="categoryContent">
+              <strong>Watch</strong>
+              <span>Watch fit and ownership evidence</span>
+            </span>
+            <span class="comingSoon">Coming soon</span>
+          </div>
+
+        </div>
+      </section>
+
+      ${state.category === 'car' ? `
+        <section class="productSearch">
+
+          <div class="searchIntro">
+            <h2>Which car are you considering?</h2>
+            <p>
+              Enter the exact model, year and version if you know them.
+            </p>
+          </div>
+
+          <div class="productSearchRow">
+            <input
+              id="unknownVehicle"
+              type="text"
+              autocomplete="off"
+              placeholder="e.g. 2019 Land Rover Discovery Sport 2.0 TD4 180 AWD"
+              value="${esc(state.researchQuery || '')}"
+              ${state.researchStatus==='researching' ? 'disabled' : ''}
+            />
+
+            <button
+              class="primary"
+              id="researchBtn"
+              ${state.researchStatus==='researching' ? 'disabled' : ''}
+            >
+              ${state.researchStatus==='researching'
+                ? 'Researching…'
+                : 'Analyze this car'}
+            </button>
+          </div>
+
+          ${state.researchStatus==='researching' ? `
+            <div class="researchState">
+              <div class="researchSpinner"></div>
+              <div>
+                <strong>Analyzing owner evidence…</strong>
+                <p>
+                  Searching real owner evidence, identifying recurring ownership
+                  conditions and building your diagnostic questions.
+                </p>
+              </div>
+            </div>
+          ` : ''}
+
+          ${state.researchStatus==='error' ? `
+            <div class="researchError">
+              ${esc(state.researchError)}
+            </div>
+          ` : ''}
+
+          <p class="micro searchNote">
+            Previously researched models can load instantly. A new model may take a little longer.
+          </p>
+
+        </section>
+      ` : ''}
+
+    </main>
+  `;
+
+  const categoryCar =
+    document.getElementById('categoryCar');
+
+  if(categoryCar){
+    categoryCar.addEventListener(
+      'click',
+      ()=>selectCategory('car')
+    );
   }
+
+  const researchBtn =
+    document.getElementById('researchBtn');
+
+  const unknownVehicle =
+    document.getElementById('unknownVehicle');
+
+  if(researchBtn){
+    researchBtn.addEventListener(
+      'click',
+      researchUnknownVehicle
+    );
+  }
+
+  if(unknownVehicle){
+    unknownVehicle.addEventListener(
+      'keydown',
+      e=>{
+        if(e.key === 'Enter'){
+          researchUnknownVehicle();
+        }
+      }
+    );
+  }
+
+  return;
+}
+
+  
 
   const finished = state.step >= vehicle.questions.length;
   const needsPriceQuestion =
