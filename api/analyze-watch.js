@@ -2996,6 +2996,910 @@ async function findCachedWatch(sql, query) {
 
 
 
+module.exports = async function handler(req, res) {
+  /*
+   * METHOD
+   */
+
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+
+    return res.status(405).json({
+      error: "Method not allowed."
+    });
+  }
+
+
+  /*
+   * DATABASE CONFIGURATION
+   */
+
+  if (!process.env.DATABASE_URL) {
+    console.error(
+      "WATCH_DATABASE_URL_MISSING"
+    );
+
+    return res.status(500).json({
+      error:
+        "Watch research database is not configured."
+    });
+  }
+
+
+  /*
+   * INPUT
+   */
+
+  let body = req.body;
+
+  /*
+   * Depending on runtime/configuration, req.body
+   * may occasionally arrive as a JSON string.
+   */
+
+  if (typeof body === "string") {
+    try {
+      body = JSON.parse(body);
+    } catch {
+      return res.status(400).json({
+        error: "Invalid request body."
+      });
+    }
+  }
+
+  const query =
+    typeof body?.query === "string"
+      ? body.query.trim()
+      : "";
+
+
+  if (query.length < 3) {
+    return res.status(400).json({
+      error:
+        "Please enter a specific watch."
+    });
+  }
+
+
+  /*
+   * DATABASE CLIENT
+   */
+
+  const sql = neon(
+    process.env.DATABASE_URL
+  );
+
+
+  /*
+   * CACHE LOOKUP
+   *
+   * Research rate limiting happens only AFTER
+   * this lookup.
+   *
+   * Therefore an existing watch can be served
+   * immediately without another OpenAI call.
+   */
+
+  let cachedMatch = null;
+
+  try {
+    cachedMatch =
+      await findCachedWatch(
+        sql,
+        query
+      );
+  } catch (error) {
+    /*
+     * Cache lookup failure should not silently
+     * create expensive duplicate research.
+     *
+     * Fail closed rather than treating database
+     * failure as a cache miss.
+     */
+
+    console.error(
+      "WATCH_CACHE_LOOKUP_ERROR",
+      {
+        query,
+        message: error?.message || String(error)
+      }
+    );
+
+    return res.status(500).json({
+      error:
+        "Unable to check the watch research cache."
+    });
+  }
+
+
+  /*
+   * CACHE HIT
+   */
+
+  if (cachedMatch?.row) {
+    const cachedWatch =
+      parseWatchData(
+        cachedMatch.row.watch_data
+      );
+
+    /*
+     * Validate database records before serving
+     * them.
+     *
+     * This protects the application if an older
+     * schema version remains in the database.
+     */
+
+    if (hasUsableWatchSchema(cachedWatch)) {
+      console.log(
+        "WATCH_CACHE_HIT",
+        JSON.stringify({
+          query,
+          matchType:
+            cachedMatch.matchType,
+          score:
+            cachedMatch.score,
+          cacheKey:
+            cachedMatch.row.cache_key,
+          displayName:
+            cachedMatch.row.display_name,
+          updatedAt:
+            cachedMatch.row.updated_at
+        })
+      );
+
+      return res.status(200).json({
+        watch: cachedWatch,
+        cache: "hit"
+      });
+    }
+
+
+    /*
+     * A record matched the search but does not
+     * satisfy Watch Schema v1.0.
+     *
+     * Allow fresh research to replace it.
+     */
+
+    console.warn(
+      "WATCH_CACHE_STALE",
+      JSON.stringify({
+        query,
+        matchType:
+          cachedMatch.matchType,
+        cacheKey:
+          cachedMatch.row.cache_key,
+        displayName:
+          cachedMatch.row.display_name
+      })
+    );
+  } else {
+    console.log(
+      "WATCH_CACHE_MISS",
+      JSON.stringify({
+        query
+      })
+    );
+  }
+
+
+  /*
+   * OPENAI CONFIGURATION
+   *
+   * Only needed after a genuine cache miss
+   * or stale cache record.
+   */
+
+  if (!process.env.OPENAI_API_KEY) {
+    console.error(
+      "WATCH_OPENAI_KEY_MISSING"
+    );
+
+    return res.status(500).json({
+      error:
+        "Watch research service is not configured."
+    });
+  }
+
+
+  /*
+   * RATE LIMIT
+   *
+   * Cache hits never reach this point.
+   */
+
+  const rateLimitIdentifier =
+    buildWatchRateLimitIdentifier(req);
+
+  const rateLimit =
+    await consumeWatchResearchRateLimit(
+      sql,
+      rateLimitIdentifier
+    );
+
+
+  if (!rateLimit.allowed) {
+    console.warn(
+      "WATCH_RESEARCH_RATE_LIMITED",
+      JSON.stringify({
+        query,
+        reason:
+          rateLimit.reason,
+        hourlyCount:
+          rateLimit.hourlyCount,
+        hourlyLimit:
+          rateLimit.hourlyLimit,
+        dailyCount:
+          rateLimit.dailyCount,
+        dailyLimit:
+          rateLimit.dailyLimit
+      })
+    );
+
+    if (
+      rateLimit.reason ===
+      "infrastructure"
+    ) {
+      return res.status(503).json({
+        error:
+          "Watch research is temporarily unavailable."
+      });
+    }
+
+    return res.status(429).json({
+      error:
+        "Research limit reached. Please try again later."
+    });
+  }
+
+
+  /*
+   * OPENAI RESPONSES API REQUEST
+   */
+
+  const requestBody = {
+    model: "gpt-5.6-sol",
+
+    reasoning: {
+      effort: "medium"
+    },
+
+    instructions:
+      watchProtocol,
+
+    input:
+      `Research and build the Watch Decision Model for: ${query}`,
+
+    tools: [
+      {
+        type:
+          "web_search_preview",
+        search_context_size:
+          "medium"
+      }
+    ],
+
+    tool_choice: "auto",
+
+    text: {
+      format: {
+        type: "json_schema",
+        name:
+          "watch_decision_model",
+        strict: true,
+        schema:
+          watchSchema
+      },
+
+      verbosity: "low"
+    }
+  };
+
+
+  /*
+   * OPENAI CALL
+   */
+
+  let response;
+
+  try {
+    response = await fetch(
+      OPENAI_URL,
+      {
+        method: "POST",
+
+        headers: {
+          Authorization:
+            `Bearer ${process.env.OPENAI_API_KEY}`,
+
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify(
+            requestBody
+          )
+      }
+    );
+  } catch (error) {
+    console.error(
+      "WATCH_OPENAI_FETCH_ERROR",
+      {
+        query,
+        message:
+          error?.message ||
+          String(error)
+      }
+    );
+
+    return res.status(502).json({
+      error:
+        "Unable to reach the watch research service."
+    });
+  }
+
+
+  /*
+   * PARSE OPENAI RESPONSE
+   */
+
+  let data;
+
+  try {
+    data = await response.json();
+  } catch (error) {
+    console.error(
+      "WATCH_OPENAI_RESPONSE_PARSE_ERROR",
+      {
+        query,
+        status:
+          response.status,
+        message:
+          error?.message ||
+          String(error)
+      }
+    );
+
+    return res.status(502).json({
+      error:
+        "Watch research returned an invalid response."
+    });
+  }
+
+
+  /*
+   * OPENAI API ERROR
+   */
+
+  if (!response.ok) {
+    console.error(
+      "WATCH_OPENAI_API_ERROR",
+      JSON.stringify({
+        query,
+        status:
+          response.status,
+        error:
+          data?.error || data
+      })
+    );
+
+    return res
+      .status(
+        response.status >= 400 &&
+        response.status < 600
+          ? response.status
+          : 502
+      )
+      .json({
+        error:
+          data?.error?.message ||
+          "Watch research failed."
+      });
+  }
+
+
+  /*
+   * USAGE + COST LOGGING
+   *
+   * Keep the same planning assumptions currently
+   * used by the Cars endpoint so category costs
+   * remain directly comparable.
+   */
+
+  const usage =
+    data?.usage || {};
+
+  const inputTokens =
+    Number(
+      usage.input_tokens || 0
+    );
+
+  const cachedInputTokens =
+    Number(
+      usage.input_tokens_details
+        ?.cached_tokens || 0
+    );
+
+  const outputTokens =
+    Number(
+      usage.output_tokens || 0
+    );
+
+  const totalTokens =
+    Number(
+      usage.total_tokens ||
+      (
+        inputTokens +
+        outputTokens
+      )
+    );
+
+
+  /*
+   * Count actual web-search tool calls in the
+   * Responses API output.
+   */
+
+  const webSearchCalls =
+    Array.isArray(data?.output)
+      ? data.output.filter(
+          item =>
+            item?.type ===
+              "web_search_call" ||
+            item?.type ===
+              "web_search_preview_call"
+        ).length
+      : 0;
+
+
+  /*
+   * Cost assumptions currently mirrored from
+   * analyze.js.
+   *
+   * This is an internal planning estimate,
+   * not an OpenAI billing statement.
+   */
+
+  const inputCost =
+    (inputTokens / 1_000_000) *
+    4;
+
+  const outputCost =
+    (outputTokens / 1_000_000) *
+    20;
+
+  const webSearchCost =
+    webSearchCalls *
+    0.01;
+
+  const estimatedCost =
+    inputCost +
+    outputCost +
+    webSearchCost;
+
+
+  console.log(
+    "WATCH_RESEARCH_USAGE",
+    JSON.stringify({
+      query,
+
+      model:
+        requestBody.model,
+
+      inputTokens,
+
+      cachedInputTokens,
+
+      outputTokens,
+
+      totalTokens,
+
+      webSearchCalls,
+
+      usageRaw:
+        usage
+    })
+  );
+
+
+  console.log(
+    "WATCH_RESEARCH_COST",
+    JSON.stringify({
+      query,
+
+      model:
+        requestBody.model,
+
+      inputCostUsd:
+        Number(
+          inputCost.toFixed(6)
+        ),
+
+      outputCostUsd:
+        Number(
+          outputCost.toFixed(6)
+        ),
+
+      webSearchCostUsd:
+        Number(
+          webSearchCost.toFixed(6)
+        ),
+
+      estimatedCostUsd:
+        Number(
+          estimatedCost.toFixed(6)
+        )
+    })
+  );
+
+
+  /*
+   * EXTRACT STRUCTURED OUTPUT
+   */
+
+  const outputText =
+    extractOutputText(data);
+
+
+  if (!outputText) {
+    console.error(
+      "WATCH_OUTPUT_MISSING",
+      JSON.stringify({
+        query,
+        responseId:
+          data?.id || null
+      })
+    );
+
+    return res.status(502).json({
+      error:
+        "Watch research returned no usable output."
+    });
+  }
+
+
+  /*
+   * PARSE WATCH JSON
+   */
+
+  let watch;
+
+  try {
+    watch =
+      JSON.parse(outputText);
+  } catch (error) {
+    console.error(
+      "WATCH_OUTPUT_JSON_ERROR",
+      {
+        query,
+        message:
+          error?.message ||
+          String(error)
+      }
+    );
+
+    return res.status(502).json({
+      error:
+        "Watch research returned malformed structured data."
+    });
+  }
+
+
+  /*
+   * VALIDATE WATCH SCHEMA
+   */
+
+  if (!hasUsableWatchSchema(watch)) {
+    console.error(
+      "WATCH_SCHEMA_INVALID",
+      JSON.stringify({
+        query,
+        watchId:
+          watch?.id || null,
+        brand:
+          watch?.brand || null,
+        model:
+          watch?.model || null,
+        reference:
+          watch?.reference || null
+      })
+    );
+
+    return res.status(502).json({
+      error:
+        "Watch research did not satisfy Watch Schema v1.0."
+    });
+  }
+
+
+  /*
+   * CANONICAL CACHE IDENTITY
+   */
+
+  const canonicalSource =
+    buildCanonicalWatchSource(
+      watch
+    );
+
+  const cacheKey =
+    normalizeCacheKey(
+      canonicalSource
+    );
+
+  const displayName =
+    buildWatchDisplayName(
+      watch
+    );
+
+  const searchText =
+    buildWatchSearchText(
+      watch,
+      query
+    );
+
+
+  if (!cacheKey) {
+    console.error(
+      "WATCH_CACHE_KEY_EMPTY",
+      {
+        query,
+        canonicalSource
+      }
+    );
+
+    return res.status(502).json({
+      error:
+        "Unable to establish a canonical watch identity."
+    });
+  }
+
+
+  /*
+   * DATABASE UPSERT
+   *
+   * cache_key is UNIQUE.
+   *
+   * If the same canonical watch is researched again,
+   * replace the stored research with the newest
+   * valid Watch Schema v1.0 result.
+   */
+
+  try {
+    await sql`
+      INSERT INTO watches (
+        brand,
+        model,
+        reference,
+        year,
+        production_period,
+        variant,
+        movement,
+        case_size,
+
+        display_name,
+        search_text,
+        cache_key,
+
+        watch_data,
+
+        researched_query,
+        research_model,
+        research_cost_usd,
+
+        input_tokens,
+        cached_input_tokens,
+        output_tokens,
+
+        updated_at
+      )
+
+      VALUES (
+        ${watch.brand},
+        ${watch.model},
+        ${watch.reference},
+        ${watch.year},
+        ${watch.productionPeriod},
+        ${watch.variant},
+        ${watch.movement},
+        ${watch.caseSize},
+
+        ${displayName},
+        ${searchText},
+        ${cacheKey},
+
+        ${JSON.stringify(watch)}::jsonb,
+
+        ${query},
+        ${requestBody.model},
+        ${estimatedCost},
+
+        ${inputTokens},
+        ${cachedInputTokens},
+        ${outputTokens},
+
+        NOW()
+      )
+
+      ON CONFLICT (cache_key)
+
+      DO UPDATE SET
+        brand =
+          EXCLUDED.brand,
+
+        model =
+          EXCLUDED.model,
+
+        reference =
+          EXCLUDED.reference,
+
+        year =
+          EXCLUDED.year,
+
+        production_period =
+          EXCLUDED.production_period,
+
+        variant =
+          EXCLUDED.variant,
+
+        movement =
+          EXCLUDED.movement,
+
+        case_size =
+          EXCLUDED.case_size,
+
+        display_name =
+          EXCLUDED.display_name,
+
+        search_text =
+          EXCLUDED.search_text,
+
+        watch_data =
+          EXCLUDED.watch_data,
+
+        researched_query =
+          EXCLUDED.researched_query,
+
+        research_model =
+          EXCLUDED.research_model,
+
+        research_cost_usd =
+          EXCLUDED.research_cost_usd,
+
+        input_tokens =
+          EXCLUDED.input_tokens,
+
+        cached_input_tokens =
+          EXCLUDED.cached_input_tokens,
+
+        output_tokens =
+          EXCLUDED.output_tokens,
+
+        updated_at =
+          NOW()
+    `;
+  } catch (error) {
+    console.error(
+      "WATCH_DATABASE_SAVE_ERROR",
+      {
+        query,
+        cacheKey,
+        displayName,
+        message:
+          error?.message ||
+          String(error)
+      }
+    );
+
+    /*
+     * Research succeeded but persistence failed.
+     *
+     * Do not silently serve the result because doing
+     * so would cause the next identical request to
+     * incur another expensive research call.
+     */
+
+    return res.status(500).json({
+      error:
+        "Watch research succeeded but could not be saved."
+    });
+  }
+
+
+  /*
+   * If the cache lookup matched an invalid legacy
+   * record under a DIFFERENT cache key, remove that
+   * stale record after the valid replacement has
+   * been safely written.
+   */
+
+  const staleCacheKey =
+    cachedMatch?.row?.cache_key;
+
+  if (
+    staleCacheKey &&
+    staleCacheKey !== cacheKey
+  ) {
+    try {
+      await sql`
+        DELETE FROM watches
+        WHERE cache_key =
+          ${staleCacheKey}
+      `;
+
+      console.log(
+        "WATCH_STALE_CACHE_REMOVED",
+        JSON.stringify({
+          oldCacheKey:
+            staleCacheKey,
+          newCacheKey:
+            cacheKey
+        })
+      );
+    } catch (error) {
+      /*
+       * Non-fatal.
+       *
+       * The new valid record has already been
+       * persisted.
+       */
+
+      console.warn(
+        "WATCH_STALE_CACHE_DELETE_ERROR",
+        {
+          oldCacheKey:
+            staleCacheKey,
+          newCacheKey:
+            cacheKey,
+          message:
+            error?.message ||
+            String(error)
+        }
+      );
+    }
+  }
+
+
+  /*
+   * SUCCESS
+   */
+
+  console.log(
+    "WATCH_RESEARCH_COMPLETE",
+    JSON.stringify({
+      query,
+      watchId:
+        watch.id,
+      displayName,
+      cacheKey,
+      reference:
+        watch.reference,
+      evidenceCount:
+        watch.evidenceCount,
+      integrityLevel:
+        watch.productIntegrity.level,
+      questionCount:
+        watch.questions.length,
+      estimatedCostUsd:
+        Number(
+          estimatedCost.toFixed(6)
+        )
+    })
+  );
+
+
+  return res.status(200).json({
+    watch,
+    cache: "miss"
+  });
+};
+
+
+
+
+
+
 
 
 
