@@ -388,8 +388,14 @@ function render(){
     return;
   }
 
-  const evaluation = evaluateResult(vehicle, state.answers);
-  const result = evaluation.result;
+const evaluation = evaluateResult(vehicle, state.answers);
+
+const integrityOverride =
+  vehicle.productIntegrity?.overrideFit === true;
+
+const result = integrityOverride
+  ? 'Not suitable'
+  : evaluation.result;
 
   const reasons = evaluation.mapped.map(a=>({
     ...a,
