@@ -513,15 +513,62 @@ if(integrityOverride){
   result = 'Not suitable';
 }
 
-  const reasons = evaluation.mapped.map(a=>({
-    ...a,
-    level: a.impact === 'positive'
-      ? 'fit'
-      : (a.impact === 'neutral' ? 'consider' : 'mismatch')
-  }));
 
-  
- const orderedReasons = [
+const reasons = evaluation.mapped.map(a=>({
+  ...a,
+  level: a.impact === 'positive'
+    ? 'fit'
+    : (a.impact === 'neutral' ? 'consider' : 'mismatch')
+}));
+
+const priceReason =
+  state.priceAnswer === 'comfortable'
+    ? {
+        level: 'fit',
+        impact: 'positive',
+        condition: 'Price level',
+        question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+        impactReason: 'This price level feels reasonable to you for this specific car.'
+      }
+    : state.priceAnswer === 'stretch'
+      ? {
+          level: 'consider',
+          impact: 'neutral',
+          condition: 'Price level',
+          question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+          impactReason: 'You could still consider the car, but the current market price creates some purchase friction.'
+        }
+      : {
+          level: 'mismatch',
+          impact: 'high_negative',
+          condition: 'Price level',
+          question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+          impactReason: 'At this price level, you would probably not choose this car.'
+        };
+
+const integrityReason =
+  vehicle.productIntegrity?.level !== 'no_meaningful_signal'
+    ? {
+        level: vehicle.productIntegrity.overrideFit
+          ? 'mismatch'
+          : 'consider',
+
+        impact: vehicle.productIntegrity.overrideFit
+          ? 'critical_negative'
+          : 'neutral',
+
+        condition: 'Product integrity risk',
+
+        question: vehicle.productIntegrity.summary,
+
+        impactReason:
+          vehicle.productIntegrity.evidenceReason,
+
+        productIntegrity: true
+      }
+    : null;
+
+const orderedReasons = [
   ...(integrityReason?.impact === 'critical_negative'
     ? [integrityReason]
     : []),
@@ -552,56 +599,6 @@ if(integrityOverride){
   ...reasons.filter(r=>r.level==='fit')
 ];
 
-  
-const priceReason =
-  state.priceAnswer === 'comfortable'
-    ? {
-        level: 'fit',
-        impact: 'positive',
-        condition: 'Price level',
-        question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
-        impactReason: 'This price level feels reasonable to you for this specific car.'
-      }
-    : state.priceAnswer === 'stretch'
-      ? {
-          level: 'consider',
-          impact: 'neutral',
-          condition: 'Price level',
-          question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
-          impactReason: 'You could still consider the car, but the current market price creates some purchase friction.'
-        }
-      : {
-          level: 'mismatch',
-          impact: 'high_negative',
-          condition: 'Price level',
-          question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
-          impactReason: 'At this price level, you would probably not choose this car.'
-        };
-
-
-const integrityReason =
-  vehicle.productIntegrity?.level !== 'no_meaningful_signal'
-    ? {
-        level: vehicle.productIntegrity.overrideFit
-          ? 'mismatch'
-          : 'consider',
-
-        impact: vehicle.productIntegrity.overrideFit
-          ? 'critical_negative'
-          : 'neutral',
-
-        condition: 'Product integrity risk',
-
-        question: vehicle.productIntegrity.summary,
-
-        impactReason:
-          vehicle.productIntegrity.evidenceReason,
-
-        productIntegrity: true
-      }
-    : null;
-
-  
 const labelFor = r => {
   if(r.productIntegrity){
     return r.level === 'mismatch'
@@ -617,6 +614,11 @@ const labelFor = r => {
           : 'THINGS TO CONSIDER'
       );
 };
+
+
+
+  
+
 
   app.innerHTML = `
     <main class="shell compact resultShell">
