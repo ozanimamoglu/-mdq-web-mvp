@@ -703,7 +703,7 @@ ${r.productIntegrity && r.issues?.length ? `
 
         <div class="evidenceMeta">
           <span>
-            ${esc(issue.severity.replaceAll('_',' '))}
+            ${esc(String(issue.severity || '').replaceAll('_',' '))}
             severity
           </span>
 
