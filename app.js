@@ -547,7 +547,8 @@ const priceReason =
         };
 
 const integrityReason =
-  vehicle.productIntegrity?.level !== 'no_meaningful_signal'
+  vehicle.productIntegrity &&
+  vehicle.productIntegrity.level !== 'no_meaningful_signal'
     ? {
         level: vehicle.productIntegrity.overrideFit
           ? 'mismatch'
@@ -564,7 +565,12 @@ const integrityReason =
         impactReason:
           vehicle.productIntegrity.evidenceReason,
 
-        productIntegrity: true
+        productIntegrity: true,
+
+        issues:
+          Array.isArray(vehicle.productIntegrity.issues)
+            ? vehicle.productIntegrity.issues
+            : []
       }
     : null;
 
@@ -668,6 +674,53 @@ const labelFor = r => {
                 <p class="reasonQuestion">${esc(r.question)}</p>
               
                 <p>${esc(r.impactReason)}</p>
+
+${r.productIntegrity && r.issues?.length ? `
+  <div class="integrityIssues">
+    <p class="mitigationLabel">RECURRING FAILURE PATTERNS</p>
+
+    ${r.issues.map(issue=>`
+      <div class="integrityIssue">
+        <h4>${esc(issue.functionAffected)}</h4>
+
+        <p>${esc(issue.failureMode)}</p>
+
+        <div class="evidenceMeta">
+          <span>
+            ${esc(issue.severity.replaceAll('_',' '))}
+            severity
+          </span>
+
+          <span>
+            ${esc(issue.evidenceStrength.replaceAll('_',' '))}
+            evidence
+          </span>
+        </div>
+
+        <p>
+          <strong>Recurrence:</strong>
+          ${esc(issue.recurrence)}
+        </p>
+
+        <p>
+          <strong>Resolution pattern:</strong>
+          ${esc(issue.resolutionPattern)}
+        </p>
+
+        ${issue.evidenceReason ? `
+          <p class="integrityEvidenceReason">
+            ${esc(issue.evidenceReason)}
+          </p>
+        ` : ''}
+      </div>
+    `).join('')}
+  </div>
+` : ''}
+
+
+
+
+
 
                 ${r.evidenceStrength ? `
                   <div class="evidenceMeta">
