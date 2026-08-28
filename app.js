@@ -537,13 +537,23 @@ const reasons = evaluation.mapped.map(a=>({
     : (a.impact === 'neutral' ? 'consider' : 'mismatch')
 }));
 
+const resultPriceFormatter = new Intl.NumberFormat('en-GB', {
+  style: 'currency',
+  currency: vehicle.marketPrice.currency,
+  maximumFractionDigits: 0
+});
+
+const resultPriceRange =
+  `${resultPriceFormatter.format(vehicle.marketPrice.low)}–${resultPriceFormatter.format(vehicle.marketPrice.high)}`;
+
+  
 const priceReason =
   state.priceAnswer === 'comfortable'
     ? {
         level: 'fit',
         impact: 'positive',
         condition: 'Price level',
-        question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+        question: `How does the current ${resultPriceRange} price range feel to you?`,
         impactReason: 'This price level feels reasonable to you for this specific car.'
       }
     : state.priceAnswer === 'stretch'
@@ -551,14 +561,14 @@ const priceReason =
           level: 'consider',
           impact: 'neutral',
           condition: 'Price level',
-          question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+          question: `How does the current ${resultPriceRange} price range feel to you?`,
           impactReason: 'You could still consider the car, but the current market price creates some purchase friction.'
         }
       : {
           level: 'mismatch',
           impact: 'high_negative',
           condition: 'Price level',
-          question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+          question: `How does the current ${resultPriceRange} price range feel to you?`,
           impactReason: 'At this price level, you would probably not choose this car.'
         };
 
@@ -708,7 +718,7 @@ ${r.productIntegrity && r.issues?.length ? `
           </span>
 
           <span>
-            ${esc(issue.evidenceStrength.replaceAll('_',' '))}
+            ${esc(String(issue.evidenceStrength || '').replaceAll('_',' '))}
             evidence
           </span>
         </div>
