@@ -499,9 +499,19 @@ const evaluation = evaluateResult(vehicle, state.answers);
 const integrityOverride =
   vehicle.productIntegrity?.overrideFit === true;
 
-const result = integrityOverride
-  ? 'Not suitable'
-  : evaluation.result;
+let result = evaluation.result;
+
+if(state.priceAnswer === 'stretch' && result === 'Ideal'){
+  result = 'Suitable';
+}
+
+if(state.priceAnswer === 'too_high'){
+  result = 'Not suitable';
+}
+
+if(integrityOverride){
+  result = 'Not suitable';
+}
 
   const reasons = evaluation.mapped.map(a=>({
     ...a,
@@ -510,15 +520,103 @@ const result = integrityOverride
       : (a.impact === 'neutral' ? 'consider' : 'mismatch')
   }));
 
-  const orderedReasons = [
-    ...reasons.filter(r=>r.impact==='critical_negative'),
-    ...reasons.filter(r=>r.impact==='high_negative'),
-    ...reasons.filter(r=>r.impact==='medium_negative'),
-    ...reasons.filter(r=>r.level==='consider'),
-    ...reasons.filter(r=>r.level==='fit')
-  ];
+  
+ const orderedReasons = [
+  ...(integrityReason?.impact === 'critical_negative'
+    ? [integrityReason]
+    : []),
 
-  const labelFor = r => r.level==='fit' ? 'WORKS WELL FOR YOU' : (r.level==='mismatch' ? 'POTENTIAL MISMATCH' : 'THINGS TO CONSIDER');
+  ...reasons.filter(r=>r.impact==='critical_negative'),
+
+  ...(priceReason.level === 'mismatch'
+    ? [priceReason]
+    : []),
+
+  ...reasons.filter(r=>r.impact==='high_negative'),
+  ...reasons.filter(r=>r.impact==='medium_negative'),
+
+  ...(integrityReason?.level === 'consider'
+    ? [integrityReason]
+    : []),
+
+  ...(priceReason.level === 'consider'
+    ? [priceReason]
+    : []),
+
+  ...reasons.filter(r=>r.level==='consider'),
+
+  ...(priceReason.level === 'fit'
+    ? [priceReason]
+    : []),
+
+  ...reasons.filter(r=>r.level==='fit')
+];
+
+  
+const priceReason =
+  state.priceAnswer === 'comfortable'
+    ? {
+        level: 'fit',
+        impact: 'positive',
+        condition: 'Price level',
+        question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+        impactReason: 'This price level feels reasonable to you for this specific car.'
+      }
+    : state.priceAnswer === 'stretch'
+      ? {
+          level: 'consider',
+          impact: 'neutral',
+          condition: 'Price level',
+          question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+          impactReason: 'You could still consider the car, but the current market price creates some purchase friction.'
+        }
+      : {
+          level: 'mismatch',
+          impact: 'high_negative',
+          condition: 'Price level',
+          question: `How does the current ${vehicle.marketPrice.currency} ${vehicle.marketPrice.low.toLocaleString()}–${vehicle.marketPrice.high.toLocaleString()} price range feel to you?`,
+          impactReason: 'At this price level, you would probably not choose this car.'
+        };
+
+
+const integrityReason =
+  vehicle.productIntegrity?.level !== 'no_meaningful_signal'
+    ? {
+        level: vehicle.productIntegrity.overrideFit
+          ? 'mismatch'
+          : 'consider',
+
+        impact: vehicle.productIntegrity.overrideFit
+          ? 'critical_negative'
+          : 'neutral',
+
+        condition: 'Product integrity risk',
+
+        question: vehicle.productIntegrity.summary,
+
+        impactReason:
+          vehicle.productIntegrity.evidenceReason,
+
+        productIntegrity: true
+      }
+    : null;
+
+  
+const labelFor = r => {
+  if(r.productIntegrity){
+    return r.level === 'mismatch'
+      ? 'PRODUCT INTEGRITY CONCERN'
+      : 'PRODUCT INTEGRITY SIGNAL';
+  }
+
+  return r.level==='fit'
+    ? 'WORKS WELL FOR YOU'
+    : (
+        r.level==='mismatch'
+          ? 'POTENTIAL MISMATCH'
+          : 'THINGS TO CONSIDER'
+      );
+};
 
   app.innerHTML = `
     <main class="shell compact resultShell">
