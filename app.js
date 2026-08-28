@@ -272,7 +272,7 @@ function render(){
       <main class="shell">
         <section class="hero">
           <p class="eyebrow">OWNER-EVIDENCE FIT</p>
-          <h1>Is this car right for you? TEST 28 AUG</h1>
+          <h1>Is this car right for you?</h1>
           <p class="lede">Not the best car. Not a comparison. Just whether this specific car fits the way you will actually own it.</p>
         </section>
 
