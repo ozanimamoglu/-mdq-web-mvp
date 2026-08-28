@@ -2578,19 +2578,7 @@ function hasUsableWatchSchema(watch) {
  * CLIENT IP
  */
 
-function getClientIp(req) {
-  const forwardedFor =
-    req.headers["x-forwarded-for"];
 
-  if (typeof forwardedFor === "string") {
-    const firstIp = forwardedFor
-      .split(",")[0]
-      .trim();
-
-    if (firstIp) {
-      return firstIp;
-    }
-  }
 
   const realIp = req.headers["x-real-ip"];
 
@@ -2615,14 +2603,7 @@ function getClientIp(req) {
  * table can be shared with Cars.
  */
 
-function buildWatchRateLimitIdentifier(req) {
-  const ip = getClientIp(req);
 
-  return crypto
-    .createHash("sha256")
-    .update(`watch-research:${ip}`)
-    .digest("hex");
-}
 
 
 /*
@@ -2637,144 +2618,245 @@ function buildWatchRateLimitIdentifier(req) {
  * This uses the existing research_rate_limits table.
  */
 
-async function consumeWatchResearchRateLimit(
-  sql,
-  identifier
-) {
-  const now = new Date();
+function getClientIp(req) {
+  const forwarded =
+    req.headers["x-forwarded-for"];
 
-  const hourBucket = now
-    .toISOString()
-    .slice(0, 13);
+  if (Array.isArray(forwarded)) {
+    const first = forwarded[0];
 
-  const dayBucket = now
-    .toISOString()
-    .slice(0, 10);
+    if (first) {
+      return String(first)
+        .split(",")[0]
+        .trim();
+    }
+  }
+
+  if (
+    typeof forwarded === "string" &&
+    forwarded.trim()
+  ) {
+    return forwarded
+      .split(",")[0]
+      .trim();
+  }
+
+  const realIp =
+    req.headers["x-real-ip"];
+
+  if (
+    typeof realIp === "string" &&
+    realIp.trim()
+  ) {
+    return realIp.trim();
+  }
+
+  return "unknown";
+}
+
+
+function buildWatchRateLimitIdentifier(req) {
+  const ip = getClientIp(req);
 
   /*
-   * Increment hourly and daily counters atomically.
+   * Do not store the raw client IP.
    *
-   * The table is shared infrastructure.
-   * The hashed identifier contains the watch-specific
-   * namespace, so Cars and Watches do not collide.
+   * Watches use their own namespace so the same
+   * research_rate_limits table can safely be shared
+   * with Cars.
+   */
+  return crypto
+    .createHash("sha256")
+    .update(`watch-research:${ip}`)
+    .digest("hex");
+}
+
+
+async function consumeWatchResearchRateLimit(
+  sql,
+  req
+) {
+  const identifier =
+    buildWatchRateLimitIdentifier(req);
+
+  /*
+   * Both counters are incremented atomically
+   * inside one PostgreSQL statement.
+   *
+   * This rate limit is consumed ONLY after a
+   * watch cache miss, immediately before a
+   * new OpenAI research request.
    */
 
-  try {
-    const hourlyRows = await sql`
+  const rows = await sql`
+    WITH hourly AS (
       INSERT INTO research_rate_limits (
         identifier,
         window_type,
-        window_key,
+        window_start,
         request_count,
+        created_at,
         updated_at
       )
       VALUES (
         ${identifier},
         'hour',
-        ${hourBucket},
+        DATE_TRUNC('hour', NOW()),
         1,
+        NOW(),
         NOW()
       )
+
       ON CONFLICT (
         identifier,
         window_type,
-        window_key
+        window_start
       )
+
       DO UPDATE SET
         request_count =
           research_rate_limits.request_count + 1,
-        updated_at = NOW()
-      RETURNING request_count
-    `;
 
-    const dailyRows = await sql`
+        updated_at =
+          NOW()
+
+      RETURNING
+        request_count,
+        window_start
+    ),
+
+    daily AS (
       INSERT INTO research_rate_limits (
         identifier,
         window_type,
-        window_key,
+        window_start,
         request_count,
+        created_at,
         updated_at
       )
       VALUES (
         ${identifier},
         'day',
-        ${dayBucket},
+        DATE_TRUNC('day', NOW()),
         1,
+        NOW(),
         NOW()
       )
+
       ON CONFLICT (
         identifier,
         window_type,
-        window_key
+        window_start
       )
+
       DO UPDATE SET
         request_count =
           research_rate_limits.request_count + 1,
-        updated_at = NOW()
-      RETURNING request_count
-    `;
 
-    const hourlyCount =
-      Number(hourlyRows?.[0]?.request_count || 0);
+        updated_at =
+          NOW()
 
-    const dailyCount =
-      Number(dailyRows?.[0]?.request_count || 0);
+      RETURNING
+        request_count,
+        window_start
+    )
 
-    const hourlyExceeded =
-      hourlyCount >
-      RESEARCH_RATE_LIMIT_HOURLY;
+    SELECT
+      hourly.request_count
+        AS hourly_count,
 
-    const dailyExceeded =
-      dailyCount >
-      RESEARCH_RATE_LIMIT_DAILY;
+      hourly.window_start
+        AS hourly_window_start,
 
-    return {
-      allowed:
-        !hourlyExceeded &&
-        !dailyExceeded,
+      daily.request_count
+        AS daily_count,
 
-      hourlyCount,
-      dailyCount,
+      daily.window_start
+        AS daily_window_start
 
-      hourlyLimit:
-        RESEARCH_RATE_LIMIT_HOURLY,
+    FROM hourly
+    CROSS JOIN daily
+  `;
 
-      dailyLimit:
-        RESEARCH_RATE_LIMIT_DAILY,
+  const row = rows[0];
 
-      reason: hourlyExceeded
-        ? "hourly"
-        : dailyExceeded
-          ? "daily"
-          : null
-    };
-  } catch (error) {
-    /*
-     * FAIL CLOSED.
-     *
-     * If rate-limit infrastructure fails,
-     * do not allow an expensive OpenAI research
-     * request through unprotected.
-     */
-
-    console.error(
-      "WATCH_RATE_LIMIT_ERROR",
-      error
+  const hourlyCount =
+    Number(
+      row?.hourly_count || 0
     );
 
-    return {
-      allowed: false,
-      hourlyCount: null,
-      dailyCount: null,
-      hourlyLimit:
-        RESEARCH_RATE_LIMIT_HOURLY,
-      dailyLimit:
-        RESEARCH_RATE_LIMIT_DAILY,
-      reason: "infrastructure"
-    };
-  }
-}
+  const dailyCount =
+    Number(
+      row?.daily_count || 0
+    );
 
+  const hourlyExceeded =
+    hourlyCount >
+    RESEARCH_RATE_LIMIT_HOURLY;
+
+  const dailyExceeded =
+    dailyCount >
+    RESEARCH_RATE_LIMIT_DAILY;
+
+  let retryAfterSeconds = 0;
+
+  if (dailyExceeded) {
+    const dayStart =
+      new Date(
+        row.daily_window_start
+      ).getTime();
+
+    const resetAt =
+      dayStart +
+      24 * 60 * 60 * 1000;
+
+    retryAfterSeconds =
+      Math.max(
+        1,
+        Math.ceil(
+          (resetAt - Date.now()) /
+          1000
+        )
+      );
+  } else if (hourlyExceeded) {
+    const hourStart =
+      new Date(
+        row.hourly_window_start
+      ).getTime();
+
+    const resetAt =
+      hourStart +
+      60 * 60 * 1000;
+
+    retryAfterSeconds =
+      Math.max(
+        1,
+        Math.ceil(
+          (resetAt - Date.now()) /
+          1000
+        )
+      );
+  }
+
+  return {
+    allowed:
+      !hourlyExceeded &&
+      !dailyExceeded,
+
+    hourlyCount,
+    dailyCount,
+
+    hourlyLimit:
+      RESEARCH_RATE_LIMIT_HOURLY,
+
+    dailyLimit:
+      RESEARCH_RATE_LIMIT_DAILY,
+
+    hourlyExceeded,
+    dailyExceeded,
+    retryAfterSeconds
+  };
+}
 
 /*
  * WATCH CACHE LOOKUP
@@ -3209,43 +3291,30 @@ module.exports = async function handler(req, res) {
    * Cache hits never reach this point.
    */
 
-  const rateLimitIdentifier =
-    buildWatchRateLimitIdentifier(req);
+let rateLimit;
 
-  const rateLimit =
+try {
+  rateLimit =
     await consumeWatchResearchRateLimit(
       sql,
-      rateLimitIdentifier
+      req
     );
-
-
-  if (!rateLimit.allowed) {
-    console.warn(
-      "WATCH_RESEARCH_RATE_LIMITED",
-      JSON.stringify({
-        query,
-        reason:
-          rateLimit.reason,
-        hourlyCount:
-          rateLimit.hourlyCount,
-        hourlyLimit:
-          rateLimit.hourlyLimit,
-        dailyCount:
-          rateLimit.dailyCount,
-        dailyLimit:
-          rateLimit.dailyLimit
-      })
-    );
-
-    if (
-      rateLimit.reason ===
-      "infrastructure"
-    ) {
-      return res.status(503).json({
-        error:
-          "Watch research is temporarily unavailable."
-      });
+} catch (error) {
+  console.error(
+    "WATCH_RATE_LIMIT_ERROR",
+    {
+      query,
+      message:
+        error?.message ||
+        String(error)
     }
+  );
+
+  return res.status(503).json({
+    error:
+      "Watch research is temporarily unavailable."
+  });
+}
 
     return res.status(429).json({
       error:
