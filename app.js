@@ -27,6 +27,91 @@ function productMeta(v){
   return {make:v.make,model:v.model,generation:v.variant,version:''};
 }
 
+function productMeta(product) {
+  if (product.category === "watch") {
+    return {
+      make: product.brand,
+
+      model: product.model,
+
+      generation: [
+        product.reference !== "Not specified"
+          ? product.reference
+          : null,
+
+        product.productionPeriod
+      ]
+        .filter(Boolean)
+        .join(" · "),
+
+      version: [
+        product.caseSize,
+        product.movement
+      ]
+        .filter(Boolean)
+        .join(" · ")
+    };
+  }
+
+  /*
+   * Existing car productMeta code stays here.
+   */
+}
+const categoryConfig = {
+  car: {
+    label: "Car",
+    endpoint: "/api/analyze",
+    responseKey: "vehicle"
+  },
+
+  watch: {
+    label: "Watch",
+    endpoint: "/api/analyze-watch",
+    responseKey: "watch"
+  }
+};
+
+
+const config =
+  categoryConfig[state.category];
+
+const response = await fetch(
+  config.endpoint,
+  {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      query
+    })
+  }
+);
+
+
+const data = await response.json();
+
+if (!response.ok) {
+  throw new Error(
+    data?.error ||
+    `${config.label} research failed.`
+  );
+}
+
+let product =
+  data[config.responseKey];
+
+if (
+  state.category === "watch"
+) {
+  product =
+    watchToUiProduct(product);
+}
+
+
+
 const catalogue = vehicles.map(v => ({...productMeta(v), id:v.id}));
 
 function uniq(arr){ return [...new Set(arr)]; }
@@ -251,6 +336,55 @@ async function loadCanonicalVehicle(query){
 
     render();
   }
+}
+
+
+
+function watchToUiProduct(watch) {
+  return {
+    ...watch,
+
+    category: "watch",
+
+    /*
+     * Compatibility aliases.
+     *
+     * Existing UI code can continue using
+     * make/model/generation/version-style fields.
+     */
+
+    make: watch.brand,
+
+    generation: [
+      watch.reference !== "Not specified"
+        ? watch.reference
+        : null,
+
+      watch.productionPeriod
+    ]
+      .filter(Boolean)
+      .join(" · "),
+
+    version: [
+      watch.variant,
+      watch.caseSize
+    ]
+      .filter(Boolean)
+      .join(" · "),
+
+    engine: watch.movement,
+
+    drivetrain: "",
+
+    /*
+     * Preserve the original watch identity too.
+     */
+
+    brand: watch.brand,
+    reference: watch.reference,
+    movement: watch.movement,
+    caseSize: watch.caseSize
+  };
 }
 
 
