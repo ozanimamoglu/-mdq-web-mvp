@@ -1103,22 +1103,42 @@ function render(){
         </div>
 
 
-        <div class="progressRow">
+<div class="progressRow">
 
-          <span>
-            ${esc(productIdentity)}
-          </span>
+  <span>
+    ${esc(productIdentity)}
+  </span>
 
-          <span>
-            ${Math.round(
-              (
-                state.step /
-                vehicle.questions.length
-              ) * 100
-            )}%
-          </span>
+  <span>
+    ${Math.round(
+      (
+        state.step /
+        vehicle.questions.length
+      ) * 100
+    )}%
+  </span>
 
-        </div>
+</div>
+
+<div class="questionEvidenceLine">
+  <span class="evidenceDot"></span>
+
+  <span>
+    <strong>
+      ${esc(evidenceSummary(vehicle))}
+    </strong>
+  </span>
+
+  ${
+    vehicle.evidenceLastUpdated
+      ? `
+        <span class="evidenceUpdated">
+          Updated ${esc(vehicle.evidenceLastUpdated)}
+        </span>
+      `
+      : ''
+  }
+</div>
 
 
         <div class="progress">
