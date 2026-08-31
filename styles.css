@@ -855,3 +855,34 @@ button.categoryCard:hover{
     width:100%;
   }
 }
+
+
+
+.questionEvidenceLine{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:8px 0 14px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.questionEvidenceLine strong{
+  color:var(--text);
+  font-weight:600;
+}
+
+.questionEvidenceLine .evidenceDot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  background:currentColor;
+  opacity:.55;
+  flex:0 0 auto;
+}
+
+.questionEvidenceLine .evidenceUpdated{
+  padding-left:8px;
+  border-left:1px solid var(--line);
+}
