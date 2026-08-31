@@ -1110,15 +1110,32 @@ function render(){
   </span>
 
   <span>
-    ${Math.round(
-      (
-        state.step /
-        vehicle.questions.length
-      ) * 100
-    )}%
+    100%
   </span>
 
 </div>
+
+<div class="questionEvidenceLine">
+  <span class="evidenceDot"></span>
+
+  <span>
+    <strong>
+      ${esc(evidenceSummary(vehicle))}
+    </strong>
+  </span>
+
+  ${
+    vehicle.evidenceLastUpdated
+      ? `
+        <span class="evidenceUpdated">
+          Updated ${esc(vehicle.evidenceLastUpdated)}
+        </span>
+      `
+      : ''
+  }
+</div>
+
+<div class="progress">
 
 <div class="questionEvidenceLine">
   <span class="evidenceDot"></span>
