@@ -1062,232 +1062,203 @@ function render(){
     !state.priceAnswer;
 
 
-  if(!finished){
+if(!finished){
 
-    const q =
-      vehicle.questions[state.step];
-
-
-    app.innerHTML = `
-      <main class="shell compact">
-
-        <div class="questionTop">
-
-          <div class="navRow">
-
-            <button
-              class="textButton"
-              id="changeCar"
-            >
-              ← Change ${esc(noun)}
-            </button>
+  const q =
+    vehicle.questions[state.step];
 
 
-            <button
-              class="textButton"
-              id="backQuestion"
-              ${state.step === 0 ? 'disabled' : ''}
-            >
-              Back
-            </button>
-
-          </div>
+  const progressPercent =
+    Math.round(
+      (
+        state.step /
+        vehicle.questions.length
+      ) * 100
+    );
 
 
-          <span class="micro">
-            ${state.step + 1}
-            /
-            ${vehicle.questions.length}
-          </span>
+  app.innerHTML = `
+    <main class="shell compact">
+
+      <div class="questionTop">
+
+        <div class="navRow">
+
+          <button
+            class="textButton"
+            id="changeCar"
+          >
+            ← Change ${esc(noun)}
+          </button>
+
+          <button
+            class="textButton"
+            id="backQuestion"
+            ${state.step === 0 ? 'disabled' : ''}
+          >
+            Back
+          </button>
 
         </div>
 
-
-<div class="progressRow">
-
-  <span>
-    ${esc(productIdentity)}
-  </span>
-
-  <span>
-    100%
-  </span>
-
-</div>
-
-<div class="questionEvidenceLine">
-  <span class="evidenceDot"></span>
-
-  <span>
-    <strong>
-      ${esc(evidenceSummary(vehicle))}
-    </strong>
-  </span>
-
-  ${
-    vehicle.evidenceLastUpdated
-      ? `
-        <span class="evidenceUpdated">
-          Updated ${esc(vehicle.evidenceLastUpdated)}
+        <span class="micro">
+          ${state.step + 1} / ${vehicle.questions.length}
         </span>
-      `
-      : ''
-  }
-</div>
 
-<div class="progress">
+      </div>
 
-<div class="questionEvidenceLine">
-  <span class="evidenceDot"></span>
 
-  <span>
-    <strong>
-      ${esc(evidenceSummary(vehicle))}
-    </strong>
-  </span>
+      <div class="progressRow">
 
-  ${
-    vehicle.evidenceLastUpdated
-      ? `
-        <span class="evidenceUpdated">
-          Updated ${esc(vehicle.evidenceLastUpdated)}
+        <span>
+          ${esc(productIdentity)}
         </span>
-      `
-      : ''
-  }
-</div>
+
+        <span>
+          ${progressPercent}%
+        </span>
+
+      </div>
 
 
-        <div class="progress">
-          <span
-            style="
-              width:
-              ${
-                (
-                  state.step /
-                  vehicle.questions.length
-                ) * 100
-              }%
-            "
-          ></span>
-        </div>
+      <div class="questionEvidenceLine">
+
+        <span class="evidenceDot"></span>
+
+        <span>
+          <strong>
+            ${esc(evidenceSummary(vehicle))}
+          </strong>
+        </span>
+
+        ${
+          vehicle.evidenceLastUpdated
+            ? `
+              <span class="evidenceUpdated">
+                Updated ${esc(vehicle.evidenceLastUpdated)}
+              </span>
+            `
+            : ''
+        }
+
+      </div>
 
 
-        <section class="questionBlock">
-
-          <p class="variant">
-            ${esc(productVariant)}
-          </p>
+      <div class="progress">
+        <span style="width:${progressPercent}%"></span>
+      </div>
 
 
-          <h2>
-            ${esc(q.text)}
-          </h2>
+      <section class="questionBlock">
 
+        <p class="variant">
+          ${esc(productVariant)}
+        </p>
+
+        <h2>
+          ${esc(q.text)}
+        </h2>
+
+        ${
+          q.clarification
+            ? `
+              <p class="questionClarification">
+                ${esc(q.clarification)}
+              </p>
+            `
+            : ''
+        }
+
+
+        <div class="answers">
 
           ${
-            q.clarification
-              ? `
-                <p class="questionClarification">
-                  ${esc(q.clarification)}
-                </p>
-              `
-              : ''
+            q.answers.map((a,i) => {
+
+              const selected =
+                state.selectedIndex === i;
+
+              const dimmed =
+                state.transitioning &&
+                !selected;
+
+              return `
+                <button
+                  class="
+                    answer
+                    ${selected ? 'selected' : ''}
+                    ${dimmed ? 'dimmed' : ''}
+                    ${state.transitioning ? 'locked' : ''}
+                  "
+                  data-answer="${i}"
+                >
+
+                  <span class="letter">
+                    ${String.fromCharCode(65+i)}
+                  </span>
+
+                  <span>
+                    ${esc(a.label)}
+                  </span>
+
+                </button>
+              `;
+
+            }).join('')
           }
 
-
-          <div class="answers">
-
-            ${
-              q.answers.map((a,i) => {
-
-                const selected =
-                  state.selectedIndex === i;
-
-                const dimmed =
-                  state.transitioning &&
-                  !selected;
-
-                return `
-                  <button
-                    class="
-                      answer
-                      ${selected ? 'selected' : ''}
-                      ${dimmed ? 'dimmed' : ''}
-                      ${
-                        state.transitioning
-                          ? 'locked'
-                          : ''
-                      }
-                    "
-                    data-answer="${i}"
-                  >
-
-                    <span class="letter">
-                      ${String.fromCharCode(65 + i)}
-                    </span>
-
-                    <span>
-                      ${esc(a.label)}
-                    </span>
-
-                  </button>
-                `;
-
-              }).join('')
-            }
-
-          </div>
+        </div>
 
 
-          <div class="transitionHint">
-            ${
-              state.transitioning
-                ? 'Got it — next question'
-                : ''
-            }
-          </div>
+        <div class="transitionHint">
+          ${
+            state.transitioning
+              ? 'Got it — next question'
+              : ''
+          }
+        </div>
 
-        </section>
+      </section>
 
-      </main>
-    `;
+    </main>
+  `;
 
 
-    document
-      .getElementById('changeCar')
-      .addEventListener(
+  document
+    .getElementById('changeCar')
+    .addEventListener(
+      'click',
+      reset
+    );
+
+
+  document
+    .getElementById('backQuestion')
+    .addEventListener(
+      'click',
+      backQuestion
+    );
+
+
+  document
+    .querySelectorAll('[data-answer]')
+    .forEach(btn => {
+
+      btn.addEventListener(
         'click',
-        reset
-      );
-
-
-    document
-      .getElementById('backQuestion')
-      .addEventListener(
-        'click',
-        backQuestion
-      );
-
-
-    document
-      .querySelectorAll('[data-answer]')
-      .forEach(btn => {
-
-        btn.addEventListener(
-          'click',
-          () => answer(
-            q.answers[
-              Number(btn.dataset.answer)
-            ],
+        () => answer(
+          q.answers[
             Number(btn.dataset.answer)
-          )
-        );
+          ],
+          Number(btn.dataset.answer)
+        )
+      );
 
-      });
+    });
 
-    return;
-  }
+
+  return;
+}
 
 
 
