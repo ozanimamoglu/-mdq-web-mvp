@@ -2918,34 +2918,40 @@ async function findCachedWatch(sql, query) {
    * one matching database record.
    */
 
-  const exactQueryRows = await sql`
-    SELECT
-      id,
-      brand,
-      model,
-      reference,
-      year,
-      production_period,
-      variant,
-      movement,
-      case_size,
-      display_name,
-      search_text,
-      cache_key,
-      watch_data,
-      researched_query,
-      research_model,
-      research_cost_usd,
-      input_tokens,
-      cached_input_tokens,
-      output_tokens,
-      updated_at
-    FROM watches
-    WHERE LOWER(TRIM(researched_query))
-      = ${normalizedQuery}
-    ORDER BY updated_at DESC
-    LIMIT 2
-  `;
+const exactQueryRows = await sql`
+  SELECT
+    id,
+    brand,
+    model,
+    reference,
+    year,
+    production_period,
+    variant,
+    movement,
+    case_size,
+    display_name,
+    search_text,
+    cache_key,
+    watch_data,
+    researched_query,
+    research_model,
+    research_cost_usd,
+    input_tokens,
+    cached_input_tokens,
+    output_tokens,
+    updated_at
+  FROM watches
+  WHERE LOWER(
+    REGEXP_REPLACE(
+      TRIM(researched_query),
+      '[[:space:]]+',
+      ' ',
+      'g'
+    )
+  ) = ${normalizedQuery}
+  ORDER BY updated_at DESC
+  LIMIT 2
+`;
 
   if (exactQueryRows.length === 1) {
     return {
