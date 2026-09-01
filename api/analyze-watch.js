@@ -3977,6 +3977,15 @@ if (!rateLimit.allowed) {
       market:
         watch?.market || null,
 
+productImageExists:
+  Object.prototype.hasOwnProperty.call(
+    watch || {},
+    "productImage"
+  ),
+
+productImage:
+  watch?.productImage ?? null,
+      
       marketPrice:
         watch?.marketPrice || null,
 
