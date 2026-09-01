@@ -21,7 +21,7 @@ const RESEARCH_RATE_LIMIT_DAILY =
  * This schema is deliberately separate from
  * Vehicle Decision Model v1.0.
  *
- * Sunglasseses have their own canonical product identity,
+ * sunglasses have their own canonical product identity,
  * while evidence, fit, product-integrity and market-price
  * concepts retain the same underlying decision philosophy.
  */
@@ -60,7 +60,7 @@ const sunglassesSchema = {
       anyOf: [
         {
           type: "integer",
-          minimum: 1800,
+          minimum: 1900,
           maximum: 2100
         },
         {
@@ -73,21 +73,25 @@ const sunglassesSchema = {
       type: "string"
     },
 
-    variant: {
-      type: "string"
-    },
+variant: {
+  type: "string"
+},
 
-    movement: {
-      type: "string"
-    },
+frame: {
+  type: "string"
+},
 
-    caseSize: {
-      type: "string"
-    },
+lens: {
+  type: "string"
+},
 
-    market: {
-      type: "string"
-    },
+size: {
+  type: "string"
+},
+
+market: {
+  type: "string"
+},
 
     /*
      * CURRENT MARKET PRICE CONTEXT
@@ -401,8 +405,9 @@ const sunglassesSchema = {
     "year",
     "productionPeriod",
     "variant",
-    "movement",
-    "caseSize",
+    "frame",
+    "lens",
+    "size",
     "market",
     "marketPrice",
     "evidenceCount",
@@ -555,7 +560,7 @@ purchase route.
 For Sunglasses commonly available new at retail, current retail pricing may be
 highly relevant.
 
-For discontinued Sunglasseses, use the relevant current secondary or pre-owned
+For discontinued sunglasses, use the relevant current secondary or pre-owned
 market.
 
 For Sunglasses where authorised retail availability is materially constrained and
@@ -1476,7 +1481,7 @@ Expected servicing cost must not override fit.
 
 Cosmetic wear must not override fit.
 
-Ordinary age-related deterioration in individual vintage Sunglasseses must not
+Ordinary age-related deterioration in individual vintage sunglasses must not
 override fit.
 
 overrideFit should normally require a combination of:
@@ -1688,7 +1693,7 @@ marketPrice.market:
 Market/geography represented by the range.
 
 marketPrice.basis:
-One concise sentence describing the comparable Sunglasseses and acquisition channel
+One concise sentence describing the comparable sunglasses and acquisition channel
 represented.
 
 marketPrice.asOf:
@@ -1890,12 +1895,13 @@ function normalizeDbQuery(value) {
  * is often mechanically identical across markets.
  */
 
-function buildCanonicalSunglassesSource(Sunglasses) {
+function buildCanonicalSunglassesSource(sunglasses) {
   return [
-    Sunglasses.brand,
-    Sunglasses.model,
-    Sunglasses.reference,
-    Sunglasses.variant
+    sunglasses.brand,
+    sunglasses.model,
+    sunglasses.reference,
+    sunglasses.variant,
+    sunglasses.size
   ]
     .filter(
       value =>
@@ -1910,7 +1916,11 @@ function buildCanonicalSunglassesSource(Sunglasses) {
 /*
  * HUMAN-READABLE CACHE / RESULT NAME
  *
- * Examples:
+ * Example:
+ *
+ * Ray-Ban Original Wayfarer RB2140 901/58
+ */
+
 
 
 function buildSunglassesDisplayName(Sunglasses) {
@@ -1946,18 +1956,19 @@ function buildSunglassesDisplayName(Sunglasses) {
  */
 
 function buildSunglassesSearchText(
-  Sunglasses,
+  sunglasses,
   originalQuery
 ) {
   return [
-    Sunglasses.brand,
-    Sunglasses.model,
-    Sunglasses.reference,
-    Sunglasses.year,
-    Sunglasses.productionPeriod,
-    Sunglasses.variant,
-    Sunglasses.movement,
-    Sunglasses.caseSize,
+    sunglasses.brand,
+    sunglasses.model,
+    sunglasses.reference,
+    sunglasses.year,
+    sunglasses.productionPeriod,
+    sunglasses.variant,
+    sunglasses.frame,
+    sunglasses.lens,
+    sunglasses.size,
     originalQuery
   ]
     .filter(
@@ -2075,7 +2086,7 @@ function hasUsableSunglassesMarketPrice(Sunglasses) {
  * legacy database records.
  */
 
-function hasUsablesunglassesSchema(Sunglasses) {
+function hasUsableSunglassesSchema(Sunglasses) {
   if (
     !Sunglasses ||
     typeof Sunglasses !== "object" ||
@@ -2178,13 +2189,17 @@ function hasUsablesunglassesSchema(Sunglasses) {
     return false;
   }
 
-  if (!isNonEmptyString(Sunglasses.movement)) {
-    return false;
-  }
+if (!isNonEmptyString(Sunglasses.frame)) {
+  return false;
+}
 
-  if (!isNonEmptyString(Sunglasses.caseSize)) {
-    return false;
-  }
+if (!isNonEmptyString(Sunglasses.lens)) {
+  return false;
+}
+
+if (!isNonEmptyString(Sunglasses.size)) {
+  return false;
+}
 
   if (!isNonEmptyString(Sunglasses.market)) {
     return false;
@@ -2632,7 +2647,7 @@ function buildSunglassesRateLimitIdentifier(req) {
   /*
    * Do not store the raw client IP.
    *
-   * Sunglasseses use their own namespace so the same
+   * sunglasses use their own namespace so the same
    * research_rate_limits table can safely be shared
    * with Cars.
    */
@@ -2885,7 +2900,7 @@ async function findCachedSunglasses(sql, query) {
       cached_input_tokens,
       output_tokens,
       updated_at
-    FROM Sunglasseses
+    FROM sunglasses
     WHERE cache_key = ${queryCacheKey}
     ORDER BY updated_at DESC
     LIMIT 2
@@ -2933,7 +2948,7 @@ const exactQueryRows = await sql`
     cached_input_tokens,
     output_tokens,
     updated_at
-  FROM Sunglasseses
+  FROM sunglasses
   WHERE LOWER(
     REGEXP_REPLACE(
       TRIM(researched_query),
@@ -2960,7 +2975,7 @@ const exactQueryRows = await sql`
    *
    * pg_trgm is already used by the Cars cache.
    *
-   * We use the same extension for Sunglasseses.
+   * We use the same extension for sunglasses.
    */
 
   const candidateRows = await sql`
@@ -2991,7 +3006,7 @@ const exactQueryRows = await sql`
         ${normalizedQuery}
       ) AS score
 
-    FROM Sunglasseses
+    FROM sunglasses
 
     WHERE
       search_text % ${normalizedQuery}
@@ -3178,7 +3193,7 @@ module.exports = async function handler(req, res) {
   if (cachedMatch?.row) {
     const cachedSunglasses =
       parseSunglassesData(
-        cachedMatch.row.Sunglasses_data
+        cachedMatch.row.sunglasses_data
       );
 
     /*
@@ -3189,7 +3204,7 @@ module.exports = async function handler(req, res) {
      * schema version remains in the database.
      */
 
-    if (hasUsablesunglassesSchema(cachedSunglasses)) {
+    if (hasUsableSunglassesSchema(cachedSunglasses)) {
       console.log(
         "Sunglasses_CACHE_HIT",
         JSON.stringify({
@@ -3208,7 +3223,7 @@ module.exports = async function handler(req, res) {
       );
 
       return res.status(200).json({
-        Sunglasses: cachedSunglasses,
+        sunglasses: cachedSunglasses,
         cache: "hit"
       });
     }
@@ -3677,7 +3692,7 @@ if (!rateLimit.allowed) {
    * VALIDATE Sunglasses SCHEMA
    */
 
-  if (!hasUsablesunglassesSchema(Sunglasses)) {
+  if (!hasUsableSunglassesSchema(Sunglasses)) {
     console.error(
       "Sunglasses_SCHEMA_INVALID",
       JSON.stringify({
@@ -3754,7 +3769,7 @@ if (!rateLimit.allowed) {
 
   try {
     await sql`
-      INSERT INTO Sunglasseses (
+      INSERT INTO sunglasses (
         brand,
         model,
         reference,
@@ -3909,7 +3924,7 @@ if (!rateLimit.allowed) {
   ) {
     try {
       await sql`
-        DELETE FROM Sunglasseses
+        DELETE FROM sunglasses
         WHERE cache_key =
           ${staleCacheKey}
       `;
@@ -3975,8 +3990,7 @@ if (!rateLimit.allowed) {
   );
 
 
-  return res.status(200).json({
-    Sunglasses,
-    cache: "miss"
-  });
-};
+ return res.status(200).json({
+  sunglasses: Sunglasses,
+  cache: "miss"
+});
