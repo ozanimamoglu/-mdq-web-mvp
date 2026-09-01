@@ -2411,14 +2411,17 @@ const productVariant =
 >
 
 
-  ${
-    isSunglassesProduct
-      ? productImageMarkup(
-          vehicle,
-          'questionProductImage'
-        )
-      : ''
-  }
+${
+  (
+    isSunglassesProduct ||
+    isWatchProduct
+  )
+    ? productImageMarkup(
+        vehicle,
+        'resultProductImage'
+      )
+    : ''
+}
 
 
   <p class="variant">
@@ -3797,14 +3800,17 @@ const productVariant =
                         : `a good ${esc(noun)}`
                     }.
 
-                    We are checking whether the ownership
-                    ${
-                      isSunglassesProduct
-                        ? 'and wearing '
-                        : ''
-                    }
-                    conditions that repeatedly matter to
-                    real owners fit you.
+We are checking whether the ownership
+${
+  (
+    isSunglassesProduct ||
+    isWatchProduct
+  )
+    ? 'and wearing '
+    : ''
+}
+conditions that repeatedly matter to
+real owners fit you.
 
                   </p>
 
