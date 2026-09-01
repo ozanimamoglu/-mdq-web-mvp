@@ -3684,28 +3684,162 @@ if (!rateLimit.allowed) {
    * VALIDATE WATCH SCHEMA
    */
 
-  if (!hasUsableWatchSchema(watch)) {
-    console.error(
-      "WATCH_SCHEMA_INVALID",
-      JSON.stringify({
-        query,
-        watchId:
-          watch?.id || null,
-        brand:
-          watch?.brand || null,
-        model:
-          watch?.model || null,
-        reference:
-          watch?.reference || null
-      })
+ if (!hasUsableWatchSchema(watch)) {
+
+  const questionIds =
+    Array.isArray(watch?.questions)
+      ? watch.questions.map(
+          q => q?.id || null
+        )
+      : [];
+
+  const duplicateQuestionIds =
+    questionIds.filter(
+      (id, index) =>
+        id &&
+        questionIds.indexOf(id) !== index
     );
 
-    return res.status(502).json({
-      error:
-        "Watch research did not satisfy Watch Schema v1.0."
-    });
-  }
+  const answerDiagnostics =
+    Array.isArray(watch?.questions)
+      ? watch.questions.flatMap(
+          question =>
+            Array.isArray(question?.answers)
+              ? question.answers.map(
+                  (answer, answerIndex) => ({
+                    questionId:
+                      question?.id || null,
 
+                    answerIndex,
+
+                    impact:
+                      answer?.impact || null,
+
+                    mitigation:
+                      typeof answer?.mitigation ===
+                      "string"
+                        ? answer.mitigation
+                        : null,
+
+                    positiveOrNeutralHasMitigation:
+                      (
+                        answer?.impact === "positive" ||
+                        answer?.impact === "neutral"
+                      ) &&
+                      typeof answer?.mitigation ===
+                        "string" &&
+                      answer.mitigation.trim() !== "",
+
+                    negativeMissingMitigation:
+                      (
+                        answer?.impact ===
+                          "medium_negative" ||
+                        answer?.impact ===
+                          "high_negative" ||
+                        answer?.impact ===
+                          "critical_negative"
+                      ) &&
+                      (
+                        typeof answer?.mitigation !==
+                          "string" ||
+                        answer.mitigation.trim() === ""
+                      )
+                  })
+                )
+              : []
+        )
+      : [];
+
+  console.error(
+    "WATCH_SCHEMA_INVALID",
+    JSON.stringify({
+      query,
+
+      watchId:
+        watch?.id || null,
+
+      idFormatValid:
+        typeof watch?.id === "string"
+          ? /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(
+              watch.id
+            )
+          : false,
+
+      brand:
+        watch?.brand || null,
+
+      model:
+        watch?.model || null,
+
+      reference:
+        watch?.reference || null,
+
+      year:
+        watch?.year ?? null,
+
+      productionPeriod:
+        watch?.productionPeriod || null,
+
+      variant:
+        watch?.variant || null,
+
+      movement:
+        watch?.movement || null,
+
+      caseSize:
+        watch?.caseSize || null,
+
+      market:
+        watch?.market || null,
+
+      marketPrice:
+        watch?.marketPrice || null,
+
+      evidenceCount:
+        watch?.evidenceCount ?? null,
+
+      evidenceSourcesCount:
+        Array.isArray(watch?.evidenceSources)
+          ? watch.evidenceSources.length
+          : null,
+
+      integrityLevel:
+        watch?.productIntegrity?.level || null,
+
+      integrityOverrideFit:
+        watch?.productIntegrity?.overrideFit ??
+        null,
+
+      integrityIssuesCount:
+        Array.isArray(
+          watch?.productIntegrity?.issues
+        )
+          ? watch.productIntegrity.issues.length
+          : null,
+
+      questionCount:
+        Array.isArray(watch?.questions)
+          ? watch.questions.length
+          : null,
+
+      questionIds,
+
+      duplicateQuestionIds,
+
+      answerProblems:
+        answerDiagnostics.filter(
+          item =>
+            item.positiveOrNeutralHasMitigation ||
+            item.negativeMissingMitigation
+        )
+    })
+  );
+
+  return res.status(502).json({
+    error:
+      "Watch research did not satisfy Watch Schema v1.0."
+  });
+}
 
   /*
    * CANONICAL CACHE IDENTITY
