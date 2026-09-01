@@ -17,6 +17,21 @@ const RESEARCH_RATE_LIMIT_DAILY =
   );
 
 
+const REQUEST_RATE_LIMIT_MINUTELY =
+  Number.parseInt(
+    process.env.REQUEST_RATE_LIMIT_MINUTELY || "60",
+    10
+  );
+
+const MAX_QUERY_LENGTH =
+  Number.parseInt(
+    process.env.MAX_QUERY_LENGTH || "200",
+    10
+  );
+
+
+
+
 /*
  * SUNGLASSES DECISION MODEL — SCHEMA v1.0
  *
@@ -3135,11 +3150,122 @@ function buildSunglassesRateLimitIdentifier(
 }
 
 
+function buildSunglassesRequestRateLimitIdentifier(req) {
+  const ip =
+    getClientIp(req);
+
+  return crypto
+    .createHash("sha256")
+    .update(
+      `sunglasses-request:${ip}`
+    )
+    .digest("hex");
+}
+
+
 /*
  * CONSUME SUNGLASSES RESEARCH RATE LIMIT
  *
  * Call ONLY after a cache miss.
  */
+
+
+async function consumeSunglassesRequestRateLimit(
+  sql,
+  req
+) {
+  const identifier =
+    buildSunglassesRequestRateLimitIdentifier(
+      req
+    );
+
+  const rows = await sql`
+    INSERT INTO research_rate_limits (
+      identifier,
+      window_type,
+      window_start,
+      request_count,
+      created_at,
+      updated_at
+    )
+    VALUES (
+      ${identifier},
+      'minute',
+      DATE_TRUNC('minute', NOW()),
+      1,
+      NOW(),
+      NOW()
+    )
+
+    ON CONFLICT (
+      identifier,
+      window_type,
+      window_start
+    )
+
+    DO UPDATE SET
+      request_count =
+        research_rate_limits.request_count + 1,
+
+      updated_at =
+        NOW()
+
+    RETURNING
+      request_count,
+      window_start
+  `;
+
+  const row =
+    rows[0];
+
+  const requestCount =
+    Number(
+      row?.request_count || 0
+    );
+
+  const exceeded =
+    requestCount >
+    REQUEST_RATE_LIMIT_MINUTELY;
+
+  let retryAfterSeconds = 0;
+
+  if(exceeded) {
+    const minuteStart =
+      new Date(
+        row.window_start
+      ).getTime();
+
+    const resetAt =
+      minuteStart +
+      60 * 1000;
+
+    retryAfterSeconds =
+      Math.max(
+        1,
+        Math.ceil(
+          (
+            resetAt -
+            Date.now()
+          ) / 1000
+        )
+      );
+  }
+
+  return {
+    allowed:
+      !exceeded,
+
+    requestCount,
+
+    limit:
+      REQUEST_RATE_LIMIT_MINUTELY,
+
+    retryAfterSeconds
+  };
+}
+
+
+
 
 async function consumeSunglassesResearchRateLimit(
   sql,
@@ -3514,31 +3640,73 @@ async function findCachedSunglasses(
    * Exactly one candidate must exist.
    */
 
+if (
+  candidateRows.length === 1
+) {
+  const candidate =
+    candidateRows[0];
+
+  const score =
+    Number(
+      candidate.score || 0
+    );
+
+  const referenceMatched =
+    candidate.reference &&
+    candidate.reference !== "Not specified" &&
+    queryContainsReference(
+      query,
+      candidate.reference
+    );
+
+
+  /*
+   * Exact manufacturer reference is present
+   * in the user's query.
+   *
+   * In this case we can tolerate a lower
+   * overall text-similarity score because
+   * the reference itself is a strong
+   * identity signal.
+   */
+
   if (
-    candidateRows.length === 1
+    referenceMatched &&
+    score >= 0.25
   ) {
-    const candidate =
-      candidateRows[0];
-
-    const score =
-      Number(
-        candidate.score || 0
-      );
-
-    if (
-      score >= 0.35
-    ) {
-      return {
-        row:
-          candidate,
-
-        matchType:
-          "fuzzy_unique",
-
-        score
-      };
-    }
+    return {
+      row: candidate,
+      matchType:
+        "fuzzy_reference_match",
+      score
+    };
   }
+
+
+  /*
+   * No exact reference match.
+   *
+   * Require substantially stronger textual
+   * similarity before automatically accepting
+   * the cached product.
+   *
+   * This reduces the chance that a broad query
+   * such as "Ray Ban Wayfarer" is silently
+   * mapped to one particular cached reference.
+   */
+
+  if (
+    !referenceMatched &&
+    score >= 0.55
+  ) {
+    return {
+      row: candidate,
+      matchType:
+        "fuzzy_unique_strong",
+      score
+    };
+  }
+}
 
 
   return null;
@@ -3637,6 +3805,20 @@ async function handler(
   }
 
 
+if (
+  query.length >
+  MAX_QUERY_LENGTH
+) {
+  return res
+    .status(400)
+    .json({
+      error:
+        `Please keep the sunglasses description under ${MAX_QUERY_LENGTH} characters.`
+    });
+}
+
+
+  
   /*
    * DATABASE CLIENT
    */
@@ -3647,6 +3829,87 @@ async function handler(
     );
 
 
+/*
+ * GENERAL REQUEST RATE LIMIT
+ *
+ * Applies to ALL sunglasses analyze requests,
+ * including cache hits.
+ *
+ * This protects the API / DB from excessive
+ * repeated traffic.
+ */
+
+let requestRateLimit;
+
+try {
+
+  requestRateLimit =
+    await consumeSunglassesRequestRateLimit(
+      sql,
+      req
+    );
+
+}
+catch(error) {
+
+  console.error(
+    "SUNGLASSES_REQUEST_RATE_LIMIT_ERROR",
+    {
+      query,
+      message:
+        error?.message ||
+        String(error)
+    }
+  );
+
+  return res
+    .status(503)
+    .json({
+      error:
+        "Sunglasses service is temporarily unavailable."
+    });
+
+}
+
+
+if (
+  !requestRateLimit.allowed
+) {
+
+  console.warn(
+    "SUNGLASSES_REQUEST_RATE_LIMITED",
+    JSON.stringify({
+      query,
+
+      requestCount:
+        requestRateLimit.requestCount,
+
+      limit:
+        requestRateLimit.limit,
+
+      retryAfterSeconds:
+        requestRateLimit.retryAfterSeconds
+    })
+  );
+
+  res.setHeader(
+    "Retry-After",
+    String(
+      requestRateLimit.retryAfterSeconds ||
+      60
+    )
+  );
+
+  return res
+    .status(429)
+    .json({
+      error:
+        "Too many requests. Please try again shortly."
+    });
+
+}
+
+  
   /*
    * CACHE LOOKUP
    *
