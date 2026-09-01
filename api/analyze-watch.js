@@ -2528,17 +2528,17 @@ function diagnoseWatchSchema(watch) {
     );
   }
 
-  if (
-    price.high <= price.low
-  ) {
-    return fail(
-      "marketPrice_range_invalid",
-      {
-        low: price.low,
-        high: price.high
-      }
-    );
-  }
+if (
+  price.high < price.low
+) {
+  return fail(
+    "marketPrice_range_invalid",
+    {
+      low: price.low,
+      high: price.high
+    }
+  );
+}
 
   if (
     !isNonEmptyString(
