@@ -2114,52 +2114,45 @@ function render(){
 
 
 
-  const productVariant =
+const productVariant =
 
-    isWatchProduct
+  isWatchProduct
+
+    ? [
+        vehicle.reference &&
+        vehicle.reference !== 'Not specified'
+          ? vehicle.reference
+          : null,
+
+        vehicle.variant,
+
+        vehicle.caseSize
+      ]
+        .filter(Boolean)
+        .join(' · ')
+
+    : isSunglassesProduct
 
       ? [
-
           vehicle.reference &&
-          vehicle.reference !==
-            'Not specified'
+          vehicle.reference !== 'Not specified'
             ? vehicle.reference
             : null,
 
-          vehicle.variant,
+          vehicle.variant &&
+          vehicle.variant !== 'Not specified'
+            ? vehicle.variant
+            : null,
 
-          vehicle.caseSize
-
+          vehicle.size &&
+          vehicle.size !== 'Not specified'
+            ? vehicle.size
+            : null
         ]
           .filter(Boolean)
           .join(' · ')
 
-
-      : isSunglassesProduct
-
-        ? [
-
-            vehicle.reference &&
-            vehicle.reference !==
-              'Not specified'
-              ? vehicle.reference
-              : null,
-
-            vehicle.variant,
-
-            vehicle.size &&
-            vehicle.size !==
-              'Not specified'
-              ? vehicle.size
-              : null
-
-          ]
-            .filter(Boolean)
-            .join(' · ')
-
-
-        : vehicle.variant;
-
+      : vehicle.variant;
 
 
   /*
