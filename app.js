@@ -906,6 +906,52 @@ function conditionTitle(
  * =========================================================
  */
 
+function productImageMarkup(
+  product,
+  className = ''
+){
+
+  const image =
+    product?.productImage;
+
+
+  if(
+    !image?.url
+  ){
+    return '';
+  }
+
+
+  return `
+    <div
+      class="
+        productImageWrap
+        ${esc(className)}
+      "
+    >
+
+      <img
+        class="productImage"
+        src="${esc(image.url)}"
+        alt="${esc(
+          image.alt ||
+          `${product.brand || product.make || ''} ${product.model || ''}`
+        )}"
+        loading="eager"
+        referrerpolicy="no-referrer"
+        onerror="
+          this.closest('.productImageWrap').style.display='none'
+        "
+      />
+
+    </div>
+  `;
+}
+
+
+
+
+
 function evidenceSummary(product){
 
   const count =
@@ -2359,16 +2405,27 @@ const productVariant =
 
 
 
-        <section
-          class="questionBlock"
-        >
+
+<section
+  class="questionBlock"
+>
 
 
-          <p class="variant">
-            ${esc(
-              productVariant
-            )}
-          </p>
+  ${
+    isSunglassesProduct
+      ? productImageMarkup(
+          vehicle,
+          'questionProductImage'
+        )
+      : ''
+  }
+
+
+  <p class="variant">
+    ${esc(
+      productVariant
+    )}
+  </p>
 
 
 
@@ -3534,15 +3591,24 @@ const productVariant =
       </button>
 
 
+<section
+  class="resultHero"
+>
 
-      <section
-        class="resultHero"
-      >
+
+  ${
+    isSunglassesProduct
+      ? productImageMarkup(
+          vehicle,
+          'resultProductImage'
+        )
+      : ''
+  }
 
 
-        <div
-          class="resultKicker"
-        >
+  <div
+    class="resultKicker"
+  >
 
 
           <span
