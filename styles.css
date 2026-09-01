@@ -886,3 +886,66 @@ button.categoryCard:hover{
   padding-left:8px;
   border-left:1px solid var(--line);
 }
+
+
+/* =========================================================
+   PRODUCT IMAGE
+   ========================================================= */
+
+.productImageWrap{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  margin:0 0 26px;
+}
+
+.productImage{
+  display:block;
+  max-width:100%;
+  object-fit:contain;
+}
+
+.questionProductImage{
+  height:170px;
+  justify-content:flex-start;
+  margin-bottom:24px;
+}
+
+.questionProductImage .productImage{
+  width:auto;
+  height:100%;
+  max-width:320px;
+}
+
+.resultProductImage{
+  height:210px;
+  justify-content:flex-start;
+  margin-bottom:30px;
+}
+
+.resultProductImage .productImage{
+  width:auto;
+  height:100%;
+  max-width:380px;
+}
+
+@media (max-width:700px){
+
+  .questionProductImage{
+    height:135px;
+  }
+
+  .questionProductImage .productImage{
+    max-width:260px;
+  }
+
+  .resultProductImage{
+    height:160px;
+  }
+
+  .resultProductImage .productImage{
+    max-width:300px;
+  }
+
+}
