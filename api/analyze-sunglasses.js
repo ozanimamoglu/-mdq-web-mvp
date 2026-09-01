@@ -2434,10 +2434,12 @@ if (
 }
 
   
-  const isNonEmptyString =
-    value =>
-      typeof value === "string" &&
-      value.trim().length > 0;
+function isNonEmptyString(value) {
+  return (
+    typeof value === "string" &&
+    value.trim().length > 0
+  );
+}
 
   const validEvidenceStrengths =
     new Set([
