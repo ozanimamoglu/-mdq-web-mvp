@@ -1790,6 +1790,36 @@ Examples:
 "United States"
 
 
+
+productImage:
+Return one representative image of the exact researched watch when a reliable
+match can be established.
+
+productImage.url:
+Return a direct HTTPS image URL suitable for an HTML <img> element.
+
+productImage.sourceUrl:
+Return the HTTPS product or archive page establishing that the image represents
+the researched watch.
+
+productImage.alt:
+Return short factual alt text describing the watch.
+
+The image should match the exact reference and principal variant as closely as
+possible.
+
+If a sufficiently reliable match cannot be established, return:
+null
+
+Never invent or guess an image URL.
+
+productImage is descriptive identity metadata only.
+It must not affect Fit Evidence, Product Integrity, MDQs or the final fit result.
+
+
+marketPrice:
+Return current acquisition-price context separately from MDQs.
+
 marketPrice:
 Return current acquisition-price context separately from MDQs.
 
