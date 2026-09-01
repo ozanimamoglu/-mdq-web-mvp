@@ -96,6 +96,42 @@ const sunglassesSchema = {
     },
 
 
+productImage: {
+  anyOf: [
+    {
+      type: "object",
+      additionalProperties: false,
+
+      properties: {
+        url: {
+          type: "string"
+        },
+
+        sourceUrl: {
+          type: "string"
+        },
+
+        alt: {
+          type: "string"
+        }
+      },
+
+      required: [
+        "url",
+        "sourceUrl",
+        "alt"
+      ]
+    },
+
+    {
+      type: "null"
+    }
+  ]
+},
+
+
+
+    
     /*
      * CURRENT MARKET PRICE CONTEXT
      *
@@ -415,6 +451,7 @@ const sunglassesSchema = {
     "lens",
     "size",
     "market",
+    "productImage",
     "marketPrice",
     "evidenceCount",
     "evidenceUnit",
@@ -1815,6 +1852,10 @@ Use:
 when necessary.
 
 
+
+
+
+
 market:
 Return the primary geography used for current acquisition-price research.
 
@@ -1822,6 +1863,56 @@ Examples:
 "United Kingdom"
 "Germany"
 "United States"
+
+
+productImage:
+
+Return one representative product image for the exact sunglasses being
+researched when a reliable image can be established.
+
+The image is descriptive product metadata.
+It is not Fit Evidence and must not influence MDQ generation.
+
+Prefer image sources in this order:
+1. official manufacturer product page
+2. official brand archive
+3. established authorised retailer
+4. established specialist eyewear retailer
+
+The image must represent the same model or reference being researched.
+
+Do not use:
+- a generic image of the brand
+- a different reference merely because it looks similar
+- prescription glasses
+- unrelated eyewear
+- lifestyle photographs where the sunglasses cannot be clearly identified
+- social-media reposts when a primary product source exists
+- counterfeit or replica listings
+- generated images
+
+productImage.url:
+Return a direct HTTPS image URL that can be displayed in a normal HTML <img>
+element.
+
+Do not return a product webpage URL in this field.
+
+productImage.sourceUrl:
+Return the webpage URL from which the exact image/product identity was
+established.
+
+productImage.alt:
+Return a short factual description suitable for image alt text.
+
+Example:
+"Ray-Ban Original Wayfarer Classic RB2140 901/58"
+
+If a sufficiently reliable exact-product image cannot be established, return:
+
+productImage = null
+
+Never invent or guess an image URL.
+
 
 
 marketPrice:
@@ -2276,6 +2367,73 @@ function hasUsableSunglassesSchema(
     return false;
   }
 
+/*
+ * PRODUCT IMAGE
+ *
+ * Field itself is mandatory in Schema v1.0,
+ * but null is allowed when a reliable exact-product
+ * image could not be established.
+ */
+
+if (
+  !Object.prototype.hasOwnProperty.call(
+    sunglasses,
+    "productImage"
+  )
+) {
+  return false;
+}
+
+
+if (
+  sunglasses.productImage !== null
+) {
+  const image =
+    sunglasses.productImage;
+
+  if (
+    !image ||
+    typeof image !== "object" ||
+    Array.isArray(image)
+  ) {
+    return false;
+  }
+
+
+  if (
+    !isNonEmptyString(
+      image.url
+    ) ||
+    !/^https:\/\//i.test(
+      image.url.trim()
+    )
+  ) {
+    return false;
+  }
+
+
+  if (
+    !isNonEmptyString(
+      image.sourceUrl
+    ) ||
+    !/^https:\/\//i.test(
+      image.sourceUrl.trim()
+    )
+  ) {
+    return false;
+  }
+
+
+  if (
+    !isNonEmptyString(
+      image.alt
+    )
+  ) {
+    return false;
+  }
+}
+
+  
   const isNonEmptyString =
     value =>
       typeof value === "string" &&
