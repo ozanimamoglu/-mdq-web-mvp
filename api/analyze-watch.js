@@ -89,6 +89,67 @@ const watchSchema = {
       type: "string"
     },
 
+
+
+caseSize: {
+  type: "string"
+},
+
+market: {
+  type: "string"
+},
+
+/*
+ * REPRESENTATIVE PRODUCT IMAGE
+ *
+ * Used only to visually identify the exact watch.
+ * It is not Fit Evidence and does not affect MDQs.
+ */
+
+productImage: {
+  anyOf: [
+    {
+      type: "object",
+      additionalProperties: false,
+
+      properties: {
+        url: {
+          type: "string"
+        },
+
+        sourceUrl: {
+          type: "string"
+        },
+
+        alt: {
+          type: "string"
+        }
+      },
+
+      required: [
+        "url",
+        "sourceUrl",
+        "alt"
+      ]
+    },
+
+    {
+      type: "null"
+    }
+  ]
+},
+
+/*
+ * CURRENT MARKET PRICE CONTEXT
+ *
+ * This is kept separate from fit evidence.
+ */
+
+marketPrice: {
+
+
+
+    
     /*
      * CURRENT MARKET PRICE CONTEXT
      *
@@ -404,6 +465,7 @@ const watchSchema = {
     "movement",
     "caseSize",
     "market",
+    "productImage",
     "marketPrice",
     "evidenceCount",
     "evidenceUnit",
@@ -510,6 +572,62 @@ Translate specifications into fit conditions only when real-world evidence
 shows that the resulting ownership or wearing characteristic is sufficiently
 decision-relevant.
 
+
+1B. REPRESENTATIVE PRODUCT IMAGE
+
+Return one representative product image for the exact researched watch when a
+reliable image can be established.
+
+The image is descriptive product-identification metadata only.
+
+It is NOT:
+- Fit Evidence
+- Product Integrity Evidence
+- market-price evidence
+- an MDQ input
+- a factor in the final fit result
+
+Prefer image sources in this order where practical:
+- official manufacturer product page
+- official manufacturer archive
+- authorised retailer
+- established specialist watch retailer
+
+The image must match the researched watch as closely as possible.
+
+Prefer the exact:
+- brand
+- model
+- reference
+- principal variant
+
+Do not use:
+- a generic brand image
+- a materially different reference
+- a different dial or case configuration when the reference does not match
+- lifestyle photography where the exact watch cannot be clearly established
+- social-media reposts when a primary or established source is available
+- counterfeit or replica imagery
+- generated images
+
+productImage.url:
+Return a direct HTTPS image URL suitable for use in an HTML <img> element.
+
+productImage.sourceUrl:
+Return the HTTPS page URL that establishes the identity of the image and watch.
+
+productImage.alt:
+Return short factual alt text describing the watch.
+
+Example:
+"Brew Metric Retro Dial chronograph"
+
+If a reliable exact or sufficiently defensible product image cannot be
+established:
+
+productImage = null
+
+Never invent or guess an image URL.
 
 2. ESTABLISH CURRENT MARKET PRICE CONTEXT
 
@@ -2197,6 +2315,62 @@ function hasUsableWatchSchema(watch) {
     return false;
   }
 
+
+/*
+ * PRODUCT IMAGE
+ *
+ * productImage is required by the schema,
+ * but may legitimately be null when a reliable
+ * exact-watch image could not be established.
+ */
+
+if (
+  !Object.prototype.hasOwnProperty.call(
+    watch,
+    "productImage"
+  )
+) {
+  return false;
+}
+
+
+if (watch.productImage !== null) {
+  const image =
+    watch.productImage;
+
+  if (
+    !image ||
+    typeof image !== "object" ||
+    Array.isArray(image)
+  ) {
+    return false;
+  }
+
+  if (
+    !isNonEmptyString(image.url) ||
+    !/^https:\/\//i.test(
+      image.url.trim()
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    !isNonEmptyString(image.sourceUrl) ||
+    !/^https:\/\//i.test(
+      image.sourceUrl.trim()
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    !isNonEmptyString(image.alt)
+  ) {
+    return false;
+  }
+}
+  
 
   /*
    * MARKET PRICE
