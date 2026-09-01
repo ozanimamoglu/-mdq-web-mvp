@@ -81,14 +81,6 @@ const watchSchema = {
       type: "string"
     },
 
-    caseSize: {
-      type: "string"
-    },
-
-    market: {
-      type: "string"
-    },
-
 
 
 caseSize: {
@@ -146,66 +138,55 @@ productImage: {
  */
 
 marketPrice: {
+  type: "object",
+  additionalProperties: false,
 
-
-
-    
-    /*
-     * CURRENT MARKET PRICE CONTEXT
-     *
-     * This is kept separate from fit evidence.
-     */
-
-    marketPrice: {
-      type: "object",
-      additionalProperties: false,
-
-      properties: {
-        currency: {
-          type: "string"
-        },
-
-        low: {
-          type: "integer",
-          minimum: 0
-        },
-
-        high: {
-          type: "integer",
-          minimum: 0
-        },
-
-        market: {
-          type: "string"
-        },
-
-        basis: {
-          type: "string"
-        },
-
-        asOf: {
-          type: "string"
-        },
-
-        sources: {
-          type: "array",
-          minItems: 1,
-          items: {
-            type: "string"
-          }
-        }
-      },
-
-      required: [
-        "currency",
-        "low",
-        "high",
-        "market",
-        "basis",
-        "asOf",
-        "sources"
-      ]
+  properties: {
+    currency: {
+      type: "string"
     },
+
+    low: {
+      type: "integer",
+      minimum: 0
+    },
+
+    high: {
+      type: "integer",
+      minimum: 0
+    },
+
+    market: {
+      type: "string"
+    },
+
+    basis: {
+      type: "string"
+    },
+
+    asOf: {
+      type: "string"
+    },
+
+    sources: {
+      type: "array",
+      minItems: 1,
+      items: {
+        type: "string"
+      }
+    }
+  },
+
+  required: [
+    "currency",
+    "low",
+    "high",
+    "market",
+    "basis",
+    "asOf",
+    "sources"
+  ]
+},
 
     /*
      * EVIDENCE BASE
