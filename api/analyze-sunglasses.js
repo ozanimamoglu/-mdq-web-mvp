@@ -2173,7 +2173,7 @@ function hasUsableSunglassesSchema(Sunglasses) {
     Sunglasses.year !== null &&
     (
       !Number.isInteger(Sunglasses.year) ||
-      Sunglasses.year < 1800 ||
+      Sunglasses.year < 1900 ||
       Sunglasses.year > 2100
     )
   ) {
@@ -2653,7 +2653,7 @@ function buildSunglassesRateLimitIdentifier(req) {
    */
   return crypto
     .createHash("sha256")
-    .update(`Sunglasses-research:${ip}`)
+    .update(`sunglasses-research:${ip}`)
     .digest("hex");
 }
 
@@ -2887,12 +2887,13 @@ async function findCachedSunglasses(sql, query) {
       year,
       production_period,
       variant,
-      movement,
-      case_size,
+      frame,
+      lens,
+      size,
       display_name,
       search_text,
       cache_key,
-      Sunglasses_data,
+      sunglasses_data,
       researched_query,
       research_model,
       research_cost_usd,
@@ -2935,12 +2936,13 @@ const exactQueryRows = await sql`
     year,
     production_period,
     variant,
-    movement,
-    case_size,
+    frame,
+    lens,
+    size,
     display_name,
     search_text,
     cache_key,
-    Sunglasses_data,
+    sunglasses_data,
     researched_query,
     research_model,
     research_cost_usd,
@@ -3387,7 +3389,7 @@ if (!rateLimit.allowed) {
       format: {
         type: "json_schema",
         name:
-          "Sunglasses_decision_model",
+          "sunglasses_decision_model",
         strict: true,
         schema:
           sunglassesSchema
@@ -3803,8 +3805,9 @@ if (!rateLimit.allowed) {
         ${Sunglasses.year},
         ${Sunglasses.productionPeriod},
         ${Sunglasses.variant},
-        ${Sunglasses.movement},
-        ${Sunglasses.caseSize},
+        ${Sunglasses.frame},
+        ${Sunglasses.lens},
+        ${Sunglasses.size},
 
         ${displayName},
         ${searchText},
@@ -3844,11 +3847,14 @@ if (!rateLimit.allowed) {
         variant =
           EXCLUDED.variant,
 
-        movement =
-          EXCLUDED.movement,
+        frame =
+          EXCLUDED.frame,
 
-        case_size =
-          EXCLUDED.case_size,
+        lens =
+          EXCLUDED.lens,
+
+        size =
+          EXCLUDED.size,
 
         display_name =
           EXCLUDED.display_name,
@@ -3856,8 +3862,8 @@ if (!rateLimit.allowed) {
         search_text =
           EXCLUDED.search_text,
 
-        Sunglasses_data =
-          EXCLUDED.Sunglasses_data,
+        sunglasses_data =
+          EXCLUDED.sunglasses_data,
 
         researched_query =
           EXCLUDED.researched_query,
@@ -3990,7 +3996,8 @@ if (!rateLimit.allowed) {
   );
 
 
- return res.status(200).json({
+return res.status(200).json({
   sunglasses: Sunglasses,
   cache: "miss"
 });
+};
