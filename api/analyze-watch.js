@@ -2179,12 +2179,17 @@ function hasUsableWatchMarketPrice(watch) {
     return false;
   }
 
-  if (
-    price.low < 0 ||
-    price.high <= price.low
-  ) {
-    return false;
-  }
+if (
+  price.high <= price.low
+) {
+  return fail(
+    "marketPrice_range_invalid",
+    {
+      low: price.low,
+      high: price.high
+    }
+  );
+}
 
   if (
     typeof price.market !== "string" ||
