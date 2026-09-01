@@ -1690,6 +1690,27 @@ value such as:
 Do not fabricate a reference.
 
 
+A model name, collection name, dial name, colourway, edition name or variant
+description is NOT a reference number.
+
+For example, if the researched watch is marketed as:
+"Brew Metric Retro Dial"
+
+do not return:
+reference = "Metric - Retro Dial"
+
+unless the manufacturer explicitly uses that value as a product reference,
+SKU or reference identifier.
+
+Instead return:
+model = "Metric"
+variant = "Retro Dial"
+reference = "Not specified"
+
+when no defensible manufacturer reference number or product reference can be
+established.
+
+
 year:
 If the user explicitly supplied a specific production year and it is compatible
 with the resolved watch, return that four-digit year.
@@ -1801,8 +1822,7 @@ It must not affect Fit Evidence, Product Integrity, MDQs or the final fit result
 marketPrice:
 Return current acquisition-price context separately from MDQs.
 
-marketPrice:
-Return current acquisition-price context separately from MDQs.
+
 
 marketPrice.currency:
 Three-letter currency code.
@@ -2212,13 +2232,22 @@ function hasUsableWatchMarketPrice(watch) {
  */
 
 function hasUsableWatchSchema(watch) {
-  if (
-    !watch ||
-    typeof watch !== "object" ||
-    Array.isArray(watch)
-  ) {
-    return false;
-  }
+  return diagnoseWatchSchema(watch).valid;
+}
+
+
+function diagnoseWatchSchema(watch) {
+  const fail = (reason, details = {}) => ({
+    valid: false,
+    reason,
+    details
+  });
+
+  const ok = () => ({
+    valid: true,
+    reason: null,
+    details: {}
+  });
 
   const isNonEmptyString = value =>
     typeof value === "string" &&
@@ -2258,11 +2287,29 @@ function hasUsableWatchSchema(watch) {
 
 
   /*
+   * BASIC OBJECT CHECK
+   */
+
+  if (
+    !watch ||
+    typeof watch !== "object" ||
+    Array.isArray(watch)
+  ) {
+    return fail("watch_not_object");
+  }
+
+
+  /*
    * SCHEMA VERSION
    */
 
   if (watch.schemaVersion !== "1.0") {
-    return false;
+    return fail(
+      "schemaVersion_invalid",
+      {
+        value: watch.schemaVersion
+      }
+    );
   }
 
 
@@ -2270,28 +2317,32 @@ function hasUsableWatchSchema(watch) {
    * TOP-LEVEL WATCH IDENTITY
    */
 
-  if (!isNonEmptyString(watch.id)) {
-    return false;
-  }
+  const requiredStringFields = [
+    "id",
+    "brand",
+    "model",
+    "reference",
+    "productionPeriod",
+    "variant",
+    "movement",
+    "caseSize",
+    "market"
+  ];
 
-  if (!isNonEmptyString(watch.brand)) {
-    return false;
-  }
-
-  if (!isNonEmptyString(watch.model)) {
-    return false;
-  }
-
-  if (!isNonEmptyString(watch.reference)) {
-    return false;
+  for (const field of requiredStringFields) {
+    if (!isNonEmptyString(watch[field])) {
+      return fail(
+        `top_level_${field}_invalid`,
+        {
+          value: watch[field]
+        }
+      );
+    }
   }
 
 
   /*
    * YEAR
-   *
-   * Unlike Vehicle Schema v1.0, a watch year
-   * may legitimately be null.
    */
 
   if (
@@ -2302,38 +2353,956 @@ function hasUsableWatchSchema(watch) {
       watch.year > 2100
     )
   ) {
-    return false;
+    return fail(
+      "year_invalid",
+      {
+        value: watch.year
+      }
+    );
   }
 
 
-  if (!isNonEmptyString(watch.productionPeriod)) {
-    return false;
+  /*
+   * PRODUCT IMAGE
+   */
+
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      watch,
+      "productImage"
+    )
+  ) {
+    return fail(
+      "productImage_missing"
+    );
   }
 
-  if (!isNonEmptyString(watch.variant)) {
-    return false;
+  if (watch.productImage !== null) {
+    const image = watch.productImage;
+
+    if (
+      !image ||
+      typeof image !== "object" ||
+      Array.isArray(image)
+    ) {
+      return fail(
+        "productImage_not_object",
+        {
+          value: image
+        }
+      );
+    }
+
+    if (!isNonEmptyString(image.url)) {
+      return fail(
+        "productImage_url_empty",
+        {
+          value: image.url
+        }
+      );
+    }
+
+    if (
+      !/^https:\/\//i.test(
+        image.url.trim()
+      )
+    ) {
+      return fail(
+        "productImage_url_not_https",
+        {
+          value: image.url
+        }
+      );
+    }
+
+    if (
+      !isNonEmptyString(
+        image.sourceUrl
+      )
+    ) {
+      return fail(
+        "productImage_sourceUrl_empty",
+        {
+          value: image.sourceUrl
+        }
+      );
+    }
+
+    if (
+      !/^https:\/\//i.test(
+        image.sourceUrl.trim()
+      )
+    ) {
+      return fail(
+        "productImage_sourceUrl_not_https",
+        {
+          value: image.sourceUrl
+        }
+      );
+    }
+
+    if (
+      !isNonEmptyString(
+        image.alt
+      )
+    ) {
+      return fail(
+        "productImage_alt_empty",
+        {
+          value: image.alt
+        }
+      );
+    }
   }
 
-  if (!isNonEmptyString(watch.movement)) {
-    return false;
+
+  /*
+   * MARKET PRICE
+   */
+
+  const price = watch.marketPrice;
+
+  if (
+    !price ||
+    typeof price !== "object" ||
+    Array.isArray(price)
+  ) {
+    return fail(
+      "marketPrice_invalid_object",
+      {
+        value: price
+      }
+    );
   }
 
-  if (!isNonEmptyString(watch.caseSize)) {
-    return false;
+  if (
+    !isNonEmptyString(
+      price.currency
+    )
+  ) {
+    return fail(
+      "marketPrice_currency_invalid",
+      {
+        value: price.currency
+      }
+    );
   }
 
-  if (!isNonEmptyString(watch.market)) {
-    return false;
+  if (
+    !Number.isFinite(
+      price.low
+    )
+  ) {
+    return fail(
+      "marketPrice_low_invalid",
+      {
+        value: price.low
+      }
+    );
+  }
+
+  if (
+    !Number.isFinite(
+      price.high
+    )
+  ) {
+    return fail(
+      "marketPrice_high_invalid",
+      {
+        value: price.high
+      }
+    );
+  }
+
+  if (price.low < 0) {
+    return fail(
+      "marketPrice_low_negative",
+      {
+        value: price.low
+      }
+    );
+  }
+
+  if (
+    price.high <= price.low
+  ) {
+    return fail(
+      "marketPrice_range_invalid",
+      {
+        low: price.low,
+        high: price.high
+      }
+    );
+  }
+
+  if (
+    !isNonEmptyString(
+      price.market
+    )
+  ) {
+    return fail(
+      "marketPrice_market_invalid",
+      {
+        value: price.market
+      }
+    );
+  }
+
+  if (
+    !isNonEmptyString(
+      price.basis
+    )
+  ) {
+    return fail(
+      "marketPrice_basis_invalid",
+      {
+        value: price.basis
+      }
+    );
+  }
+
+  if (
+    !isNonEmptyString(
+      price.asOf
+    )
+  ) {
+    return fail(
+      "marketPrice_asOf_invalid",
+      {
+        value: price.asOf
+      }
+    );
+  }
+
+  if (
+    !Array.isArray(
+      price.sources
+    ) ||
+    price.sources.length < 1
+  ) {
+    return fail(
+      "marketPrice_sources_invalid",
+      {
+        value: price.sources
+      }
+    );
+  }
+
+  for (
+    let i = 0;
+    i < price.sources.length;
+    i++
+  ) {
+    if (
+      !isNonEmptyString(
+        price.sources[i]
+      )
+    ) {
+      return fail(
+        "marketPrice_source_invalid",
+        {
+          index: i,
+          value: price.sources[i]
+        }
+      );
+    }
   }
 
 
-/*
- * PRODUCT IMAGE
- *
- * productImage is required by the schema,
- * but may legitimately be null when a reliable
- * exact-watch image could not be established.
- */
+  /*
+   * EVIDENCE BASE
+   */
+
+  if (
+    !Number.isInteger(
+      watch.evidenceCount
+    ) ||
+    watch.evidenceCount < 1
+  ) {
+    return fail(
+      "evidenceCount_invalid",
+      {
+        value: watch.evidenceCount
+      }
+    );
+  }
+
+  if (
+    !isNonEmptyString(
+      watch.evidenceUnit
+    )
+  ) {
+    return fail(
+      "evidenceUnit_invalid",
+      {
+        value: watch.evidenceUnit
+      }
+    );
+  }
+
+  if (
+    !isNonEmptyString(
+      watch.evidenceLastUpdated
+    )
+  ) {
+    return fail(
+      "evidenceLastUpdated_invalid",
+      {
+        value:
+          watch.evidenceLastUpdated
+      }
+    );
+  }
+
+  if (
+    !Array.isArray(
+      watch.evidenceSources
+    ) ||
+    watch.evidenceSources.length < 1
+  ) {
+    return fail(
+      "evidenceSources_invalid",
+      {
+        value: watch.evidenceSources
+      }
+    );
+  }
+
+  for (
+    let i = 0;
+    i < watch.evidenceSources.length;
+    i++
+  ) {
+    if (
+      !isNonEmptyString(
+        watch.evidenceSources[i]
+      )
+    ) {
+      return fail(
+        "evidenceSource_invalid",
+        {
+          index: i,
+          value:
+            watch.evidenceSources[i]
+        }
+      );
+    }
+  }
+
+  if (
+    !isNonEmptyString(
+      watch.evidenceMethod
+    )
+  ) {
+    return fail(
+      "evidenceMethod_invalid",
+      {
+        value:
+          watch.evidenceMethod
+      }
+    );
+  }
+
+
+  /*
+   * PRODUCT INTEGRITY
+   */
+
+  const integrity =
+    watch.productIntegrity;
+
+  if (
+    !integrity ||
+    typeof integrity !== "object" ||
+    Array.isArray(integrity)
+  ) {
+    return fail(
+      "productIntegrity_invalid_object",
+      {
+        value: integrity
+      }
+    );
+  }
+
+  if (
+    !validIntegrityLevels.has(
+      integrity.level
+    )
+  ) {
+    return fail(
+      "productIntegrity_level_invalid",
+      {
+        value: integrity.level
+      }
+    );
+  }
+
+  if (
+    !isNonEmptyString(
+      integrity.summary
+    )
+  ) {
+    return fail(
+      "productIntegrity_summary_invalid",
+      {
+        value: integrity.summary
+      }
+    );
+  }
+
+  if (
+    typeof integrity.overrideFit !==
+    "boolean"
+  ) {
+    return fail(
+      "productIntegrity_overrideFit_invalid",
+      {
+        value:
+          integrity.overrideFit
+      }
+    );
+  }
+
+  if (
+    !isNonEmptyString(
+      integrity.evidenceReason
+    )
+  ) {
+    return fail(
+      "productIntegrity_evidenceReason_invalid",
+      {
+        value:
+          integrity.evidenceReason
+      }
+    );
+  }
+
+  if (
+    !Array.isArray(
+      integrity.issues
+    )
+  ) {
+    return fail(
+      "productIntegrity_issues_invalid",
+      {
+        value: integrity.issues
+      }
+    );
+  }
+
+
+  /*
+   * INTEGRITY CONSISTENCY
+   */
+
+  if (
+    integrity.level ===
+      "no_meaningful_signal" &&
+    integrity.overrideFit !== false
+  ) {
+    return fail(
+      "no_meaningful_signal_override_true",
+      {
+        level:
+          integrity.level,
+        overrideFit:
+          integrity.overrideFit
+      }
+    );
+  }
+
+  if (
+    integrity.level ===
+      "no_meaningful_signal" &&
+    integrity.issues.length !== 0
+  ) {
+    return fail(
+      "no_meaningful_signal_has_issues",
+      {
+        issuesCount:
+          integrity.issues.length
+      }
+    );
+  }
+
+  if (
+    integrity.overrideFit === true &&
+    integrity.level !==
+      "serious_integrity_concern"
+  ) {
+    return fail(
+      "override_without_serious_integrity",
+      {
+        level:
+          integrity.level
+      }
+    );
+  }
+
+
+  /*
+   * INTEGRITY ISSUES
+   */
+
+  for (
+    let i = 0;
+    i < integrity.issues.length;
+    i++
+  ) {
+    const issue =
+      integrity.issues[i];
+
+    if (
+      !issue ||
+      typeof issue !== "object" ||
+      Array.isArray(issue)
+    ) {
+      return fail(
+        "integrity_issue_invalid_object",
+        {
+          index: i
+        }
+      );
+    }
+
+    const issueStringFields = [
+      "id",
+      "functionAffected",
+      "failureMode",
+      "resolutionPattern",
+      "evidenceReason"
+    ];
+
+    for (
+      const field of issueStringFields
+    ) {
+      if (
+        !isNonEmptyString(
+          issue[field]
+        )
+      ) {
+        return fail(
+          `integrity_issue_${field}_invalid`,
+          {
+            index: i,
+            value:
+              issue[field]
+          }
+        );
+      }
+    }
+
+    if (
+      !validIntegritySeverities.has(
+        issue.severity
+      )
+    ) {
+      return fail(
+        "integrity_issue_severity_invalid",
+        {
+          index: i,
+          value:
+            issue.severity
+        }
+      );
+    }
+
+    if (
+      !validIntegrityRecurrence.has(
+        issue.recurrence
+      )
+    ) {
+      return fail(
+        "integrity_issue_recurrence_invalid",
+        {
+          index: i,
+          value:
+            issue.recurrence
+        }
+      );
+    }
+
+    if (
+      !validEvidenceStrengths.has(
+        issue.evidenceStrength
+      )
+    ) {
+      return fail(
+        "integrity_issue_evidenceStrength_invalid",
+        {
+          index: i,
+          value:
+            issue.evidenceStrength
+        }
+      );
+    }
+  }
+
+
+  /*
+   * WATCH MDQs
+   */
+
+  if (
+    !Array.isArray(
+      watch.questions
+    )
+  ) {
+    return fail(
+      "questions_not_array",
+      {
+        value: watch.questions
+      }
+    );
+  }
+
+  if (
+    watch.questions.length < 5 ||
+    watch.questions.length > 8
+  ) {
+    return fail(
+      "question_count_invalid",
+      {
+        count:
+          watch.questions.length
+      }
+    );
+  }
+
+  const questionIds =
+    new Set();
+
+
+  for (
+    let qIndex = 0;
+    qIndex < watch.questions.length;
+    qIndex++
+  ) {
+    const question =
+      watch.questions[qIndex];
+
+    if (
+      !question ||
+      typeof question !== "object" ||
+      Array.isArray(question)
+    ) {
+      return fail(
+        "question_invalid_object",
+        {
+          qIndex
+        }
+      );
+    }
+
+    if (
+      !isNonEmptyString(
+        question.id
+      )
+    ) {
+      return fail(
+        "question_id_invalid",
+        {
+          qIndex,
+          value:
+            question.id
+        }
+      );
+    }
+
+    if (
+      questionIds.has(
+        question.id
+      )
+    ) {
+      return fail(
+        "question_id_duplicate",
+        {
+          qIndex,
+          id:
+            question.id
+        }
+      );
+    }
+
+    questionIds.add(
+      question.id
+    );
+
+
+    /*
+     * REQUIRED QUESTION STRINGS
+     */
+
+    const questionStringFields = [
+      "condition",
+      "evidenceReason",
+      "text",
+      "clarification"
+    ];
+
+    for (
+      const field of questionStringFields
+    ) {
+      if (
+        !isNonEmptyString(
+          question[field]
+        )
+      ) {
+        return fail(
+          `question_${field}_invalid`,
+          {
+            qIndex,
+            questionId:
+              question.id,
+            value:
+              question[field]
+          }
+        );
+      }
+    }
+
+
+    if (
+      !validEvidenceStrengths.has(
+        question.evidenceStrength
+      )
+    ) {
+      return fail(
+        "question_evidenceStrength_invalid",
+        {
+          qIndex,
+          questionId:
+            question.id,
+          value:
+            question.evidenceStrength
+        }
+      );
+    }
+
+    if (
+      typeof question.dealBreakerCapable !==
+      "boolean"
+    ) {
+      return fail(
+        "question_dealBreakerCapable_invalid",
+        {
+          qIndex,
+          questionId:
+            question.id,
+          value:
+            question.dealBreakerCapable
+        }
+      );
+    }
+
+
+    /*
+     * EXACTLY THREE ANSWERS
+     */
+
+    if (
+      !Array.isArray(
+        question.answers
+      ) ||
+      question.answers.length !== 3
+    ) {
+      return fail(
+        "question_answers_count_invalid",
+        {
+          qIndex,
+          questionId:
+            question.id,
+          count:
+            Array.isArray(
+              question.answers
+            )
+              ? question.answers.length
+              : null
+        }
+      );
+    }
+
+
+    /*
+     * ANSWERS
+     */
+
+    for (
+      let aIndex = 0;
+      aIndex <
+      question.answers.length;
+      aIndex++
+    ) {
+      const answer =
+        question.answers[aIndex];
+
+      if (
+        !answer ||
+        typeof answer !== "object" ||
+        Array.isArray(answer)
+      ) {
+        return fail(
+          "answer_invalid_object",
+          {
+            qIndex,
+            aIndex,
+            questionId:
+              question.id
+          }
+        );
+      }
+
+      if (
+        !isNonEmptyString(
+          answer.label
+        )
+      ) {
+        return fail(
+          "answer_label_invalid",
+          {
+            qIndex,
+            aIndex,
+            questionId:
+              question.id,
+            value:
+              answer.label
+          }
+        );
+      }
+
+      if (
+        !validImpacts.has(
+          answer.impact
+        )
+      ) {
+        return fail(
+          "answer_impact_invalid",
+          {
+            qIndex,
+            aIndex,
+            questionId:
+              question.id,
+            value:
+              answer.impact
+          }
+        );
+      }
+
+      if (
+        !isNonEmptyString(
+          answer.impactReason
+        )
+      ) {
+        return fail(
+          "answer_impactReason_invalid",
+          {
+            qIndex,
+            aIndex,
+            questionId:
+              question.id,
+            value:
+              answer.impactReason
+          }
+        );
+      }
+
+      if (
+        typeof answer.mitigation !==
+        "string"
+      ) {
+        return fail(
+          "answer_mitigation_not_string",
+          {
+            qIndex,
+            aIndex,
+            questionId:
+              question.id,
+            value:
+              answer.mitigation
+          }
+        );
+      }
+
+
+      /*
+       * MITIGATION CONSISTENCY
+       */
+
+      const positiveOrNeutral =
+        answer.impact === "positive" ||
+        answer.impact === "neutral";
+
+      const negative =
+        answer.impact ===
+          "medium_negative" ||
+        answer.impact ===
+          "high_negative" ||
+        answer.impact ===
+          "critical_negative";
+
+      if (
+        positiveOrNeutral &&
+        answer.mitigation.trim() !== ""
+      ) {
+        return fail(
+          "positive_or_neutral_has_mitigation",
+          {
+            qIndex,
+            aIndex,
+            questionId:
+              question.id,
+            impact:
+              answer.impact,
+            mitigation:
+              answer.mitigation
+          }
+        );
+      }
+
+      if (
+        negative &&
+        answer.mitigation.trim() === ""
+      ) {
+        return fail(
+          "negative_missing_mitigation",
+          {
+            qIndex,
+            aIndex,
+            questionId:
+              question.id,
+            impact:
+              answer.impact
+          }
+        );
+      }
+    }
+  }
+
+
+  /*
+   * CANONICAL ID FORMAT
+   */
+
+  if (
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(
+      watch.id
+    )
+  ) {
+    return fail(
+      "watch_id_format_invalid",
+      {
+        value:
+          watch.id
+      }
+    );
+  }
+
+
+  return ok();
+}
+
+
+
 
 if (
   !Object.prototype.hasOwnProperty.call(
@@ -3869,86 +4838,23 @@ if (!rateLimit.allowed) {
    * VALIDATE WATCH SCHEMA
    */
 
- if (!hasUsableWatchSchema(watch)) {
+const watchValidation =
+  diagnoseWatchSchema(watch);
 
-  const questionIds =
-    Array.isArray(watch?.questions)
-      ? watch.questions.map(
-          q => q?.id || null
-        )
-      : [];
-
-  const duplicateQuestionIds =
-    questionIds.filter(
-      (id, index) =>
-        id &&
-        questionIds.indexOf(id) !== index
-    );
-
-  const answerDiagnostics =
-    Array.isArray(watch?.questions)
-      ? watch.questions.flatMap(
-          question =>
-            Array.isArray(question?.answers)
-              ? question.answers.map(
-                  (answer, answerIndex) => ({
-                    questionId:
-                      question?.id || null,
-
-                    answerIndex,
-
-                    impact:
-                      answer?.impact || null,
-
-                    mitigation:
-                      typeof answer?.mitigation ===
-                      "string"
-                        ? answer.mitigation
-                        : null,
-
-                    positiveOrNeutralHasMitigation:
-                      (
-                        answer?.impact === "positive" ||
-                        answer?.impact === "neutral"
-                      ) &&
-                      typeof answer?.mitigation ===
-                        "string" &&
-                      answer.mitigation.trim() !== "",
-
-                    negativeMissingMitigation:
-                      (
-                        answer?.impact ===
-                          "medium_negative" ||
-                        answer?.impact ===
-                          "high_negative" ||
-                        answer?.impact ===
-                          "critical_negative"
-                      ) &&
-                      (
-                        typeof answer?.mitigation !==
-                          "string" ||
-                        answer.mitigation.trim() === ""
-                      )
-                  })
-                )
-              : []
-        )
-      : [];
-
+if (!watchValidation.valid) {
   console.error(
     "WATCH_SCHEMA_INVALID",
     JSON.stringify({
       query,
 
+      reason:
+        watchValidation.reason,
+
+      details:
+        watchValidation.details,
+
       watchId:
         watch?.id || null,
-
-      idFormatValid:
-        typeof watch?.id === "string"
-          ? /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(
-              watch.id
-            )
-          : false,
 
       brand:
         watch?.brand || null,
@@ -3957,83 +4863,23 @@ if (!rateLimit.allowed) {
         watch?.model || null,
 
       reference:
-        watch?.reference || null,
-
-      year:
-        watch?.year ?? null,
-
-      productionPeriod:
-        watch?.productionPeriod || null,
-
-      variant:
-        watch?.variant || null,
-
-      movement:
-        watch?.movement || null,
-
-      caseSize:
-        watch?.caseSize || null,
-
-      market:
-        watch?.market || null,
-
-productImageExists:
-  Object.prototype.hasOwnProperty.call(
-    watch || {},
-    "productImage"
-  ),
-
-productImage:
-  watch?.productImage ?? null,
-      
-      marketPrice:
-        watch?.marketPrice || null,
-
-      evidenceCount:
-        watch?.evidenceCount ?? null,
-
-      evidenceSourcesCount:
-        Array.isArray(watch?.evidenceSources)
-          ? watch.evidenceSources.length
-          : null,
-
-      integrityLevel:
-        watch?.productIntegrity?.level || null,
-
-      integrityOverrideFit:
-        watch?.productIntegrity?.overrideFit ??
-        null,
-
-      integrityIssuesCount:
-        Array.isArray(
-          watch?.productIntegrity?.issues
-        )
-          ? watch.productIntegrity.issues.length
-          : null,
-
-      questionCount:
-        Array.isArray(watch?.questions)
-          ? watch.questions.length
-          : null,
-
-      questionIds,
-
-      duplicateQuestionIds,
-
-      answerProblems:
-        answerDiagnostics.filter(
-          item =>
-            item.positiveOrNeutralHasMitigation ||
-            item.negativeMissingMitigation
-        )
+        watch?.reference || null
     })
   );
 
   return res.status(502).json({
     error:
-      "Watch research did not satisfy Watch Schema v1.0."
+      "Watch research did not satisfy Watch Schema v1.0.",
+
+    validationReason:
+      watchValidation.reason
   });
 }
+
+
+
+
+  
 
   /*
    * CANONICAL CACHE IDENTITY
