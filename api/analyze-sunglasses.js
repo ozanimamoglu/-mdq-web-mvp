@@ -2114,6 +2114,27 @@ function normalizeText(value) {
 }
 
 
+function normalizeReferenceToken(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+}
+
+
+function queryContainsReference(query, reference) {
+  const q =
+    normalizeReferenceToken(query);
+
+  const r =
+    normalizeReferenceToken(reference);
+
+  return (
+    r.length >= 4 &&
+    q.includes(r)
+  );
+}
+
+
 function normalizeCacheKey(value) {
   return normalizeText(value)
     .replace(/[^a-z0-9]+/g, "-")
