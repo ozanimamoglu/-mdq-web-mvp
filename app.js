@@ -19,17 +19,11 @@ let state = {
 };
 
 
-
 /*
  * =========================================================
  * STATIC CAMPAIGN STATE
  * =========================================================
  */
-
-
-
-
-
 
 let campaignState = {
 
@@ -49,19 +43,6 @@ let campaignState = {
 
 
 
-
-const resultCopy = {
-  'Ideal':
-    'The conditions that shape real ownership fit you very well.',
-
-  'Suitable':
-    'There are some trade-offs, but no major mismatch dominates the decision.',
-
-  'Not suitable':
-    'One or more important ownership conditions conflict with what you want from the product.'
-};
-
-
 /*
  * =========================================================
  * CAMPAIGN ROUTING
@@ -74,30 +55,42 @@ function getActiveCampaign(){
     new URLSearchParams(
       window.location.search
     );
+
+
   const queryCampaign =
     params.get('campaign');
+
+
   if(
     queryCampaign &&
-    kropcampaigns?.[queryCampaign]
+    kropCampaigns?.[queryCampaign]
   ){
-    return kropcampaigns[
+
+    return kropCampaigns[
       queryCampaign
     ];
+
   }
+
 
   const path =
     window.location.pathname
       .replace(/\/+$/, '')
       .toLowerCase();
+
+
   if(
     path === '/pirge'
   ){
-    return kropcampaigns.pirge;
+
+    return kropCampaigns.pirge;
+
   }
+
+
   return null;
 
 }
-
 
 
 
@@ -107,28 +100,31 @@ function getActiveCampaign(){
  * =========================================================
  */
 
-function evaluateCampaign(
-  campaign
-){
+function evaluateCampaign(){
 
   const score =
+
     campaignState.answers
+
       .slice(0, 4)
+
       .reduce(
+
         (total, answer) =>
+
           total +
           (
             Number(
               answer?.score
             ) || 0
           ),
+
         0
+
       );
 
 
   /*
-   * Intentionally positive campaign logic.
-   *
    * No Not Suitable result.
    *
    * 5–8 = Ideal
@@ -161,41 +157,7 @@ function answerCampaign(
   }
 
 
-/*
- * =========================================================
- * CAMPAIGN BACK
- * =========================================================
- */
-
-function backCampaignQuestion(){
-
-  if(
-    campaignState.transitioning ||
-    campaignState.step === 0 ||
-    campaignState.finished
-  ){
-    return;
-  }
-
-  
-
-  campaignState.step -= 1;
-  campaignState.answers =
-    campaignState.answers.slice(
-      0,
-      campaignState.step
-    );
-  campaignState.selectedIndex =
-    null;
-  campaignState.reveal =
-    null;
-  render();
-
-}
-
-
-  
-  const campaign =
+  const kropCampaigns =
     getActiveCampaign();
 
 
@@ -214,10 +176,170 @@ function backCampaignQuestion(){
 
   campaignState.selectedIndex =
     index;
+
   campaignState.transitioning =
     true;
 
+
   render();
+
+
+
+  /*
+   * QUESTIONS 5–6
+   * answer -> reveal -> next
+   */
+
+  if(
+    question.reveal
+  ){
+
+    setTimeout(
+      () => {
+
+
+        campaignState.answers[
+          campaignState.step
+        ] = answer;
+
+
+        campaignState.reveal =
+          question.reveal;
+
+
+        campaignState.selectedIndex =
+          null;
+
+
+        render();
+
+
+
+        setTimeout(
+          () => {
+
+
+            campaignState.reveal =
+              null;
+
+
+            campaignState.step +=
+              1;
+
+
+            campaignState.transitioning =
+              false;
+
+
+            if(
+              campaignState.step >=
+              campaign.questions.length
+            ){
+
+              campaignState.finished =
+                true;
+
+            }
+
+
+            render();
+
+          },
+
+          1300
+
+        );
+
+      },
+
+      250
+
+    );
+
+
+    return;
+
+  }
+
+
+
+  /*
+   * QUESTIONS 1–4
+   * fast transition
+   */
+
+  setTimeout(
+    () => {
+
+
+      campaignState.answers[
+        campaignState.step
+      ] = answer;
+
+
+      campaignState.step +=
+        1;
+
+
+      campaignState.selectedIndex =
+        null;
+
+
+      campaignState.transitioning =
+        false;
+
+
+      render();
+
+    },
+
+    320
+
+  );
+
+}
+
+
+
+/*
+ * =========================================================
+ * CAMPAIGN BACK
+ * =========================================================
+ */
+
+function backCampaignQuestion(){
+
+  if(
+    campaignState.transitioning ||
+    campaignState.step === 0 ||
+    campaignState.finished
+  ){
+    return;
+  }
+
+
+  campaignState.step -=
+    1;
+
+
+  campaignState.answers =
+    campaignState.answers.slice(
+      0,
+      campaignState.step
+    );
+
+
+  campaignState.selectedIndex =
+    null;
+
+
+  campaignState.reveal =
+    null;
+
+
+  render();
+
+}
 
 
 
@@ -234,9 +356,9 @@ function renderCampaign(
 
 
   /*
-   * -------------------------
+   * =========================================================
    * REVEAL SCREEN
-   * -------------------------
+   * =========================================================
    */
 
   if(
@@ -290,9 +412,9 @@ function renderCampaign(
 
 
   /*
-   * -------------------------
-   * RESULT
-   * -------------------------
+   * =========================================================
+   * RESULT SCREEN
+   * =========================================================
    */
 
   if(
@@ -300,13 +422,12 @@ function renderCampaign(
   ){
 
     const result =
-      evaluateCampaign(
-        campaign
-      );
+      evaluateCampaign();
 
 
     const isIdeal =
       result === 'Ideal';
+
 
 
     const resultHeadline =
@@ -314,7 +435,6 @@ function renderCampaign(
       isIdeal
 
         ? 'This knife looks very much like you.'
-
         : 'We have a feeling this knife would make you happy.';
 
 
@@ -324,7 +444,6 @@ function renderCampaign(
       isIdeal
 
         ? 'You seem to appreciate more than just sharpness — craftsmanship, feel and character matter too.'
-
         : 'You may not be overly romantic about knives, but you know how good it feels to use something beautifully made.';
 
 
@@ -337,6 +456,7 @@ function renderCampaign(
         /\D/g,
         ''
       );
+
 
 
     const whatsappUrl =
@@ -360,11 +480,9 @@ function renderCampaign(
         "
       >
 
-
         <section
           class="campaignResultIntro"
         >
-
 
           <p
             class="campaignEyebrow"
@@ -406,6 +524,7 @@ function renderCampaign(
 
 
           <img
+
             src="${esc(
               campaign.image
             )}"
@@ -413,6 +532,7 @@ function renderCampaign(
             alt="${esc(
               campaign.productName
             )}"
+
           />
 
 
@@ -439,6 +559,7 @@ function renderCampaign(
           </h2>
 
 
+
           <div
             class="campaignSpecs"
           >
@@ -448,7 +569,9 @@ function renderCampaign(
                 .map(
                   spec => `
                     <span>
-                      ${esc(spec)}
+                      ${esc(
+                        spec
+                      )}
                     </span>
                   `
                 )
@@ -516,6 +639,7 @@ function renderCampaign(
               ? `
 
                 <a
+
                   class="campaignWhatsapp"
 
                   href="${esc(
@@ -525,6 +649,7 @@ function renderCampaign(
                   target="_blank"
 
                   rel="noopener"
+
                 >
                   Order on WhatsApp →
                 </a>
@@ -534,6 +659,7 @@ function renderCampaign(
               : `
 
                 <button
+
                   class="
                     campaignWhatsapp
                     campaignWhatsappDisabled
@@ -542,6 +668,7 @@ function renderCampaign(
                   type="button"
 
                   disabled
+
                 >
                   Order on WhatsApp →
                 </button>
@@ -572,9 +699,9 @@ function renderCampaign(
 
 
   /*
-   * -------------------------
+   * =========================================================
    * QUESTION SCREEN
-   * -------------------------
+   * =========================================================
    */
 
   const q =
@@ -659,6 +786,7 @@ function renderCampaign(
             q.text
           )}
         </h1>
+
 
 
         <div
@@ -799,11 +927,13 @@ function renderCampaign(
 
       button => {
 
+
         button.addEventListener(
 
           'click',
 
           () => {
+
 
             const index =
               Number(
@@ -847,93 +977,24 @@ function renderCampaign(
 
 
 
-  
-  /*
-   * Questions 5 and 6:
-   * selected answer -> reveal -> next
-   */
+/*
+ * =========================================================
+ * NORMAL OWNER-EVIDENCE RESULT COPY
+ * =========================================================
+ */
 
-  if(
-    question.reveal
-  ){
+const resultCopy = {
 
-    setTimeout(
-      () => {
+  'Ideal':
+    'The conditions that shape real ownership fit you very well.',
 
-        campaignState.answers[
-          campaignState.step
-        ] = answer;
+  'Suitable':
+    'There are some trade-offs, but no major mismatch dominates the decision.',
 
-        campaignState.reveal =
-          question.reveal;
-        campaignState.selectedIndex =
-          null;
+  'Not suitable':
+    'One or more important ownership conditions conflict with what you want from the product.'
 
-        render();
-
-
-        setTimeout(
-          () => {
-            campaignState.reveal =
-              null;
-            campaignState.step +=
-              1;
-            campaignState.transitioning =
-              false;
-
-
-            if(
-              campaignState.step >=
-              campaign.questions.length
-            ){
-
-              campaignState.finished =
-                true;
-
-            }
-
-
-            render();
-
-          },
-          1300
-        );
-
-      },
-      250
-    );
-
-
-    return;
-
-  }
-
-
-  /*
-   * Questions 1–4:
-   * fast transition
-   */
-
-  setTimeout(
-    () => {
-      campaignState.answers[
-        campaignState.step
-      ] = answer;
-      campaignState.step +=
-        1;
-      campaignState.selectedIndex =
-        null;
-      campaignState.transitioning =
-        false;
-      render();
-    },
-    320
-  );
-
-}
-
-
-
+};
 
 
 /*
