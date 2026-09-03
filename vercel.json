@@ -3,5 +3,11 @@
     "api/analyze.js": {
       "maxDuration": 300
     }
-  }
+  },
+  "rewrites": [
+    {
+      "source": "/pirge",
+      "destination": "/index.html"
+    }
+  ]
 }
