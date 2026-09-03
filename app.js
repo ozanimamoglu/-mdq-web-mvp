@@ -156,10 +156,8 @@ function answerCampaign(
     return;
   }
 
-
-  const campaigns =
+  const campaign =
     getActiveCampaign();
-
 
   if(
     !campaign
@@ -167,19 +165,15 @@ function answerCampaign(
     return;
   }
 
-
   const question =
     campaign.questions[
       campaignState.step
     ];
 
-
   campaignState.selectedIndex =
     index;
-
   campaignState.transitioning =
     true;
-
 
   render();
 
