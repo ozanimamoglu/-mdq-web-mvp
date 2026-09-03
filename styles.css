@@ -1329,3 +1329,32 @@ button.categoryCard:hover{
     font-size:40px;
   }
 }
+
+
+.campaignQuestionImage{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  margin:0 0 34px;
+}
+
+.campaignQuestionImage img{
+  display:block;
+  width:auto;
+  max-width:100%;
+  height:150px;
+  object-fit:contain;
+}
+
+@media(max-width:700px){
+
+  .campaignQuestionImage{
+    margin-bottom:28px;
+  }
+
+  .campaignQuestionImage img{
+    height:120px;
+  }
+
+}
+
