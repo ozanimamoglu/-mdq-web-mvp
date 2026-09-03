@@ -19,6 +19,37 @@ let state = {
 };
 
 
+
+/*
+ * =========================================================
+ * STATIC CAMPAIGN STATE
+ * =========================================================
+ */
+
+
+
+
+
+
+let campaignState = {
+
+  step: 0,
+
+  answers: [],
+
+  selectedIndex: null,
+
+  transitioning: false,
+
+  reveal: null,
+
+  finished: false
+
+};
+
+
+
+
 const resultCopy = {
   'Ideal':
     'The conditions that shape real ownership fit you very well.',
@@ -29,6 +60,43 @@ const resultCopy = {
   'Not suitable':
     'One or more important ownership conditions conflict with what you want from the product.'
 };
+
+
+/*
+ * =========================================================
+ * CAMPAIGN ROUTING
+ * =========================================================
+ */
+
+function getActiveCampaign(){
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+  const queryCampaign =
+    params.get('campaign');
+  if(
+    queryCampaign &&
+    campaigns?.[queryCampaign]
+  ){
+    return campaigns[
+      queryCampaign
+    ];
+  }
+
+  const path =
+    window.location.pathname
+      .replace(/\/+$/, '')
+      .toLowerCase();
+  if(
+    path === '/pirge'
+  ){
+    return campaigns.pirge;
+  }
+  return null;
+
+}
 
 
 
