@@ -16,7 +16,7 @@ const kropCampaigns = {
     id: 'pirge',
     brand: 'Pirge',
     productName: '17 cm Handmade Damascus Chef’s Knife',
-    image: '/pirge-damascus-17.jpg',
+    image: '/pirgedamascus-17.jpg',
     price: '€287.99',
     couponCode: 'PIRGE10',
 
