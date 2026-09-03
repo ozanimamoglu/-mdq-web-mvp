@@ -774,39 +774,40 @@ function renderCampaign(
         class="campaignQuestion"
       >
 
-
-        <h1>
+<div
+  class="campaignQuestionImage"
+>
+  <img
+    src="${esc(
+      campaign.image
+    )}"
+    alt="${esc(
+      campaign.productName
+    )}"
+  />
+</div>        <h1>
           ${esc(
             q.text
           )}
         </h1>
 
-
-
         <div
           class="campaignAnswers"
         >
-
 
           ${
             q.answers.map(
 
               (answer,index) => {
-
-
                 const selected =
                   campaignState.selectedIndex ===
                   index;
-
-
                 const dimmed =
 
                   campaignState.transitioning &&
                   !selected;
 
-
                 return `
-
                   <button
 
                     class="
@@ -824,7 +825,6 @@ function renderCampaign(
                           : ''
                       }
                     "
-
                     data-campaign-answer="${index}"
 
                     ${
@@ -832,9 +832,7 @@ function renderCampaign(
                         ? 'disabled'
                         : ''
                     }
-
                   >
-
 
                     <span
                       class="campaignLetter"
@@ -855,25 +853,18 @@ function renderCampaign(
                       )}
                     </span>
 
-
                   </button>
-
                 `;
-
               }
 
             ).join('')
           }
 
-
         </div>
-
-
 
         <div
           class="campaignBottom"
         >
-
 
           <button
 
@@ -895,18 +886,11 @@ function renderCampaign(
           <span>
             Handmade · Damascus · 17 cm
           </span>
-
-
         </div>
-
-
       </section>
-
-
     </main>
 
   `;
-
 
 
   /*
@@ -940,15 +924,10 @@ function renderCampaign(
               q.answers[index],
               index
             );
-
           }
-
         );
-
       }
-
     );
-
 
 
   /*
@@ -960,7 +939,6 @@ function renderCampaign(
       'campaignBack'
     )
     ?.addEventListener(
-
       'click',
 
       backCampaignQuestion
@@ -1019,9 +997,7 @@ const categoryConfig = {
     endpoint:'/api/analyze-watch',
     responseKey:'watch'
   }
-
 };
-
 
 
 function currentCategoryConfig(){
@@ -1030,17 +1006,13 @@ function currentCategoryConfig(){
     categoryConfig[state.category] ||
     categoryConfig.car
   );
-
 }
-
 
 
 function productNoun(){
-
   return currentCategoryConfig().noun;
 
 }
-
 
 
 /*
@@ -1087,9 +1059,7 @@ function productMeta(product){
       ]
         .filter(Boolean)
         .join(' · ')
-
     };
-
   }
 
 
@@ -1125,9 +1095,7 @@ function productMeta(product){
       ]
         .filter(Boolean)
         .join(' · ')
-
     };
-
   }
 
 
@@ -1144,7 +1112,6 @@ function productMeta(product){
       generation:'G01 · 2018–2021',
       version:'20d'
     };
-
   }
 
 
@@ -1156,7 +1123,6 @@ function productMeta(product){
       generation:'II · 2018–2021',
       version:'D4 AWD'
     };
-
   }
 
 
@@ -1168,7 +1134,6 @@ function productMeta(product){
       generation:'X253 facelift · 2019–2021',
       version:'220d 4MATIC'
     };
-
   }
 
 
@@ -1180,7 +1145,6 @@ function productMeta(product){
       generation:'1980',
       version:'3.0 air-cooled · 915 manual'
     };
-
   }
 
 
@@ -1205,11 +1169,8 @@ function productMeta(product){
     version:
       product.variant ||
       ''
-
   };
-
 }
-
 
 
 /*
@@ -1232,13 +1193,11 @@ function uniq(arr){
   return [
     ...new Set(arr)
   ];
-
 }
 
 
 
 function filteredCatalogue(){
-
   const s =
     state.selection;
 
@@ -1264,9 +1223,7 @@ function filteredCatalogue(){
         x.version === s.version
       )
   );
-
 }
-
 
 
 function optionsFor(field){
@@ -1303,11 +1260,8 @@ function optionsFor(field){
       .map(
         x => x[field]
       )
-
       .filter(Boolean)
-
   );
-
 }
 
 
@@ -1323,7 +1277,6 @@ function getVehicle(){
   return vehicles.find(
     v => v.id === state.vehicleId
   );
-
 }
 
 
@@ -1358,9 +1311,7 @@ function setSelection(
       k =>
         state.selection[k] = ''
     );
-
   render();
-
 }
 
 
@@ -1475,7 +1426,6 @@ function backQuestion(){
     null;
 
   render();
-
 }
 
 
@@ -1491,40 +1441,26 @@ function reset(){
   state = {
 
     vehicleId:'',
-
     category:'',
-
     step:0,
-
     answers:[],
-
     priceAnswer:null,
-
     showWhy:false,
-
     selectedIndex:null,
-
     transitioning:false,
-
     researchStatus:'idle',
-
     researchError:'',
-
     researchQuery:'',
-
     selection:{
       make:'',
       model:'',
       generation:'',
       version:''
     }
-
   };
 
   render();
-
 }
-
 
 
 /*
@@ -1546,37 +1482,26 @@ function selectCategory(category){
 
   state.vehicleId =
     '';
-
   state.category =
     category;
-
   state.step =
     0;
-
   state.answers =
     [];
-
   state.priceAnswer =
     null;
-
   state.showWhy =
     false;
-
   state.selectedIndex =
     null;
-
   state.transitioning =
     false;
-
   state.researchStatus =
     'idle';
-
   state.researchError =
     '';
-
   state.researchQuery =
     '';
-
 
   state.selection = {
     make:'',
@@ -1584,8 +1509,6 @@ function selectCategory(category){
     generation:'',
     version:''
   };
-
-
   render();
 
 
@@ -1597,10 +1520,8 @@ function selectCategory(category){
           'unknownVehicle'
         )
         ?.focus();
-
     }
   );
-
 }
 
 
@@ -1615,9 +1536,7 @@ function toggleWhy(){
 
   state.showWhy =
     !state.showWhy;
-
   render();
-
 }
 
 
@@ -1643,9 +1562,7 @@ function esc(s){
       '"':'&quot;',
       "'":'&#039;'
     }[c])
-
   );
-
 }
 
 
@@ -1683,7 +1600,6 @@ function selector(
         <span>
           ${value ? 'Selected' : ''}
         </span>
-
       </label>
 
 
