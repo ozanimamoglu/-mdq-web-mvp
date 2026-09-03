@@ -100,6 +100,842 @@ function getActiveCampaign(){
 
 
 
+
+/*
+ * =========================================================
+ * CAMPAIGN RESULT
+ * =========================================================
+ */
+
+function evaluateCampaign(
+  campaign
+){
+
+  const score =
+    campaignState.answers
+      .slice(0, 4)
+      .reduce(
+        (total, answer) =>
+          total +
+          (
+            Number(
+              answer?.score
+            ) || 0
+          ),
+        0
+      );
+
+
+  /*
+   * Intentionally positive campaign logic.
+   *
+   * No Not Suitable result.
+   *
+   * 5–8 = Ideal
+   * 0–4 = Suitable
+   */
+
+  return score >= 5
+    ? 'Ideal'
+    : 'Suitable';
+
+}
+
+
+
+/*
+ * =========================================================
+ * CAMPAIGN ANSWER
+ * =========================================================
+ */
+
+function answerCampaign(
+  answer,
+  index
+){
+
+  if(
+    campaignState.transitioning
+  ){
+    return;
+  }
+
+
+/*
+ * =========================================================
+ * CAMPAIGN BACK
+ * =========================================================
+ */
+
+function backCampaignQuestion(){
+
+  if(
+    campaignState.transitioning ||
+    campaignState.step === 0 ||
+    campaignState.finished
+  ){
+    return;
+  }
+
+  
+
+  campaignState.step -= 1;
+  campaignState.answers =
+    campaignState.answers.slice(
+      0,
+      campaignState.step
+    );
+  campaignState.selectedIndex =
+    null;
+  campaignState.reveal =
+    null;
+  render();
+
+}
+
+
+  
+  const campaign =
+    getActiveCampaign();
+
+
+  if(
+    !campaign
+  ){
+    return;
+  }
+
+
+  const question =
+    campaign.questions[
+      campaignState.step
+    ];
+
+
+  campaignState.selectedIndex =
+    index;
+  campaignState.transitioning =
+    true;
+
+  render();
+
+
+
+/*
+ * =========================================================
+ * KROP CAMPAIGN RENDERER
+ * =========================================================
+ */
+
+function renderCampaign(
+  app,
+  campaign
+){
+
+
+  /*
+   * -------------------------
+   * REVEAL SCREEN
+   * -------------------------
+   */
+
+  if(
+    campaignState.reveal
+  ){
+
+    app.innerHTML = `
+
+      <main
+        class="
+          campaignShell
+          campaignRevealShell
+        "
+      >
+
+        <section
+          class="campaignReveal"
+        >
+
+          <div
+            class="campaignRevealMark"
+          >
+            ✦
+          </div>
+
+
+          <h2>
+            ${esc(
+              campaignState.reveal.title
+            )}
+          </h2>
+
+
+          <p>
+            ${esc(
+              campaignState.reveal.text
+            )}
+          </p>
+
+        </section>
+
+      </main>
+
+    `;
+
+
+    return;
+
+  }
+
+
+
+  /*
+   * -------------------------
+   * RESULT
+   * -------------------------
+   */
+
+  if(
+    campaignState.finished
+  ){
+
+    const result =
+      evaluateCampaign(
+        campaign
+      );
+
+
+    const isIdeal =
+      result === 'Ideal';
+
+
+    const resultHeadline =
+
+      isIdeal
+
+        ? 'This knife looks very much like you.'
+
+        : 'We have a feeling this knife would make you happy.';
+
+
+
+    const campaignResultCopy =
+
+      isIdeal
+
+        ? 'You seem to appreciate more than just sharpness — craftsmanship, feel and character matter too.'
+
+        : 'You may not be overly romantic about knives, but you know how good it feels to use something beautifully made.';
+
+
+
+    const cleanNumber =
+      String(
+        campaign.whatsappNumber ||
+        ''
+      ).replace(
+        /\D/g,
+        ''
+      );
+
+
+    const whatsappUrl =
+
+      cleanNumber
+
+        ? `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
+            campaign.whatsappMessage
+          )}`
+
+        : '';
+
+
+
+    app.innerHTML = `
+
+      <main
+        class="
+          campaignShell
+          campaignResultShell
+        "
+      >
+
+
+        <section
+          class="campaignResultIntro"
+        >
+
+
+          <p
+            class="campaignEyebrow"
+          >
+            YOUR RESULT
+          </p>
+
+
+          <h1>
+            ${esc(
+              result.toUpperCase()
+            )}
+          </h1>
+
+
+          <h2>
+            ${esc(
+              resultHeadline
+            )}
+          </h2>
+
+
+          <p
+            class="campaignResultCopy"
+          >
+            ${esc(
+              campaignResultCopy
+            )}
+          </p>
+
+
+        </section>
+
+
+
+        <section
+          class="campaignProductHero"
+        >
+
+
+          <img
+            src="${esc(
+              campaign.image
+            )}"
+
+            alt="${esc(
+              campaign.productName
+            )}"
+          />
+
+
+        </section>
+
+
+
+        <section
+          class="campaignProductDetails"
+        >
+
+
+          <p
+            class="campaignArtLine"
+          >
+            A chef’s knife — and a little piece of art.
+          </p>
+
+
+          <h2>
+            ${esc(
+              campaign.productName
+            )}
+          </h2>
+
+
+          <div
+            class="campaignSpecs"
+          >
+
+            ${
+              campaign.specs
+                .map(
+                  spec => `
+                    <span>
+                      ${esc(spec)}
+                    </span>
+                  `
+                )
+                .join('')
+            }
+
+          </div>
+
+
+
+          <div
+            class="campaignPriceBlock"
+          >
+
+            <p>
+              YOUR KNIFE
+            </p>
+
+
+            <strong>
+              ${esc(
+                campaign.price
+              )}
+            </strong>
+
+          </div>
+
+
+
+          <div
+            class="campaignOffer"
+          >
+
+            <p
+              class="campaignOfferLabel"
+            >
+              ${esc(
+                campaign.discountText
+              )}
+            </p>
+
+
+            <p
+              class="campaignCouponLabel"
+            >
+              USE CODE
+            </p>
+
+
+            <div
+              class="campaignCoupon"
+            >
+              ${esc(
+                campaign.couponCode
+              )}
+            </div>
+
+          </div>
+
+
+
+          ${
+            whatsappUrl
+
+              ? `
+
+                <a
+                  class="campaignWhatsapp"
+
+                  href="${esc(
+                    whatsappUrl
+                  )}"
+
+                  target="_blank"
+
+                  rel="noopener"
+                >
+                  Order on WhatsApp →
+                </a>
+
+              `
+
+              : `
+
+                <button
+                  class="
+                    campaignWhatsapp
+                    campaignWhatsappDisabled
+                  "
+
+                  type="button"
+
+                  disabled
+                >
+                  Order on WhatsApp →
+                </button>
+
+              `
+          }
+
+
+          <p
+            class="campaignWhatsAppNote"
+          >
+            Mention your test code when ordering.
+          </p>
+
+
+        </section>
+
+
+      </main>
+
+    `;
+
+
+    return;
+
+  }
+
+
+
+  /*
+   * -------------------------
+   * QUESTION SCREEN
+   * -------------------------
+   */
+
+  const q =
+    campaign.questions[
+      campaignState.step
+    ];
+
+
+  const progress =
+    Math.round(
+      (
+        campaignState.step /
+        campaign.questions.length
+      ) * 100
+    );
+
+
+
+  app.innerHTML = `
+
+    <main
+      class="campaignShell"
+    >
+
+
+      <div
+        class="campaignTop"
+      >
+
+
+        <span
+          class="campaignBrand"
+        >
+          ${esc(
+            campaign.brand
+          )}
+        </span>
+
+
+        <span
+          class="campaignCounter"
+        >
+
+          ${
+            campaignState.step + 1
+          }
+
+          /
+
+          ${
+            campaign.questions.length
+          }
+
+        </span>
+
+
+      </div>
+
+
+
+      <div
+        class="campaignProgress"
+      >
+
+        <span
+          style="
+            width:${progress}%
+          "
+        ></span>
+
+      </div>
+
+
+
+      <section
+        class="campaignQuestion"
+      >
+
+
+        <h1>
+          ${esc(
+            q.text
+          )}
+        </h1>
+
+
+        <div
+          class="campaignAnswers"
+        >
+
+
+          ${
+            q.answers.map(
+
+              (answer,index) => {
+
+
+                const selected =
+                  campaignState.selectedIndex ===
+                  index;
+
+
+                const dimmed =
+
+                  campaignState.transitioning &&
+                  !selected;
+
+
+                return `
+
+                  <button
+
+                    class="
+                      campaignAnswer
+
+                      ${
+                        selected
+                          ? 'selected'
+                          : ''
+                      }
+
+                      ${
+                        dimmed
+                          ? 'dimmed'
+                          : ''
+                      }
+                    "
+
+                    data-campaign-answer="${index}"
+
+                    ${
+                      campaignState.transitioning
+                        ? 'disabled'
+                        : ''
+                    }
+
+                  >
+
+
+                    <span
+                      class="campaignLetter"
+                    >
+
+                      ${
+                        String.fromCharCode(
+                          65 + index
+                        )
+                      }
+
+                    </span>
+
+
+                    <span>
+                      ${esc(
+                        answer.label
+                      )}
+                    </span>
+
+
+                  </button>
+
+                `;
+
+              }
+
+            ).join('')
+          }
+
+
+        </div>
+
+
+
+        <div
+          class="campaignBottom"
+        >
+
+
+          <button
+
+            class="campaignBack"
+
+            id="campaignBack"
+
+            ${
+              campaignState.step === 0
+                ? 'disabled'
+                : ''
+            }
+
+          >
+            Back
+          </button>
+
+
+          <span>
+            Handmade · Damascus · 17 cm
+          </span>
+
+
+        </div>
+
+
+      </section>
+
+
+    </main>
+
+  `;
+
+
+
+  /*
+   * ANSWER EVENTS
+   */
+
+  document
+    .querySelectorAll(
+      '[data-campaign-answer]'
+    )
+    .forEach(
+
+      button => {
+
+        button.addEventListener(
+
+          'click',
+
+          () => {
+
+            const index =
+              Number(
+                button.dataset
+                  .campaignAnswer
+              );
+
+
+            answerCampaign(
+              q.answers[index],
+              index
+            );
+
+          }
+
+        );
+
+      }
+
+    );
+
+
+
+  /*
+   * BACK EVENT
+   */
+
+  document
+    .getElementById(
+      'campaignBack'
+    )
+    ?.addEventListener(
+
+      'click',
+
+      backCampaignQuestion
+
+    );
+
+}
+
+
+
+  
+  /*
+   * Questions 5 and 6:
+   * selected answer -> reveal -> next
+   */
+
+  if(
+    question.reveal
+  ){
+
+    setTimeout(
+      () => {
+
+        campaignState.answers[
+          campaignState.step
+        ] = answer;
+
+        campaignState.reveal =
+          question.reveal;
+        campaignState.selectedIndex =
+          null;
+
+        render();
+
+
+        setTimeout(
+          () => {
+            campaignState.reveal =
+              null;
+            campaignState.step +=
+              1;
+            campaignState.transitioning =
+              false;
+
+
+            if(
+              campaignState.step >=
+              campaign.questions.length
+            ){
+
+              campaignState.finished =
+                true;
+
+            }
+
+
+            render();
+
+          },
+          1300
+        );
+
+      },
+      250
+    );
+
+
+    return;
+
+  }
+
+
+  /*
+   * Questions 1–4:
+   * fast transition
+   */
+
+  setTimeout(
+    () => {
+      campaignState.answers[
+        campaignState.step
+      ] = answer;
+      campaignState.step +=
+        1;
+      campaignState.selectedIndex =
+        null;
+      campaignState.transitioning =
+        false;
+      render();
+    },
+    320
+  );
+
+}
+
+
+
+
+
 /*
  * =========================================================
  * CATEGORY CONFIG
@@ -1530,8 +2366,29 @@ function render(){
     );
 
 
+  /*
+   * =========================================================
+   * KROP STATIC CAMPAIGN ROUTE
+   * =========================================================
+   */
+
+  const campaign =
+    getActiveCampaign();
+
+  if(
+    campaign
+  ){
+    renderCampaign(
+      app,
+      campaign
+    );
+    return;
+  }
+
+
   const vehicle =
     getVehicle();
+
 
 
 
