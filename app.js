@@ -78,9 +78,9 @@ function getActiveCampaign(){
     params.get('campaign');
   if(
     queryCampaign &&
-    campaigns?.[queryCampaign]
+    kropcampaigns?.[queryCampaign]
   ){
-    return campaigns[
+    return kropcampaigns[
       queryCampaign
     ];
   }
@@ -92,7 +92,7 @@ function getActiveCampaign(){
   if(
     path === '/pirge'
   ){
-    return campaigns.pirge;
+    return kropcampaigns.pirge;
   }
   return null;
 
