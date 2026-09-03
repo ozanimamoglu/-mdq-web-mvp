@@ -949,3 +949,44 @@ button.categoryCard:hover{
   }
 
 }
+
+
+
+function render(){
+
+  const app =
+    document.getElementById(
+      'app'
+    );
+
+
+  /*
+   * =========================================================
+   * KROP STATIC CAMPAIGN ROUTE
+   * =========================================================
+   */
+
+  const campaign =
+    getActiveCampaign();
+
+
+  if(
+    campaign
+  ){
+    renderCampaign(
+      app,
+      campaign
+    );
+    return;
+
+  }
+
+  const vehicle =
+    getVehicle();
+
+
+  /*
+   * =========================================================
+   * HOME / CATEGORY / SEARCH
+   * =========================================================
+   */
