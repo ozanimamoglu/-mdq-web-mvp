@@ -157,7 +157,7 @@ function answerCampaign(
   }
 
 
-  const kropCampaigns =
+  const campaigns =
     getActiveCampaign();
 
 
