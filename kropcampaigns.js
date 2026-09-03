@@ -9,7 +9,7 @@
  * No database
  */
 
-const campaigns = {
+const kropcampaigns = {
 
   pirge: {
 
