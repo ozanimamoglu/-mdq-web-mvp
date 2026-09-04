@@ -18,7 +18,7 @@ const kropCampaigns = {
     productName: '17 cm Handmade Damascus Chef’s Knife',
 
     // Question screen image
-    image: '/pirgedamascus-17.jpg',
+    image: '/pirgedamascus-17.jpeg',
 
     // Final result screen image
     resultImage: '/Krop-last-page.jpg',
