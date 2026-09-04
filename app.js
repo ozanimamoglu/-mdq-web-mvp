@@ -77,9 +77,9 @@ function getActiveCampaign(){
       .toLowerCase();
 
   if(
-    path === '/pirge'
+    path === '/Krop Chef Knives'
   ){
-    return kropCampaigns.pirge;
+    return kropCampaigns.Krop Chef Knives;
   }
   return null;
 }
@@ -95,24 +95,17 @@ function getActiveCampaign(){
 function evaluateCampaign(){
 
   const score =
-
     campaignState.answers
-
       .slice(0, 4)
-
       .reduce(
-
         (total, answer) =>
-
           total +
           (
             Number(
               answer?.score
             ) || 0
           ),
-
         0
-
       );
 
 
@@ -126,7 +119,6 @@ function evaluateCampaign(){
   return score >= 5
     ? 'Ideal'
     : 'Suitable';
-
 }
 
 
@@ -239,27 +231,19 @@ function answerCampaign(
         campaignState.step
       ] = answer;
 
-
       campaignState.step +=
         1;
-
 
       campaignState.selectedIndex =
         null;
 
-
       campaignState.transitioning =
         false;
 
-
       render();
-
     },
-
     320
-
   );
-
 }
 
 
@@ -280,10 +264,8 @@ function backCampaignQuestion(){
     return;
   }
 
-
   campaignState.step -=
     1;
-
 
   campaignState.answers =
     campaignState.answers.slice(
@@ -291,17 +273,13 @@ function backCampaignQuestion(){
       campaignState.step
     );
 
-
   campaignState.selectedIndex =
     null;
-
 
   campaignState.reveal =
     null;
 
-
   render();
-
 }
 
 
@@ -360,16 +338,11 @@ function renderCampaign(
               campaignState.reveal.text
             )}
           </p>
-
         </section>
-
       </main>
-
     `;
 
-
     return;
-
   }
 
 
@@ -480,11 +453,9 @@ function renderCampaign(
 </section>
 
 
-
         <section
           class="campaignProductDetails"
         >
-
 
           <p
             class="campaignArtLine"
