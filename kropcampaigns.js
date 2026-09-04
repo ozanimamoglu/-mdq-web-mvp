@@ -24,7 +24,7 @@ const kropCampaigns = {
     resultImage: '/Krop-last-page.jpg',
 
     price: '€287.99',
-    couponCode: 'PIRGE10',
+    couponCode: '10% DISCOUNT',
 
     /*
      * We will replace these later.
