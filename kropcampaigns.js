@@ -38,7 +38,7 @@ const kropCampaigns = {
     whatsappNumber: '31621164080',
 
     whatsappMessage:
-      'Hi, I just took the Damascus Chef’s Knife test. I’d like to order using code 10.',
+      'Hi, I just took the Damascus Chef’s Knife test. I’d like to order with 10% discount.',
 
 
     specs: [
@@ -187,9 +187,9 @@ const kropCampaigns = {
 
         reveal: {
           title:
-            'They do like a little attention.',
+            'They are pieces of art.',
           text:
-            'Good things usually do. 😉'
+            'Art needs caring.'
         }
       },
 
@@ -221,7 +221,7 @@ const kropCampaigns = {
           title:
             'With proper care, potentially decades.',
           text:
-            'So yes… the grandkids may be involved. 😏'
+            'So yes… the grandkids may be involved.'
         }
       }
     ]
