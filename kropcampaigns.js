@@ -11,11 +11,11 @@
 
 const kropCampaigns = {
 
-  pirge: {
+  krop: {
 
-    id: 'pirge',
-    brand: 'Pirge',
-    productName: '17 cm Handmade Damascus Chef’s Knife',
+    id: 'krop',
+    brand: 'KROP Chef knives',
+    productName: 'Handmade Damascus Chef’s Knife',
 
     // Question screen image
     image: '/pirgedamascus-17.jpeg',
@@ -38,14 +38,14 @@ const kropCampaigns = {
     whatsappNumber: '31621164080',
 
     whatsappMessage:
-      'Hi, I just took the 17 cm Damascus Chef’s Knife test. I’d like to order using code PIRGE10.',
+      'Hi, I just took the Damascus Chef’s Knife test. I’d like to order using code PIRGE10.',
 
 
     specs: [
       'Handmade',
       '135-layer Damascus steel',
-      '1,500-year-old fossilized oak',
-      '17 cm'
+      '1,500-year-old fossilized oak'
+      
     ],
 
 
@@ -60,7 +60,7 @@ const kropCampaigns = {
         id: 'q1',
 
         text:
-          'Have you ever held a handmade 17 cm chef’s knife crafted from 135-layer Damascus steel?',
+          'Have you ever held a handmade chef’s chopper crafted from 135-layer Damascus steel?',
 
         answers: [
           {
@@ -80,20 +80,16 @@ const kropCampaigns = {
               'Yes. But now I’m curious about this one.',
             score: 2
           }
-
         ]
-
       },
 
 
       {
         id: 'q2',
-
         text:
           'A chef uses a great knife almost like an extension of their hand. Is that true for you too?',
 
         answers: [
-
           {
             label:
               'Absolutely.',
@@ -187,7 +183,6 @@ const kropCampaigns = {
             label:
               'They need some attention.'
           }
-
         ],
 
         reveal: {
@@ -196,9 +191,7 @@ const kropCampaigns = {
           text:
             'Good things usually do. 😉'
         }
-
       },
-
 
       {
         id: 'q6',
@@ -222,7 +215,6 @@ const kropCampaigns = {
             label:
               'Long enough for the grandkids'
           }
-
         ],
 
         reveal: {
@@ -231,11 +223,8 @@ const kropCampaigns = {
           text:
             'So yes… the grandkids may be involved. 😏'
         }
-
       }
-
     ]
-
   }
 
 };
