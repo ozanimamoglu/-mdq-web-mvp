@@ -614,7 +614,6 @@ function renderCampaign(
           </div>
 
 
-
           <div
             class="campaignOffer"
           >
@@ -626,11 +625,6 @@ function renderCampaign(
               )}
             </p>
 
-            <p
-              class="campaignCouponLabel"
-            >
-              USE CODE
-            </p>
 
             <div
               class="campaignCoupon"
@@ -641,7 +635,6 @@ function renderCampaign(
             </div>
 
           </div>
-
 
 
           ${
