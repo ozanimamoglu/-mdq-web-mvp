@@ -38,7 +38,7 @@ const kropCampaigns = {
     whatsappNumber: '31621164080',
 
     whatsappMessage:
-      'Hi, I just took the Damascus Chef’s Knife test. I’d like to order using code PIRGE10.',
+      'Hi, I just took the Damascus Chef’s Knife test. I’d like to order using code 10.',
 
 
     specs: [
