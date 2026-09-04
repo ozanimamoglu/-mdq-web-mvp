@@ -69,27 +69,19 @@ function getActiveCampaign(){
     return kropCampaigns[
       queryCampaign
     ];
-
   }
-
 
   const path =
     window.location.pathname
       .replace(/\/+$/, '')
       .toLowerCase();
 
-
   if(
     path === '/pirge'
   ){
-
     return kropCampaigns.pirge;
-
   }
-
-
   return null;
-
 }
 
 
@@ -685,22 +677,16 @@ function renderCampaign(
         <span
           class="campaignCounter"
         >
-
           ${
             campaignState.step + 1
           }
-
           /
-
           ${
             campaign.questions.length
           }
-
         </span>
 
-
       </div>
-
 
 
       <div
@@ -887,11 +873,8 @@ function renderCampaign(
     )
     ?.addEventListener(
       'click',
-
       backCampaignQuestion
-
     );
-
 }
 
 
@@ -955,7 +938,6 @@ function currentCategoryConfig(){
   );
 }
 
-
 function productNoun(){
   return currentCategoryConfig().noun;
 
@@ -969,7 +951,6 @@ function productNoun(){
  */
 
 function productMeta(product){
-
 
   /*
    * SUNGLASSES
@@ -1072,7 +1053,6 @@ function productMeta(product){
     };
   }
 
-
   if(product.id === 'mercedes-glc-220d'){
 
     return {
@@ -1083,7 +1063,6 @@ function productMeta(product){
     };
   }
 
-
   if(product.id === 'porsche-911-sc-1980'){
 
     return {
@@ -1093,7 +1072,6 @@ function productMeta(product){
       version:'3.0 air-cooled · 915 manual'
     };
   }
-
 
 
   /*
@@ -1133,15 +1111,12 @@ const catalogue = vehicles.map(
   })
 );
 
-
-
 function uniq(arr){
 
   return [
     ...new Set(arr)
   ];
 }
-
 
 
 function filteredCatalogue(){
