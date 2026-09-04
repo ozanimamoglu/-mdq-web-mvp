@@ -57,33 +57,31 @@ function getActiveCampaign(){
     );
 
 
-  const queryCampaign =
-    params.get('campaign');
+ const queryCampaign =
+  params.get('campaign');
 
-
-  if(
-    queryCampaign &&
-    kropCampaigns?.[queryCampaign]
-  ){
-
-    return kropCampaigns[
-      queryCampaign
-    ];
-  }
-
-  const path =
-    window.location.pathname
-      .replace(/\/+$/, '')
-      .toLowerCase();
-
-  if(
-    path === '/Krop Chef Knives'
-  ){
-    return kropCampaigns.Krop Chef Knives;
-  }
-  return null;
+if(
+  queryCampaign &&
+  kropCampaigns?.[queryCampaign]
+){
+  return kropCampaigns[
+    queryCampaign
+  ];
 }
 
+const path =
+  window.location.pathname
+    .replace(/\/+$/, '')
+    .toLowerCase();
+
+if(
+  path === '/krop-chef-knives'
+){
+  return kropCampaigns.krop;
+}
+
+return null;
+}
 
 
 /*
