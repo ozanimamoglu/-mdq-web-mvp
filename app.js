@@ -28,15 +28,10 @@ let state = {
 let campaignState = {
 
   step: 0,
-
   answers: [],
-
   selectedIndex: null,
-
   transitioning: false,
-
   reveal: null,
-
   finished: false
 
 };
@@ -56,8 +51,7 @@ function getActiveCampaign(){
       window.location.search
     );
 
-
- const queryCampaign =
+const queryCampaign =
   params.get('campaign');
 
 if(
@@ -76,14 +70,17 @@ const path =
 
 if(
   path === '/krop-chef-knives'
-){
-  return kropCampaigns.krop;
-}
 
+){
+  return kropCampaigns.pirge;
+}
 return null;
 }
 
 
+
+
+  
 /*
  * =========================================================
  * CAMPAIGN RESULT
