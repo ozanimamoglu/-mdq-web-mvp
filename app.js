@@ -4,13 +4,86 @@
  * =========================================================
  */
 
-function trackEvent(name, data = {}) {
-  if (window.va) {
-    window.va('event', {
-      name,
-      data
-    });
+function getCampaignSessionId(){
+
+  let sessionId =
+    sessionStorage.getItem(
+      'campaign_session_id'
+    );
+
+  if(
+    !sessionId
+  ){
+
+    sessionId =
+      crypto.randomUUID();
+
+    sessionStorage.setItem(
+      'campaign_session_id',
+      sessionId
+    );
   }
+
+  return sessionId;
+}
+
+
+
+function trackEvent(name, data = {}) {
+
+  fetch('/api/campaign-event', {
+
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify({
+
+      campaignId:
+        data.campaign || 'krop',
+
+      eventName:
+        name,
+
+      questionNumber:
+        data.question || null,
+
+      result:
+        data.result || null,
+
+      sessionId:
+        getCampaignSessionId(),
+
+      referrer:
+        document.referrer || null,
+
+      utmSource:
+        new URLSearchParams(
+          window.location.search
+        ).get('utm_source'),
+
+      utmMedium:
+        new URLSearchParams(
+          window.location.search
+        ).get('utm_medium'),
+
+      utmCampaign:
+        new URLSearchParams(
+          window.location.search
+        ).get('utm_campaign')
+
+    })
+
+  }).catch(
+    error =>
+      console.error(
+        'Campaign analytics error:',
+        error
+      )
+  );
+
 }
 
 
