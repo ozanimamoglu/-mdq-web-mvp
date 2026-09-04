@@ -16,7 +16,13 @@ const kropCampaigns = {
     id: 'pirge',
     brand: 'Pirge',
     productName: '17 cm Handmade Damascus Chef’s Knife',
+
+    // Question screen image
     image: '/pirgedamascus-17.jpg',
+
+    // Final result screen image
+    resultImage: '/Krop-last-page.jpg',
+
     price: '€287.99',
     couponCode: 'PIRGE10',
 
@@ -26,10 +32,10 @@ const kropCampaigns = {
     discountText: 'Special test offer',
 
     /*
-     * Enter only digits, including country code.
-     * Example Turkey: 905xxxxxxxxx
+     * WhatsApp number:
+     * country code + number, digits only
      */
-    whatsappNumber: '',
+    whatsappNumber: '31621164080',
 
     whatsappMessage:
       'Hi, I just took the 17 cm Damascus Chef’s Knife test. I’d like to order using code PIRGE10.',
@@ -99,26 +105,20 @@ const kropCampaigns = {
               'Well… not quite.',
             score: 0
           },
-
           {
             label:
               'Knives and kitchens are my thing.',
             score: 2
           }
-
         ]
-
       },
 
 
       {
         id: 'q3',
-
         text:
           'The handle of this knife is made from approximately 1,500-year-old fossilized oak. What would you feel holding it?',
-
         answers: [
-
           {
             label:
               'A little mesmerized.',
@@ -136,11 +136,8 @@ const kropCampaigns = {
               'Nice. But it still has to perform.',
             score: 0
           }
-
         ]
-
       },
-
 
       {
         id: 'q4',
@@ -149,27 +146,22 @@ const kropCampaigns = {
           'Research suggests that a quality chef’s knife can make cooking more enjoyable. Think they’re right?',
 
         answers: [
-
           {
             label:
               'Absolutely.',
             score: 2
           },
-
           {
             label:
               'It might even get me cooking. 😄',
             score: 1
           },
-
           {
             label:
               'Let me try it first.',
             score: 0
           }
-
         ]
-
       },
 
 
