@@ -187,43 +187,32 @@ function answerCampaign(
   if(
     question.reveal
   ){
-
     setTimeout(
       () => {
-
 
         campaignState.answers[
           campaignState.step
         ] = answer;
 
-
         campaignState.reveal =
           question.reveal;
-
 
         campaignState.selectedIndex =
           null;
 
-
         render();
-
-
 
         setTimeout(
           () => {
 
-
             campaignState.reveal =
               null;
-
 
             campaignState.step +=
               1;
 
-
             campaignState.transitioning =
               false;
-
 
             if(
               campaignState.step >=
@@ -232,27 +221,15 @@ function answerCampaign(
 
               campaignState.finished =
                 true;
-
             }
-
-
             render();
-
           },
-
-          1300
-
+          3500
         );
-
       },
-
       250
-
     );
-
-
     return;
-
   }
 
 
