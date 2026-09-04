@@ -316,7 +316,7 @@ campaignState.selectedIndex =
 
 render();
           },
-          3500
+          4000
         );
       },
       250
