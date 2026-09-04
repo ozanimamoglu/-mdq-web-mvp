@@ -54,7 +54,7 @@ let campaignState = {
   selectedIndex: null,
   transitioning: false,
   reveal: null,
-  finished: false
+  finished: false,
   analyticsStarted: false
 };
 
@@ -823,7 +823,7 @@ function renderCampaign(
 
 
           <span>
-            Handmade · Damascus · 17 cm
+            Handmade · Damascus 
           </span>
         </div>
       </section>
