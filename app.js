@@ -1,3 +1,25 @@
+/*
+ * =========================================================
+ * ANALYTICS
+ * =========================================================
+ */
+
+function trackEvent(name, data = {}) {
+  if (window.va) {
+    window.va('event', {
+      name,
+      data
+    });
+  }
+}
+
+
+/*
+ * =========================================================
+ * APP STATE
+ * =========================================================
+ */
+
 let state = {
   vehicleId:'',
   category:'',
@@ -33,9 +55,8 @@ let campaignState = {
   transitioning: false,
   reveal: null,
   finished: false
-
+  analyticsStarted: false
 };
-
 
 
 /*
@@ -72,7 +93,7 @@ if(
   path === '/krop-chef-knives'
 
 ){
-  return kropCampaigns.pirge;
+  return kropCampaigns.krop;
 }
 return null;
 }
@@ -144,13 +165,22 @@ function answerCampaign(
     return;
   }
 
-  const question =
-    campaign.questions[
-      campaignState.step
-    ];
+const question =
+  campaign.questions[
+    campaignState.step
+  ];
 
-  campaignState.selectedIndex =
-    index;
+trackEvent(
+  'question_answered',
+  {
+    campaign: campaign.id,
+    question:
+      campaignState.step + 1
+  }
+);
+
+campaignState.selectedIndex =
+  index;
   campaignState.transitioning =
     true;
 
@@ -193,15 +223,25 @@ function answerCampaign(
             campaignState.transitioning =
               false;
 
-            if(
-              campaignState.step >=
-              campaign.questions.length
-            ){
+           if(
+  campaignState.step >=
+    campaign.questions.length
+){
 
-              campaignState.finished =
-                true;
-            }
-            render();
+  campaignState.finished =
+    true;
+
+  trackEvent(
+    'campaign_completed',
+    {
+      campaign: campaign.id,
+      result:
+        evaluateCampaign()
+    }
+  );
+}
+
+render();
           },
           3500
         );
@@ -221,17 +261,13 @@ function answerCampaign(
   setTimeout(
     () => {
 
-
       campaignState.answers[
         campaignState.step
       ] = answer;
-
       campaignState.step +=
         1;
-
       campaignState.selectedIndex =
         null;
-
       campaignState.transitioning =
         false;
 
@@ -258,25 +294,20 @@ function backCampaignQuestion(){
   ){
     return;
   }
-
   campaignState.step -=
     1;
-
   campaignState.answers =
     campaignState.answers.slice(
       0,
       campaignState.step
     );
-
   campaignState.selectedIndex =
     null;
-
   campaignState.reveal =
     null;
 
   render();
 }
-
 
 
 /*
@@ -289,6 +320,20 @@ function renderCampaign(
   app,
   campaign
 ){
+
+  if(
+    !campaignState.analyticsStarted
+  ){
+    campaignState.analyticsStarted =
+      true;
+
+    trackEvent(
+      'campaign_started',
+      {
+        campaign: campaign.id
+      }
+    );
+  }
 
 
   /*
@@ -309,7 +354,6 @@ function renderCampaign(
           campaignRevealShell
         "
       >
-
         <section
           class="campaignReveal"
         >
@@ -320,13 +364,11 @@ function renderCampaign(
             ✦
           </div>
 
-
           <h2>
             ${esc(
               campaignState.reveal.title
             )}
           </h2>
-
 
           <p>
             ${esc(
@@ -336,10 +378,8 @@ function renderCampaign(
         </section>
       </main>
     `;
-
     return;
   }
-
 
 
   /*
@@ -379,7 +419,6 @@ function renderCampaign(
         ''
       );
 
-
     const whatsappUrl =
 
       cleanNumber
@@ -387,8 +426,6 @@ function renderCampaign(
             campaign.whatsappMessage
           )}`
         : '';
-
-
 
     app.innerHTML = `
 
@@ -447,7 +484,6 @@ function renderCampaign(
 
 </section>
 
-
         <section
           class="campaignProductDetails"
         >
@@ -464,8 +500,6 @@ function renderCampaign(
               campaign.productName
             )}
           </h2>
-
-
 
           <div
             class="campaignSpecs"
@@ -511,7 +545,6 @@ function renderCampaign(
           <div
             class="campaignOffer"
           >
-
             <p
               class="campaignOfferLabel"
             >
@@ -520,13 +553,11 @@ function renderCampaign(
               )}
             </p>
 
-
             <p
               class="campaignCouponLabel"
             >
               USE CODE
             </p>
-
 
             <div
               class="campaignCoupon"
@@ -545,37 +576,46 @@ function renderCampaign(
 
               ? `
 
-                <a
+<a
 
-                  class="campaignWhatsapp"
+  class="campaignWhatsapp"
 
-                  href="${esc(
-                    whatsappUrl
-                  )}"
+  href="${esc(
+    whatsappUrl
+  )}"
 
-                  target="_blank"
+  target="_blank"
 
-                  rel="noopener"
+  rel="noopener"
 
-                >
-                  Order on WhatsApp →
-                </a>
+  onclick="
+    trackEvent(
+      'whatsapp_clicked',
+      {
+        campaign: '${esc(
+          campaign.id
+        )}',
+        result: '${esc(
+          result
+        )}'
+      }
+    )
+  "
 
+>
+  Order on WhatsApp →
+</a>
               `
 
               : `
 
                 <button
-
                   class="
                     campaignWhatsapp
                     campaignWhatsappDisabled
                   "
-
                   type="button"
-
                   disabled
-
                 >
                   Order on WhatsApp →
                 </button>
