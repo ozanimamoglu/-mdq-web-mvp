@@ -418,29 +418,20 @@ function renderCampaign(
     const result =
       evaluateCampaign();
 
-
     const isIdeal =
       result === 'Ideal';
-
-
 
     const resultHeadline =
 
       isIdeal
-
         ? 'This knife looks very much like you.'
         : 'We have a feeling this knife would make you happy.';
-
-
 
     const campaignResultCopy =
 
       isIdeal
-
         ? 'You seem to appreciate more than just sharpness — craftsmanship, feel and character matter too.'
         : 'You may not be overly romantic about knives, but you know how good it feels to use something beautifully made.';
-
-
 
     const cleanNumber =
       String(
@@ -452,15 +443,12 @@ function renderCampaign(
       );
 
 
-
     const whatsappUrl =
 
       cleanNumber
-
         ? `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
             campaign.whatsappMessage
           )}`
-
         : '';
 
 
@@ -473,17 +461,14 @@ function renderCampaign(
           campaignResultShell
         "
       >
-
         <section
           class="campaignResultIntro"
         >
-
           <p
             class="campaignEyebrow"
           >
             YOUR RESULT
           </p>
-
 
           <h1>
             ${esc(
@@ -491,13 +476,11 @@ function renderCampaign(
             )}
           </h1>
 
-
           <h2>
             ${esc(
               resultHeadline
             )}
           </h2>
-
 
           <p
             class="campaignResultCopy"
@@ -507,30 +490,25 @@ function renderCampaign(
             )}
           </p>
 
-
         </section>
 
+ 
+<section
+  class="campaignProductHero"
+>
 
+  <img
+    src="${esc(
+      campaign.resultImage
+    )}"
 
-        <section
-          class="campaignProductHero"
-        >
+    alt="${esc(
+      campaign.productName
+    )}"
 
+  />
 
-          <img
-
-            src="${esc(
-              campaign.image
-            )}"
-
-            alt="${esc(
-              campaign.productName
-            )}"
-
-          />
-
-
-        </section>
+</section>
 
 
 
@@ -676,18 +654,10 @@ function renderCampaign(
           >
             Mention your test code when ordering.
           </p>
-
-
         </section>
-
-
       </main>
-
     `;
-
-
     return;
-
   }
 
 
