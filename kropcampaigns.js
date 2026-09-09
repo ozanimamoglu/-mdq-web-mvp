@@ -57,31 +57,31 @@ const kropCampaigns = {
     questions: [
 
       {
-        id: 'q1',
+  id: 'q1',
 
-        text:
-          'Have you ever held a handmade chef’s chopper crafted from 135-layer Damascus steel?',
+  text:
+    'Imagine this in your hand. How would it feel?',
 
-        answers: [
-          {
-            label:
-              'No. Wow, that sounds tempting.',
-            score: 2
-          },
+  answers: [
+    {
+      label:
+        'Powerful. I’d want to try it.',
+      score: 2
+    },
 
-          {
-            label:
-              'No. This would be my first. 😏',
-            score: 2
-          },
+    {
+      label:
+        'Special. Definitely not an ordinary knife.',
+      score: 1
+    },
 
-          {
-            label:
-              'Yes. But now I’m curious about this one.',
-            score: 2
-          }
-        ]
-      },
+    {
+      label:
+        'Beautiful — but I’m not sure it’s for me.',
+      score: 0
+    }
+  ]
+},
 
 
       {
