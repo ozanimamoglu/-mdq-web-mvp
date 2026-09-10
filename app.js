@@ -431,7 +431,7 @@ function renderCampaign(
 
           <img
             class="kropHeroImage"
-            src="/KROP-chopper_AI.jpg"
+            src="/KROP-chopper-AI.jpg"
             alt="Handmade Damascus Chef's Chopper"
           />
 
