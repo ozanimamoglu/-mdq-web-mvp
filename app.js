@@ -660,60 +660,106 @@ function renderCampaign(
         </div>
 
 
-        <div class="kropTrustIcon">
-  <svg
-    viewBox="0 0 24 24"
-    width="30"
-    height="30"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.7"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M12 3 5 6v5c0 4.6 2.7 8.1 7 10 4.3-1.9 7-5.4 7-10V6l-7-3Z"/>
-    <path d="m9 12 2 2 4-4"/>
-  </svg>
-</div>
+
+        <!-- TRUST -->
+        <div class="kropTrust">
+
+          <div class="kropTrustBlock">
+
+            <div class="kropTrustIcon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M12 3 5 6v5c0 4.6 2.7 8.1 7 10 4.3-1.9 7-5.4 7-10V6l-7-3Z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+
+            <div class="kropTrustText">
+              <strong>
+                Secure & direct ordering
+              </strong>
+
+              <span>
+                Orders handled by<br>
+                Wine So Easy.
+              </span>
+            </div>
+
+          </div>
 
 
-  <div class="kropTrustIcon">
-  <svg
-    viewBox="0 0 24 24"
-    width="30"
-    height="30"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.7"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M3 7h11v9H3z"/>
-    <path d="M14 10h4l3 3v3h-7z"/>
-    <circle cx="7" cy="18" r="2"/>
-    <circle cx="18" cy="18" r="2"/>
-  </svg>
-</div>
+          <div class="kropTrustBlock">
 
-  <div class="kropTrustIcon">
-  <svg
-    viewBox="0 0 24 24"
-    width="30"
-    height="30"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.7"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.4 9.4 0 0 1-4-.9L3 21l1.7-4.2A8.2 8.2 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/>
-    <path d="M9.8 9a2.3 2.3 0 0 1 4.5.7c0 1.7-2.3 2-2.3 3.5"/>
-    <path d="M12 16h.01"/>
-  </svg>
-</div>
+            <div class="kropTrustIcon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M3 7h11v9H3z"/>
+                <path d="M14 10h4l3 3v3h-7z"/>
+                <circle cx="7" cy="18" r="2"/>
+                <circle cx="18" cy="18" r="2"/>
+              </svg>
+            </div>
+
+            <div class="kropTrustText">
+              <strong>
+                PostNL shipping
+              </strong>
+
+              <span>
+                Within the Netherlands.<br>
+                Typically around €12.
+              </span>
+            </div>
+
+          </div>
+
+
+          <div class="kropTrustBlock">
+
+            <div class="kropTrustIcon">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.4 9.4 0 0 1-4-.9L3 21l1.7-4.2A8.2 8.2 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/>
+                <path d="M9.8 9a2.3 2.3 0 0 1 4.5.7c0 1.7-2.3 2-2.3 3.5"/>
+                <path d="M12 16h.01"/>
+              </svg>
+            </div>
+
+            <div class="kropTrustText">
+              <strong>
+                Questions? We’re here.
+              </strong>
+
+              <span>
+                Order or contact us<br>
+                via WhatsApp.
+              </span>
+            </div>
+
+          </div>
+
+        </div>
 
 
         <!-- WINE SO EASY -->
@@ -729,21 +775,13 @@ function renderCampaign(
             CORNELIS SCHUYTSTRAAT 37
 
             <span>•</span>
-
             AMSTERDAM
-
             <span>•</span>
-
             KVK 81664346
-
           </div>
-
         </footer>
-
       </section>
-
     </main>
-
   `;
 
   return;
