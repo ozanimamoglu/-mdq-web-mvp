@@ -469,33 +469,97 @@ function renderCampaign(
         </p>
 
 
-<div class="kropFeatureIcon">
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M7 11V6.5a1.5 1.5 0 0 1 3 0V10"/>
-    <path d="M10 10V4.5a1.5 1.5 0 0 1 3 0V10"/>
-    <path d="M13 10V5.5a1.5 1.5 0 0 1 3 0V11"/>
-    <path d="M16 11V8a1.5 1.5 0 0 1 3 0v5.5c0 4.1-2.8 7.5-7 7.5-3.6 0-6-2-7-5l-1.2-3.2a1.6 1.6 0 0 1 3-1.1L8 14"/>
-  </svg>
-</div>
+<!-- FEATURES -->
+<div class="kropFeatures">
 
-<div class="kropFeatureIcon">
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 3 3 8l9 5 9-5-9-5Z"/>
-    <path d="m3 12 9 5 9-5"/>
-    <path d="m3 16 9 5 9-5"/>
-  </svg>
-</div>
+  <div class="kropFeature">
 
-<div class="kropFeatureIcon">
-  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M12 21v-8"/>
-    <path d="M7 21h10"/>
-    <path d="M12 13 8 9"/>
-    <path d="M12 13 16 9"/>
-    <path d="M8 10a4 4 0 1 1 8 0"/>
-    <path d="M6 11a3 3 0 0 1 2-5"/>
-    <path d="M18 11a3 3 0 0 0-2-5"/>
-  </svg>
+    <div class="kropFeatureIcon">
+      <svg
+        viewBox="0 0 24 24"
+        width="28"
+        height="28"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M7 11V6.5a1.5 1.5 0 0 1 3 0V10"/>
+        <path d="M10 10V4.5a1.5 1.5 0 0 1 3 0V10"/>
+        <path d="M13 10V5.5a1.5 1.5 0 0 1 3 0V11"/>
+        <path d="M16 11V8a1.5 1.5 0 0 1 3 0v5.5c0 4.1-2.8 7.5-7 7.5-3.6 0-6-2-7-5l-1.2-3.2a1.6 1.6 0 0 1 3-1.1L8 14"/>
+      </svg>
+    </div>
+
+    <div>
+      <strong>Handmade</strong>
+      <span>Crafted by a Turkish master artisan.</span>
+    </div>
+
+  </div>
+
+
+  <div class="kropFeature">
+
+    <div class="kropFeatureIcon">
+      <svg
+        viewBox="0 0 24 24"
+        width="28"
+        height="28"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 3 3 8l9 5 9-5-9-5Z"/>
+        <path d="m3 12 9 5 9-5"/>
+        <path d="m3 16 9 5 9-5"/>
+      </svg>
+    </div>
+
+    <div>
+      <strong>135-layer Damascus steel</strong>
+      <span>Exceptional beauty and lasting performance.</span>
+    </div>
+
+  </div>
+
+
+  <div class="kropFeature">
+
+    <div class="kropFeatureIcon">
+      <svg
+        viewBox="0 0 24 24"
+        width="28"
+        height="28"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.7"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M12 21v-8"/>
+        <path d="M7 21h10"/>
+        <path d="M12 13 8 9"/>
+        <path d="M12 13 16 9"/>
+        <path d="M8 10a4 4 0 1 1 8 0"/>
+        <path d="M6 11a3 3 0 0 1 2-5"/>
+        <path d="M18 11a3 3 0 0 0-2-5"/>
+      </svg>
+    </div>
+
+    <div>
+      <strong>1,500-year-old fossilized oak</strong>
+      <span>A unique handle with a story.</span>
+    </div>
+
+  </div>
+
 </div>
 
 
@@ -596,75 +660,60 @@ function renderCampaign(
         </div>
 
 
-        <!-- TRUST -->
-        <div class="kropTrust">
-
-          <div class="kropTrustBlock">
-
-            <div class="kropTrustIcon">
-              ♢
-            </div>
-
-            <div>
-
-              <strong>
-                Secure & direct ordering
-              </strong>
-
-              <span>
-                Orders handled by<br>
-                Wine So Easy.
-              </span>
-
-            </div>
-
-          </div>
+        <div class="kropTrustIcon">
+  <svg
+    viewBox="0 0 24 24"
+    width="30"
+    height="30"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 3 5 6v5c0 4.6 2.7 8.1 7 10 4.3-1.9 7-5.4 7-10V6l-7-3Z"/>
+    <path d="m9 12 2 2 4-4"/>
+  </svg>
+</div>
 
 
-          <div class="kropTrustBlock">
+  <div class="kropTrustIcon">
+  <svg
+    viewBox="0 0 24 24"
+    width="30"
+    height="30"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 7h11v9H3z"/>
+    <path d="M14 10h4l3 3v3h-7z"/>
+    <circle cx="7" cy="18" r="2"/>
+    <circle cx="18" cy="18" r="2"/>
+  </svg>
+</div>
 
-            <div class="kropTrustIcon">
-              ▱
-            </div>
-
-            <div>
-
-              <strong>
-                PostNL shipping
-              </strong>
-
-              <span>
-                Within the Netherlands.<br>
-                Typically around €12.
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <div class="kropTrustBlock">
-
-            <div class="kropTrustIcon">
-              ◌
-            </div>
-
-            <div>
-
-              <strong>
-                Questions? We’re here.
-              </strong>
-
-              <span>
-                Order or contact us<br>
-                via WhatsApp.
-              </span>
-
-            </div>
-
-          </div>
-
-        </div>
+  <div class="kropTrustIcon">
+  <svg
+    viewBox="0 0 24 24"
+    width="30"
+    height="30"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M21 11.5a8.4 8.4 0 0 1-9 8.5 9.4 9.4 0 0 1-4-.9L3 21l1.7-4.2A8.2 8.2 0 0 1 3 11.5 8.5 8.5 0 0 1 12 3a8.5 8.5 0 0 1 9 8.5Z"/>
+    <path d="M9.8 9a2.3 2.3 0 0 1 4.5.7c0 1.7-2.3 2-2.3 3.5"/>
+    <path d="M12 16h.01"/>
+  </svg>
+</div>
 
 
         <!-- WINE SO EASY -->
