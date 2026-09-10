@@ -605,77 +605,97 @@ function renderCampaign(
           }
 
 
-          <!-- SHIPPING -->
-          <div class="kropShipping">
+   <div class="kropShipping">
 
-            <strong>
-              Shipping with PostNL
-            </strong>
+  <strong>
+    Shipping with PostNL
+  </strong>
 
-            <span>
-              Within the Netherlands. Typically around €12.
-              Exact shipping cost confirmed when ordering.
-            </span>
+  <span>
+    Within the Netherlands · Typically around €12
+  </span>
 
-          </div>
+  <small>
+    Exact shipping cost confirmed when ordering.
+  </small>
 
-
-          <!-- TRUST -->
-          <div class="kropTrust">
-
-            <div class="kropTrustBlock">
-
-              <strong>
-                Secure & direct ordering
-              </strong>
-
-              <span>
-                Orders handled directly by Wine So Easy.
-              </span>
-
-            </div>
+</div>
 
 
-            <div class="kropTrustBlock">
+<div class="kropTrust">
 
-              <strong>
-                Questions?
-              </strong>
+  <div class="kropTrustBlock">
 
-              <span>
-                Contact us directly on WhatsApp.
-              </span>
+    <div class="kropTrustIcon">
+      ♢
+    </div>
 
-            </div>
+    <div>
+      <strong>
+        Secure & direct ordering
+      </strong>
 
-          </div>
+      <span>
+        Orders handled by<br>
+        Wine So Easy.
+      </span>
+    </div>
+  </div>
 
 
-          <!-- COMPANY -->
-          <footer class="kropCompany">
+  <div class="kropTrustBlock">
+    <div class="kropTrustIcon">
+      ▱
+    </div>
 
-            <img
-              src="/wine-so-easy-logo.png"
-              alt="Wine So Easy"
-            />
+    <div>
+      <strong>
+        PostNL shipping
+      </strong>
 
-            <div>
-              Cornelis Schuytstraat 37 · Amsterdam
-            </div>
+      <span>
+        Within the Netherlands.<br>
+        Typically around €12.
+      </span>
+    </div>
+  </div>
 
-            <div>
-              KvK 81664346
-            </div>
 
-          </footer>
+  <div class="kropTrustBlock">
 
-        </section>
+    <div class="kropTrustIcon">
+      ◌
+    </div>
 
-      </main>
-    `;
+    <div>
+      <strong>
+        Questions? We’re here.
+      </strong>
 
-    return;
-  }
+      <span>
+        Order or contact us<br>
+        via WhatsApp.
+      </span>
+    </div>
+  </div>
+</div>
+
+
+<footer class="kropCompany">
+
+  <img
+    src="/wine-so-easy-logo.png"
+    alt="Wine So Easy"
+  />
+  <div class="kropCompanyDetails">
+    CORNELIS SCHUYTSTRAAT 37
+    <span>•</span>
+    AMSTERDAM
+    <span>•</span>
+    KVK 81664346
+  </div>
+
+</footer>
   
   /*
    * =========================================================
