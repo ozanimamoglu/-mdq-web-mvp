@@ -426,16 +426,35 @@ function renderCampaign(
 
       <main class="kropLanding">
 
-        <!-- HERO -->
-        <section class="kropHero">
+<!-- HERO -->
+<section class="kropHero">
 
-          <img
-            class="kropHeroImage"
-            src="/KROP-chopper-AI.jpg"
-            alt="Handmade Damascus Chef's Chopper"
-          />
+  <img
+    class="kropHeroImage"
+    src="/KROP-chopper-AI.jpg"
+    alt="Handmade Damascus Chef's Chopper"
+  />
 
-        </section>
+  <div class="kropHeroOverlay">
+
+    <div class="kropHeroBrand">
+      KROP
+    </div>
+
+    <div class="kropHeroSubBrand">
+      CHEF KNIVES
+    </div>
+
+    <div class="kropHeroMessage">
+      HANDMADE<br>
+      FOR A MORE<br>
+      MEANINGFUL<br>
+      KITCHEN
+    </div>
+
+  </div>
+
+</section>
 
 
         <!-- MAIN CONTENT -->
