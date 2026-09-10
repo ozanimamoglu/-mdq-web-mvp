@@ -23,7 +23,7 @@ const kropCampaigns = {
     // Final result screen image
     resultImage: '/Krop-last-page.jpg',
 
-    price: '€287.99',
+    price: '€249.99',
     couponCode: '10% DISCOUNT',
 
     /*
