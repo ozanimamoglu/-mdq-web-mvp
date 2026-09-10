@@ -460,9 +460,13 @@ function renderCampaign(
         <!-- MAIN CONTENT -->
         <section class="kropContent">
 
-          <div class="kropBrand">
-            KROP CHEF KNIVES
-          </div>
+<div class="kropBrand">
+  KROP CHEF KNIVES
+</div>
+
+<h1>
+  Handmade Damascus Chef’s Chopper
+</h1>
 
           <h1>
             Handmade for a more meaningful kitchen.
