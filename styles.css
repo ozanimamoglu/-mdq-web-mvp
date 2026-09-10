@@ -1967,85 +1967,63 @@ button.categoryCard:hover{
 
   .kropHeroImage {
     height: 68vw;
-
     min-height: 330px;
     max-height: 480px;
   }
-
 
   .kropHeroOverlay {
     top: 8%;
     left: 7%;
   }
 
-
   .kropHeroBrand {
     font-size: 68px;
-
     letter-spacing: 4px;
   }
-
 
   .kropHeroSubBrand {
     margin-top: 11px;
-
     font-size: 18px;
-
     letter-spacing: 6px;
   }
 
-
   .kropHeroMessage {
     margin-top: 26px;
-
     font-size: 18px;
-
     line-height: 1.42;
-
     letter-spacing: 4px;
   }
-
 
   .kropContent {
     padding:
       38px 20px 32px;
   }
 
-
   .kropContent h1 {
     font-size: 47px;
-
     line-height: .98;
   }
 
-
   .kropArtLine {
     font-size: 18px;
-
     margin:
       17px 0 34px;
   }
 
-
   .kropFeatures {
     grid-template-columns:
       repeat(3, 1fr);
-
     margin-bottom: 38px;
   }
-
 
   .kropFeature {
     padding: 0 10px;
   }
 
-
   .kropFeatureIcon {
     width: 50px;
     height: 50px;
-
     margin-bottom: 12px;
-
     font-size: 22px;
   }
 
@@ -2057,10 +2035,8 @@ button.categoryCard:hover{
 
   .kropFeature span {
     font-size: 12px;
-
     line-height: 1.35;
   }
-
 
   .kropPrice strong {
     font-size: 54px;
@@ -2070,7 +2046,6 @@ button.categoryCard:hover{
   .kropOffer {
     margin-top: 17px;
     margin-bottom: 27px;
-
     padding:
       10px 26px 11px;
   }
@@ -2078,40 +2053,32 @@ button.categoryCard:hover{
 
   .kropOfferLabel {
     font-size: 12px;
-
     letter-spacing: 2px;
   }
-
 
   .kropOffer strong {
     font-size: 25px;
   }
 
-
   .kropWhatsapp {
     border-radius: 25px;
-
     padding:
       17px 18px;
 
     gap: 13px;
   }
 
-
   .kropWhatsappIcon {
     font-size: 32px;
   }
-
 
   .kropWhatsapp strong {
     font-size: 20px;
   }
 
-
   .kropWhatsapp small {
     font-size: 13px;
   }
-
 
   .kropShipping {
     margin-top: 15px;
@@ -2149,7 +2116,6 @@ button.categoryCard:hover{
 
   .kropHeroImage {
     height: 78vw;
-
     min-height: 320px;
   }
 
@@ -2159,28 +2125,22 @@ button.categoryCard:hover{
     left: 6%;
   }
 
-
   .kropHeroBrand {
     font-size: 56px;
-
     letter-spacing: 3px;
   }
 
 
   .kropHeroSubBrand {
     font-size: 14px;
-
     letter-spacing: 5px;
   }
 
 
   .kropHeroMessage {
     margin-top: 22px;
-
     font-size: 15px;
-
     line-height: 1.45;
-
     letter-spacing: 3.2px;
   }
 
@@ -2222,5 +2182,102 @@ button.categoryCard:hover{
   .kropTrust {
     grid-template-columns: 1fr;
     text-align: center;
+  }
+}
+
+
+
+/* =========================================================
+   KROP TRUST ROW — FIX
+   ========================================================= */
+
+.kropTrust {
+  width: min(820px, 100%);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 44px auto 0;
+  padding: 30px 0;
+  border-top: 1px solid #d9d9d5;
+  border-bottom: 1px solid #d9d9d5;
+}
+
+.kropTrustBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 24px;
+  text-align: center;
+  border-right: 1px solid #ddd;
+}
+
+.kropTrustBlock:last-child {
+  border-right: 0;
+}
+
+.kropTrustIcon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 10px;
+  color: #222;
+}
+
+.kropTrustIcon svg {
+  display: block;
+  width: 30px;
+  height: 30px;
+}
+
+.kropTrustBlock > div:last-child {
+  display: block;
+}
+
+.kropTrustBlock strong {
+  display: block;
+  margin: 0 0 5px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #222;
+}
+
+.kropTrustBlock span {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+
+  color: #555;
+}
+
+
+/* MOBILE */
+
+@media (max-width: 700px) {
+
+  .kropTrust {
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 34px;
+    padding: 25px 0;
+  }
+  .kropTrustBlock {
+    padding: 0 10px;
+  }
+  .kropTrustIcon {
+    width: 38px;
+    height: 38px;
+    margin-bottom: 8px;
+  }
+  .kropTrustIcon svg {
+    width: 27px;
+    height: 27px;
+  }
+  .kropTrustBlock strong {
+    font-size: 12px;
+  }
+  .kropTrustBlock span {
+    font-size: 11px;
   }
 }
