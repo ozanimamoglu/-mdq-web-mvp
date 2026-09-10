@@ -1738,89 +1738,107 @@ button.categoryCard:hover{
    ========================================================= */
 
 .kropShipping {
-  width: min(760px, 100%);
+  width: min(740px, 100%);
+  margin: 20px auto 0;
+  padding: 18px 20px;
 
-  margin: 17px auto 0;
-
-  padding: 15px 18px;
-
-  border:
-    1px solid #ddd9d2;
-
+  border: 1px solid #d8d8d4;
   border-radius: 8px;
 
   text-align: center;
-
   background: #fff;
 }
 
-
 .kropShipping strong {
   display: block;
+  margin-bottom: 5px;
 
-  margin-bottom: 4px;
-
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-
-  color: #2d2925;
 }
-
 
 .kropShipping span {
   display: block;
 
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #555;
+}
 
-  color: #706860;
+.kropShipping small {
+  display: block;
+  margin-top: 3px;
+
+  font-size: 12px;
+  line-height: 1.4;
+  color: #777;
 }
 
 
 /* =========================================================
-   TRUST
+   TRUST ROW
    ========================================================= */
 
 .kropTrust {
-  width: min(760px, 100%);
+  width: min(820px, 100%);
 
   display: grid;
+  grid-template-columns: repeat(3, 1fr);
 
-  grid-template-columns:
-    1fr 1fr;
+  margin: 44px auto 0;
+  padding: 32px 0;
 
-  gap: 38px;
-
-  margin: 38px auto 0;
-
-  padding-top: 27px;
-
-  border-top:
-    1px solid #ddd9d2;
-
-  text-align: left;
+  border-top: 1px solid #d9d9d5;
+  border-bottom: 1px solid #d9d9d5;
 }
 
+.kropTrustBlock {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 14px;
+
+  align-items: start;
+  text-align: left;
+
+  padding: 0 24px;
+
+  border-right: 1px solid #ddd;
+}
+
+.kropTrustBlock:last-child {
+  border-right: 0;
+}
+
+.kropTrustIcon {
+  width: 42px;
+  height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  font-size: 30px;
+  line-height: 1;
+
+  color: #222;
+}
 
 .kropTrustBlock strong {
   display: block;
 
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 700;
+  line-height: 1.25;
 
   margin-bottom: 5px;
-
-  color: #2b2724;
 }
-
 
 .kropTrustBlock span {
   display: block;
 
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.35;
 
-  color: #6b625b;
+  color: #555;
 }
 
 
@@ -1829,44 +1847,117 @@ button.categoryCard:hover{
    ========================================================= */
 
 .kropCompany {
-  width: min(760px, 100%);
+  width: min(820px, 100%);
 
-  margin: 36px auto 0;
+  margin: 0 auto;
+  padding: 30px 20px 16px;
 
-  padding: 29px 0 10px;
-
-  border-top:
-    1px solid #ddd9d2;
+  border-top: 0;
 
   text-align: center;
-
-  font-size: 12px;
-  line-height: 1.7;
-
-  color: #756d66;
 }
-
 
 .kropCompany img {
   display: block;
 
-  max-width: 155px;
-  max-height: 72px;
+  width: auto;
+  max-width: 230px;
+  max-height: 120px;
 
   object-fit: contain;
 
-  margin: 0 auto 12px;
+  margin: 0 auto 18px;
+}
+
+.kropCompanyDetails {
+  font-size: 12px;
+  font-weight: 500;
+
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+
+  color: #777;
+}
+
+.kropCompanyDetails span {
+  display: inline-block;
+  margin: 0 9px;
 }
 
 
-.kropCompanyName {
-  margin-bottom: 2px;
+/* =========================================================
+   MOBILE TRUST + FOOTER
+   ========================================================= */
 
-  font-weight: 700;
+@media (max-width: 700px) {
 
-  color: #312a25;
+  .kropShipping {
+    margin-top: 16px;
+    padding: 15px 14px;
+  }
+
+  .kropTrust {
+    width: 100%;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    margin-top: 34px;
+    padding: 25px 0;
+  }
+  .kropTrustBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    text-align: center;
+  }
+
+  .kropTrustIcon {
+    width: 36px;
+    height: 36px;
+
+    font-size: 26px;
+  }
+  .kropTrustBlock strong {
+    font-size: 12px;
+  }
+  .kropTrustBlock span {
+    font-size: 11px;
+  }
+  .kropCompany {
+    padding-top: 28px;
+  }
+  .kropCompany img {
+    max-width: 190px;
+    max-height: 100px;
+  }
+  .kropCompanyDetails {
+    font-size: 10px;
+    line-height: 1.7;
+    letter-spacing: 1.2px;
+  }
 }
 
+
+@media (max-width: 460px) {
+
+  .kropTrust {
+    gap: 0;
+  }
+  .kropTrustBlock {
+    padding: 0 7px;
+  }
+  .kropTrustBlock strong {
+    font-size: 11px;
+  }
+  .kropTrustBlock span {
+    font-size: 10px;
+  }
+  .kropCompanyDetails span {
+    margin: 0 4px;
+  }
+}
 
 /* =========================================================
    TABLET / MOBILE
