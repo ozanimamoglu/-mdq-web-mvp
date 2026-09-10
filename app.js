@@ -375,25 +375,6 @@ function backCampaignQuestion(){
  * =========================================================
  */
 
-function renderCampaign(
-  app,
-  campaign
-){
-
-  if(
-    !campaignState.analyticsStarted
-  ){
-    campaignState.analyticsStarted =
-      true;
-
-    trackEvent(
-      'campaign_started',
-      {
-        campaign: campaign.id
-      }
-    );
-  }
-
 
 function renderCampaign(
   app,
