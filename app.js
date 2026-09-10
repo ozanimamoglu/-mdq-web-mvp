@@ -28,37 +28,25 @@ function getCampaignSessionId(){
 }
 
 
-
 function trackEvent(name, data = {}) {
-
   fetch('/api/campaign-event', {
-
     method: 'POST',
-
     headers: {
       'Content-Type': 'application/json'
     },
-
     body: JSON.stringify({
-
       campaignId:
         data.campaign || 'krop',
-
       eventName:
         name,
-
       questionNumber:
         data.question || null,
-
       result:
         data.result || null,
-
       sessionId:
         getCampaignSessionId(),
-
       referrer:
         document.referrer || null,
-
       utmSource:
         new URLSearchParams(
           window.location.search
@@ -68,7 +56,6 @@ function trackEvent(name, data = {}) {
         new URLSearchParams(
           window.location.search
         ).get('utm_medium'),
-
       utmCampaign:
         new URLSearchParams(
           window.location.search
@@ -83,7 +70,6 @@ function trackEvent(name, data = {}) {
         error
       )
   );
-
 }
 
 
@@ -409,6 +395,284 @@ function renderCampaign(
   }
 
 
+function renderCampaign(
+  app,
+  campaign
+){
+
+  if(
+    !campaignState.analyticsStarted
+  ){
+    campaignState.analyticsStarted =
+      true;
+
+    trackEvent(
+      'campaign_started',
+      {
+        campaign: campaign.id
+      }
+    );
+  }
+
+
+  /*
+   * =========================================================
+   * KROP VERSION C — DIRECT PRODUCT LANDING PAGE
+   * =========================================================
+   */
+
+  if(
+    campaign.id === 'krop'
+  ){
+
+    const cleanNumber =
+      String(
+        campaign.whatsappNumber ||
+        ''
+      ).replace(
+        /\D/g,
+        ''
+      );
+
+    const whatsappUrl =
+      cleanNumber
+        ? `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
+            campaign.whatsappMessage
+          )}`
+        : '';
+
+    app.innerHTML = `
+
+      <main class="kropLanding">
+
+        <!-- HERO -->
+        <section class="kropHero">
+
+          <img
+            class="kropHeroImage"
+            src="/KROP-chopper_AI.jpg"
+            alt="Handmade Damascus Chef's Chopper"
+          />
+
+        </section>
+
+
+        <!-- MAIN CONTENT -->
+        <section class="kropContent">
+
+          <div class="kropBrand">
+            KROP CHEF KNIVES
+          </div>
+
+          <h1>
+            Handmade for a more meaningful kitchen.
+          </h1>
+
+          <p class="kropArtLine">
+            A chef’s knife — and a little piece of art.
+          </p>
+
+
+          <!-- FEATURES -->
+          <div class="kropFeatures">
+
+            <div class="kropFeature">
+              <div class="kropFeatureIcon">
+                ✦
+              </div>
+
+              <div>
+                <strong>
+                  Handmade
+                </strong>
+
+                <span>
+                  Crafted by a Turkish master artisan.
+                </span>
+              </div>
+            </div>
+
+
+            <div class="kropFeature">
+              <div class="kropFeatureIcon">
+                ◈
+              </div>
+
+              <div>
+                <strong>
+                  135-layer Damascus steel
+                </strong>
+
+                <span>
+                  Exceptional beauty and lasting performance.
+                </span>
+              </div>
+            </div>
+
+
+            <div class="kropFeature">
+              <div class="kropFeatureIcon">
+                ◎
+              </div>
+
+              <div>
+                <strong>
+                  1,500-year-old fossilized oak
+                </strong>
+
+                <span>
+                  A unique handle with a story.
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+
+          <!-- PRICE -->
+          <div class="kropPrice">
+
+            <span>
+              YOUR KNIFE
+            </span>
+
+            <strong>
+              ${esc(
+                campaign.price
+              )}
+            </strong>
+
+          </div>
+
+
+          <!-- OFFER -->
+          <div class="kropOffer">
+
+            <span class="kropOfferLabel">
+              SPECIAL TEST OFFER
+            </span>
+
+            <strong>
+              10% DISCOUNT
+            </strong>
+
+          </div>
+
+
+          <!-- WHATSAPP -->
+          ${
+            whatsappUrl
+              ? `
+                <a
+                  class="kropWhatsapp"
+                  href="${esc(
+                    whatsappUrl
+                  )}"
+                  target="_blank"
+                  rel="noopener"
+
+                  onclick="
+                    trackEvent(
+                      'whatsapp_clicked',
+                      {
+                        campaign: '${esc(
+                          campaign.id
+                        )}'
+                      }
+                    )
+                  "
+                >
+                  <span class="kropWhatsappIcon">
+                    ☏
+                  </span>
+
+                  <span>
+                    <strong>
+                      Order NOW with 10% Discount
+                    </strong>
+
+                    <small>
+                      on WhatsApp
+                    </small>
+                  </span>
+                </a>
+              `
+              : ''
+          }
+
+
+          <!-- SHIPPING -->
+          <div class="kropShipping">
+
+            <strong>
+              Shipping with PostNL
+            </strong>
+
+            <span>
+              Within the Netherlands. Typically around €12.
+              Exact shipping cost confirmed when ordering.
+            </span>
+
+          </div>
+
+
+          <!-- TRUST -->
+          <div class="kropTrust">
+
+            <div class="kropTrustBlock">
+
+              <strong>
+                Secure & direct ordering
+              </strong>
+
+              <span>
+                Orders handled directly by Wine So Easy.
+              </span>
+
+            </div>
+
+
+            <div class="kropTrustBlock">
+
+              <strong>
+                Questions?
+              </strong>
+
+              <span>
+                Contact us directly on WhatsApp.
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <!-- COMPANY -->
+          <footer class="kropCompany">
+
+            <img
+              src="/wine-so-easy-logo.png"
+              alt="Wine So Easy"
+            />
+
+            <div>
+              Cornelis Schuytstraat 37 · Amsterdam
+            </div>
+
+            <div>
+              KvK 81664346
+            </div>
+
+          </footer>
+
+        </section>
+
+      </main>
+    `;
+
+    return;
+  }
+  
   /*
    * =========================================================
    * REVEAL SCREEN
