@@ -402,301 +402,330 @@ function renderCampaign(
    * =========================================================
    */
 
-  if(
-    campaign.id === 'krop'
-  ){
+ if(
+  campaign.id === 'krop'
+){
 
-    const cleanNumber =
-      String(
-        campaign.whatsappNumber ||
-        ''
-      ).replace(
-        /\D/g,
-        ''
-      );
+  const cleanNumber =
+    String(
+      campaign.whatsappNumber ||
+      ''
+    ).replace(
+      /\D/g,
+      ''
+    );
 
-    const whatsappUrl =
-      cleanNumber
-        ? `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
-            campaign.whatsappMessage
-          )}`
-        : '';
+  const whatsappUrl =
+    cleanNumber
+      ? `https://wa.me/${cleanNumber}?text=${encodeURIComponent(
+          campaign.whatsappMessage
+        )}`
+      : '';
 
-    app.innerHTML = `
+  app.innerHTML = `
 
-      <main class="kropLanding">
+    <main class="kropLanding">
 
-<!-- HERO -->
-<section class="kropHero">
+      <!-- HERO -->
+      <section class="kropHero">
 
-  <img
-    class="kropHeroImage"
-    src="/KROP-chopper-AI.jpg"
-    alt="Handmade Damascus Chef's Chopper"
-  />
+        <img
+          class="kropHeroImage"
+          src="/KROP-chopper-AI.jpg"
+          alt="Handmade Damascus Chef's Chopper"
+        />
 
-  <div class="kropHeroOverlay">
+        <div class="kropHeroOverlay">
 
-    <div class="kropHeroBrand">
-      KROP
-    </div>
+          <div class="kropHeroBrand">
+            KROP
+          </div>
 
-    <div class="kropHeroSubBrand">
-      CHEF KNIVES
-    </div>
+          <div class="kropHeroSubBrand">
+            CHEF KNIVES
+          </div>
 
-    <div class="kropHeroMessage">
-      HANDMADE<br>
-      FOR A MORE<br>
-      MEANINGFUL<br>
-      KITCHEN
-    </div>
+          <div class="kropHeroMessage">
+            HANDMADE<br>
+            FOR A MORE<br>
+            MEANINGFUL<br>
+            KITCHEN
+          </div>
 
-  </div>
+        </div>
 
-</section>
-
-
-        <!-- MAIN CONTENT -->
-        <section class="kropContent">
-
-<div class="kropBrand">
-  KROP CHEF KNIVES
-</div>
-
-<h1>
-  Handmade Damascus Chef’s Chopper
-</h1>
-
-          <h1>
-            Handmade for a more meaningful kitchen.
-          </h1>
-
-          <p class="kropArtLine">
-            A chef’s knife — and a little piece of art.
-          </p>
+      </section>
 
 
-          <!-- FEATURES -->
-          <div class="kropFeatures">
+      <!-- MAIN CONTENT -->
+      <section class="kropContent">
 
-            <div class="kropFeature">
-              <div class="kropFeatureIcon">
-                ✦
-              </div>
+        <h1>
+          Handmade Damascus Chef’s Chopper
+        </h1>
 
-              <div>
-                <strong>
-                  Handmade
-                </strong>
+        <p class="kropArtLine">
+          A chef’s knife — and a little piece of art.
+        </p>
 
-                <span>
-                  Crafted by a Turkish master artisan.
-                </span>
-              </div>
+
+        <!-- FEATURES -->
+        <div class="kropFeatures">
+
+          <div class="kropFeature">
+
+            <div class="kropFeatureIcon">
+              ✋
             </div>
 
+            <div>
+              <strong>
+                Handmade
+              </strong>
 
-            <div class="kropFeature">
-              <div class="kropFeatureIcon">
-                ◈
-              </div>
-
-              <div>
-                <strong>
-                  135-layer Damascus steel
-                </strong>
-
-                <span>
-                  Exceptional beauty and lasting performance.
-                </span>
-              </div>
-            </div>
-
-
-            <div class="kropFeature">
-              <div class="kropFeatureIcon">
-                ◎
-              </div>
-
-              <div>
-                <strong>
-                  1,500-year-old fossilized oak
-                </strong>
-
-                <span>
-                  A unique handle with a story.
-                </span>
-              </div>
+              <span>
+                Crafted by a Turkish master artisan.
+              </span>
             </div>
 
           </div>
 
 
-          <!-- PRICE -->
-          <div class="kropPrice">
+          <div class="kropFeature">
 
-            <span>
-              YOUR KNIFE
-            </span>
+            <div class="kropFeatureIcon">
+              ◫
+            </div>
 
-            <strong>
-              ${esc(
-                campaign.price
-              )}
-            </strong>
+            <div>
+              <strong>
+                135-layer Damascus steel
+              </strong>
 
-          </div>
-
-
-          <!-- OFFER -->
-          <div class="kropOffer">
-
-            <span class="kropOfferLabel">
-              SPECIAL TEST OFFER
-            </span>
-
-            <strong>
-              10% DISCOUNT
-            </strong>
+              <span>
+                Exceptional beauty and lasting performance.
+              </span>
+            </div>
 
           </div>
 
 
-          <!-- WHATSAPP -->
-          ${
-            whatsappUrl
-              ? `
-                <a
-                  class="kropWhatsapp"
-                  href="${esc(
-                    whatsappUrl
-                  )}"
-                  target="_blank"
-                  rel="noopener"
+          <div class="kropFeature">
 
-                  onclick="
-                    trackEvent(
-                      'whatsapp_clicked',
-                      {
-                        campaign: '${esc(
-                          campaign.id
-                        )}'
-                      }
-                    )
-                  "
-                >
-                  <span class="kropWhatsappIcon">
-                    ☏
-                  </span>
+            <div class="kropFeatureIcon">
+              ♧
+            </div>
 
-                  <span>
-                    <strong>
-                      Order NOW with 10% Discount
-                    </strong>
+            <div>
+              <strong>
+                1,500-year-old fossilized oak
+              </strong>
 
-                    <small>
-                      on WhatsApp
-                    </small>
-                  </span>
-                </a>
-              `
-              : ''
-          }
+              <span>
+                A unique handle with a story.
+              </span>
+            </div>
+
+          </div>
+
+        </div>
 
 
-   <div class="kropShipping">
+        <!-- PRICE -->
+        <div class="kropPrice">
 
-  <strong>
-    Shipping with PostNL
-  </strong>
+          <strong>
+            ${esc(
+              campaign.price
+            )}
+          </strong>
 
-  <span>
-    Within the Netherlands · Typically around €12
-  </span>
-
-  <small>
-    Exact shipping cost confirmed when ordering.
-  </small>
-
-</div>
+        </div>
 
 
-<div class="kropTrust">
+        <!-- OFFER -->
+        <div class="kropOffer">
 
-  <div class="kropTrustBlock">
+          <span class="kropOfferLabel">
+            SPECIAL TEST OFFER
+          </span>
 
-    <div class="kropTrustIcon">
-      ♢
-    </div>
+          <strong>
+            10% DISCOUNT
+          </strong>
 
-    <div>
-      <strong>
-        Secure & direct ordering
-      </strong>
-
-      <span>
-        Orders handled by<br>
-        Wine So Easy.
-      </span>
-    </div>
-  </div>
+        </div>
 
 
-  <div class="kropTrustBlock">
-    <div class="kropTrustIcon">
-      ▱
-    </div>
+        <!-- WHATSAPP -->
+        ${
+          whatsappUrl
+            ? `
+              <a
+                class="kropWhatsapp"
+                href="${esc(
+                  whatsappUrl
+                )}"
+                target="_blank"
+                rel="noopener"
 
-    <div>
-      <strong>
-        PostNL shipping
-      </strong>
+                onclick="
+                  trackEvent(
+                    'whatsapp_clicked',
+                    {
+                      campaign: '${esc(
+                        campaign.id
+                      )}'
+                    }
+                  )
+                "
+              >
 
-      <span>
-        Within the Netherlands.<br>
-        Typically around €12.
-      </span>
-    </div>
-  </div>
+                <span class="kropWhatsappIcon">
+                  ☎
+                </span>
+
+                <span>
+
+                  <strong>
+                    Order NOW with 10% Discount
+                  </strong>
+
+                  <small>
+                    on WhatsApp
+                  </small>
+
+                </span>
+
+              </a>
+            `
+            : ''
+        }
 
 
-  <div class="kropTrustBlock">
+        <!-- SHIPPING -->
+        <div class="kropShipping">
 
-    <div class="kropTrustIcon">
-      ◌
-    </div>
+          <strong>
+            Shipping with PostNL
+          </strong>
 
-    <div>
-      <strong>
-        Questions? We’re here.
-      </strong>
+          <span>
+            Within the Netherlands · Typically around €12
+          </span>
 
-      <span>
-        Order or contact us<br>
-        via WhatsApp.
-      </span>
-    </div>
-  </div>
-</div>
+          <small>
+            Exact shipping cost confirmed when ordering.
+          </small>
+
+        </div>
 
 
-<footer class="kropCompany">
+        <!-- TRUST -->
+        <div class="kropTrust">
 
-  <img
-    src="/wine-so-easy-logo.png"
-    alt="Wine So Easy"
-  />
-  <div class="kropCompanyDetails">
-    CORNELIS SCHUYTSTRAAT 37
-    <span>•</span>
-    AMSTERDAM
-    <span>•</span>
-    KVK 81664346
-  </div>
+          <div class="kropTrustBlock">
 
-</footer>
-  
+            <div class="kropTrustIcon">
+              ♢
+            </div>
+
+            <div>
+
+              <strong>
+                Secure & direct ordering
+              </strong>
+
+              <span>
+                Orders handled by<br>
+                Wine So Easy.
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="kropTrustBlock">
+
+            <div class="kropTrustIcon">
+              ▱
+            </div>
+
+            <div>
+
+              <strong>
+                PostNL shipping
+              </strong>
+
+              <span>
+                Within the Netherlands.<br>
+                Typically around €12.
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="kropTrustBlock">
+
+            <div class="kropTrustIcon">
+              ◌
+            </div>
+
+            <div>
+
+              <strong>
+                Questions? We’re here.
+              </strong>
+
+              <span>
+                Order or contact us<br>
+                via WhatsApp.
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- WINE SO EASY -->
+        <footer class="kropCompany">
+
+          <img
+            src="/wine-so-easy-logo.png"
+            alt="Wine So Easy"
+          />
+
+          <div class="kropCompanyDetails">
+
+            CORNELIS SCHUYTSTRAAT 37
+
+            <span>•</span>
+
+            AMSTERDAM
+
+            <span>•</span>
+
+            KVK 81664346
+
+          </div>
+
+        </footer>
+
+      </section>
+
+    </main>
+
+  `;
+
+  return;
+}
+
+
   /*
    * =========================================================
    * REVEAL SCREEN
