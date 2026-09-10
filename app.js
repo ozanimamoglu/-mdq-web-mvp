@@ -469,66 +469,34 @@ function renderCampaign(
         </p>
 
 
-        <!-- FEATURES -->
-        <div class="kropFeatures">
+<div class="kropFeatureIcon">
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 11V6.5a1.5 1.5 0 0 1 3 0V10"/>
+    <path d="M10 10V4.5a1.5 1.5 0 0 1 3 0V10"/>
+    <path d="M13 10V5.5a1.5 1.5 0 0 1 3 0V11"/>
+    <path d="M16 11V8a1.5 1.5 0 0 1 3 0v5.5c0 4.1-2.8 7.5-7 7.5-3.6 0-6-2-7-5l-1.2-3.2a1.6 1.6 0 0 1 3-1.1L8 14"/>
+  </svg>
+</div>
 
-          <div class="kropFeature">
+<div class="kropFeatureIcon">
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 3 3 8l9 5 9-5-9-5Z"/>
+    <path d="m3 12 9 5 9-5"/>
+    <path d="m3 16 9 5 9-5"/>
+  </svg>
+</div>
 
-            <div class="kropFeatureIcon">
-              ✋
-            </div>
-
-            <div>
-              <strong>
-                Handmade
-              </strong>
-
-              <span>
-                Crafted by a Turkish master artisan.
-              </span>
-            </div>
-
-          </div>
-
-
-          <div class="kropFeature">
-
-            <div class="kropFeatureIcon">
-              ◫
-            </div>
-
-            <div>
-              <strong>
-                135-layer Damascus steel
-              </strong>
-
-              <span>
-                Exceptional beauty and lasting performance.
-              </span>
-            </div>
-
-          </div>
-
-
-          <div class="kropFeature">
-
-            <div class="kropFeatureIcon">
-              ♧
-            </div>
-
-            <div>
-              <strong>
-                1,500-year-old fossilized oak
-              </strong>
-
-              <span>
-                A unique handle with a story.
-              </span>
-            </div>
-
-          </div>
-
-        </div>
+<div class="kropFeatureIcon">
+  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 21v-8"/>
+    <path d="M7 21h10"/>
+    <path d="M12 13 8 9"/>
+    <path d="M12 13 16 9"/>
+    <path d="M8 10a4 4 0 1 1 8 0"/>
+    <path d="M6 11a3 3 0 0 1 2-5"/>
+    <path d="M18 11a3 3 0 0 0-2-5"/>
+  </svg>
+</div>
 
 
         <!-- PRICE -->
@@ -581,9 +549,16 @@ function renderCampaign(
                 "
               >
 
-                <span class="kropWhatsappIcon">
-                  ☎
-                </span>
+<span class="kropWhatsappIcon" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    width="34"
+    height="34"
+    fill="currentColor"
+  >
+    <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.48 0 .13 5.35.13 11.93c0 2.1.55 4.15 1.6 5.95L0 24l6.28-1.65a11.9 11.9 0 0 0 5.77 1.47h.01c6.58 0 11.93-5.35 11.93-11.93 0-3.19-1.24-6.19-3.47-8.41ZM12.06 21.8h-.01a9.9 9.9 0 0 1-5.04-1.38l-.36-.22-3.73.98 1-3.64-.24-.37a9.88 9.88 0 0 1-1.52-5.24c0-5.47 4.45-9.92 9.93-9.92a9.85 9.85 0 0 1 7.01 2.9 9.85 9.85 0 0 1 2.9 7.01c-.01 5.47-4.46 9.88-9.94 9.88Zm5.44-7.42c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.49s1.07 2.89 1.22 3.09c.15.2 2.1 3.21 5.09 4.5.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.77-.72 2.02-1.42.25-.7.25-1.3.17-1.42-.07-.13-.27-.2-.57-.35Z"/>
+  </svg>
+</span>
 
                 <span>
 
