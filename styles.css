@@ -2281,3 +2281,1118 @@ button.categoryCard:hover{
     font-size: 11px;
   }
 }
+
+
+
+/* =========================================================
+   KROP NEW AD FUNNEL
+   ========================================================= */
+
+.kropAd,
+.kropReasonsPage{
+  width:100%;
+  min-height:100vh;
+  background:#0e0e0e;
+  color:#fff;
+}
+
+
+/* =========================================================
+   PAGE 1
+   ========================================================= */
+
+.kropAdHero{
+  position:relative;
+  width:100%;
+  height:100svh;
+  min-height:680px;
+  max-height:1100px;
+  overflow:hidden;
+  background:#0d0d0d;
+}
+
+
+.kropAdHeroImage{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  display:block;
+}
+
+
+.kropAdShade{
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,0,0,.82) 0%,
+      rgba(0,0,0,.46) 45%,
+      rgba(0,0,0,.08) 75%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(0,0,0,.78) 0%,
+      transparent 42%
+    );
+  z-index:1;
+}
+
+
+.kropAdBrand{
+  position:absolute;
+  top:7%;
+  left:6%;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  text-transform:uppercase;
+}
+
+
+.kropAdBrand strong{
+  font-family:
+    "Bebas Neue",
+    "Arial Narrow",
+    sans-serif;
+  font-size:
+    clamp(
+      64px,
+      7vw,
+      100px
+    );
+
+  font-weight:400;
+  line-height:.82;
+  letter-spacing:5px;
+}
+
+
+.kropAdBrand span{
+  margin-top:15px;
+  font-family:
+    "Bebas Neue",
+    "Arial Narrow",
+    sans-serif;
+
+  font-size:
+    clamp(
+      15px,
+      1.5vw,
+      22px
+    );
+
+  letter-spacing:7px;
+}
+
+.kropAdHook{
+  position:absolute;
+  z-index:2;
+  left:6%;
+  bottom:12%;
+  width:min(
+    650px,
+    86%
+  );
+}
+
+
+.kropAdHook h1{
+  margin:0;
+  max-width:none;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      52px,
+      6vw,
+      92px
+    );
+
+  font-weight:600;
+  line-height:.94;
+  letter-spacing:-.045em;
+  color:#fff;
+}
+
+
+.kropAdHook h1 em{
+  font-style:normal;
+  color:#daa070;
+}
+
+
+.kropAdHook p{
+  margin:
+    24px 0 0;
+
+  font-size:
+    clamp(
+      18px,
+      1.6vw,
+      24px
+    );
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      .92
+    );
+}
+
+.kropAdFindOut{
+  margin-top:28px;
+  min-width:250px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:30px;
+  padding:
+    18px 25px;
+  border:0;
+  border-radius:999px;
+  background:#dba174;
+  color:#19120e;
+  font:inherit;
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.18em;
+  cursor:pointer;
+  transition:
+    transform .15s ease,
+    background .15s ease;
+}
+
+.kropAdFindOut:hover{
+  transform:
+    translateY(-2px);
+  background:#e5ae84;
+}
+
+.kropAdFindOut span:last-child{
+  font-size:26px;
+  line-height:1;
+}
+
+.kropAdFooter{
+  position:absolute;
+  z-index:2;
+  left:6%;
+  right:6%;
+  bottom:3.7%;
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  letter-spacing:.26em;
+
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      .72
+    );
+}
+
+
+
+/* =========================================================
+   PAGE 2 — CRAFTSMAN HERO
+   ========================================================= */
+
+.kropReasonsPage{
+  background:#f7f2e9;
+  color:#171411;
+}
+
+.kropCraftHero{
+  position:relative;
+  width:100%;
+  height:
+    clamp(
+      380px,
+      44vw,
+      610px
+    );
+  overflow:hidden;
+  background:#111;
+}
+
+
+.kropCraftHero > img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+
+  object-position:
+    center 38%;
+}
+
+.kropCraftShade{
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,0,0,.72),
+      rgba(0,0,0,.14) 62%
+    );
+
+  z-index:1;
+}
+
+
+.kropCraftBrand{
+  position:absolute;
+  z-index:2;
+  top:10%;
+  left:6%;
+  color:#fff;
+}
+
+
+.kropCraftBrand strong{
+  display:block;
+  font-family:
+    "Bebas Neue",
+    "Arial Narrow",
+    sans-serif;
+
+  font-size:
+    clamp(
+      54px,
+      6vw,
+      84px
+    );
+  line-height:.84;
+  letter-spacing:4px;
+}
+
+
+.kropCraftBrand span{
+  display:block;
+  margin-top:13px;
+  font-size:
+    clamp(
+      13px,
+      1.3vw,
+      19px
+    );
+  letter-spacing:6px;
+}
+
+
+.kropCraftQuote{
+  position:absolute;
+  z-index:2;
+  left:6%;
+  bottom:11%;
+  width:
+    min(
+      420px,
+      72%
+    );
+
+  color:#fff;
+}
+
+.kropCraftQuote p{
+  margin:
+    0 0 18px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      18px,
+      2vw,
+      28px
+    );
+  font-style:italic;
+  line-height:1.3;
+}
+
+
+.kropCraftQuote strong{
+  display:block;
+  font-size:13px;
+  letter-spacing:.23em;
+}
+
+
+.kropCraftQuote span{
+  display:block;
+  margin-top:5px;
+  font-size:10px;
+  letter-spacing:.27em;
+  opacity:.75;
+}
+
+
+
+/* =========================================================
+   REASONS CONTENT
+   ========================================================= */
+
+.kropReasonsContent{
+  width:
+    min(
+      1080px,
+      calc(
+        100% - 48px
+      )
+    );
+  margin:
+    0 auto;
+  padding:
+    64px 0 40px;
+}
+
+.kropReasonsIntro{
+  max-width:900px;
+}
+
+.kropReasonsIntro h1{
+  margin:0;
+  max-width:880px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      48px,
+      6vw,
+      82px
+    );
+  font-weight:600;
+  line-height:.98;
+  letter-spacing:
+    -.045em;
+}
+
+
+.kropReasonsIntro h1 em{
+  display:block;
+  font-style:normal;
+  color:#8f5c3d;
+}
+
+
+.kropReasonsIntro > p{
+  max-width:760px;
+
+  margin:
+    24px 0 0;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(
+      17px,
+      1.7vw,
+      22px
+    );
+  line-height:1.6;
+  color:#554d46;
+}
+
+
+
+/* =========================================================
+   REASON GRID
+   ========================================================= */
+
+.kropReasonGrid{
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  margin-top:60px;
+  border-top:
+    1px solid
+    #d7cfc3;
+
+  border-left:
+    1px solid
+    #d7cfc3;
+}
+
+.kropReason{
+  min-height:280px;
+  padding:
+    34px 30px;
+  border-right:
+    1px solid
+    #d7cfc3;
+  border-bottom:
+    1px solid
+    #d7cfc3;
+}
+
+.kropReasonIcon{
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  margin-bottom:22px;
+  border-radius:50%;
+  background:#e9e1d5;
+  font-size:27px;
+}
+
+.kropReason h2{
+  margin:
+    0 0 11px;
+  font-size:
+    21px;
+  line-height:1.15;
+  letter-spacing:-.025em;
+}
+
+.kropReason p{
+  margin:0;
+
+  font-size:15px;
+
+  line-height:1.55;
+
+  color:#655d55;
+}
+
+
+
+/* =========================================================
+   EMOTIONAL SECTION
+   ========================================================= */
+
+.kropEmotional{
+  max-width:860px;
+  margin:
+    90px auto 0;
+  padding:
+    70px 0;
+  text-align:center;
+  border-top:
+    1px solid
+    #d7cfc3;
+
+  border-bottom:
+    1px solid
+    #d7cfc3;
+}
+
+
+.kropEmotionalEyebrow{
+  margin:
+    0 0 23px;
+
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.25em;
+  color:#8f5c3d;
+}
+
+
+.kropEmotional h2{
+  margin:
+    0 auto;
+  max-width:800px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      37px,
+      4.5vw,
+      60px
+    );
+
+  line-height:1.08;
+  letter-spacing:
+    -.035em;
+}
+
+
+.kropEmotional > p:not(
+  .kropEmotionalEyebrow
+){
+  max-width:660px;
+  margin:
+    28px auto 0;
+  font-size:
+    clamp(
+      16px,
+      1.5vw,
+      20px
+    );
+
+  line-height:1.65;
+  color:#655d55;
+}
+
+
+.kropEmotional > strong{
+  display:block;
+  margin-top:34px;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      27px,
+      3vw,
+      42px
+    );
+
+  font-style:italic;
+  font-weight:400;
+}
+
+
+
+/* =========================================================
+   BUY AREA
+   ========================================================= */
+
+.kropReasonsBuy{
+  padding:
+    72px 0 10px;
+  text-align:center;
+}
+
+.kropReasonsPrice span{
+  display:block;
+  margin-bottom:12px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.17em;
+  color:#736b63;
+}
+
+
+.kropReasonsPrice strong{
+  display:block;
+
+  font-size:
+    clamp(
+      54px,
+      6vw,
+      76px
+    );
+
+  line-height:1;
+
+  letter-spacing:-.045em;
+}
+
+.kropReasonsOffer{
+  display:inline-flex;
+  flex-direction:column;
+  gap:3px;
+  margin:
+    22px auto 30px;
+  padding:
+    12px 42px;
+  border-radius:8px;
+  background:#f7ddda;
+  color:#ce241c;
+}
+
+.kropReasonsOffer small{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.22em;
+}
+
+
+.kropReasonsOffer strong{
+  font-size:26px;
+  letter-spacing:.08em;
+}
+
+
+/* =========================================================
+   WHATSAPP
+   ========================================================= */
+
+.kropReasonsWhatsapp{
+  width:
+    min(
+      760px,
+      100%
+    );
+
+  display:grid;
+  grid-template-columns:
+    auto 1fr auto;
+  align-items:center;
+  gap:18px;
+  margin:
+    0 auto;
+  padding:
+    18px 26px;
+  border-radius:28px;
+  background:#10b849;
+  color:#fff;
+  text-align:left;
+  text-decoration:none;
+}
+
+
+.kropReasonsWhatsappIcon{
+  font-size:34px;
+}
+
+
+.kropReasonsWhatsapp strong{
+  display:block;
+
+  font-size:
+    clamp(
+      18px,
+      2vw,
+      25px
+    );
+}
+
+.kropReasonsWhatsapp small{
+  display:block;
+  margin-top:3px;
+  font-size:14px;
+}
+
+.kropReasonsWhatsappArrow{
+  font-size:28px;
+}
+
+
+/* =========================================================
+   TRUST
+   ========================================================= */
+
+.kropReasonsTrust{
+  width:
+    min(
+      820px,
+      100%
+    );
+
+  display:grid;
+
+  grid-template-columns:
+    repeat(
+      3,
+      1fr
+    );
+
+  margin:
+    38px auto 0;
+
+  padding:
+    30px 0;
+
+  border-top:
+    1px solid
+    #d7cfc3;
+
+  border-bottom:
+    1px solid
+    #d7cfc3;
+}
+
+.kropReasonsTrust > div{
+  padding:
+    0 22px;
+
+  border-right:
+    1px solid
+    #d7cfc3;
+}
+
+.kropReasonsTrust > div:last-child{
+  border-right:0;
+}
+
+
+.kropReasonsTrust strong{
+  display:block;
+  font-size:14px;
+}
+
+.kropReasonsTrust span{
+  display:block;
+  margin-top:5px;
+  font-size:12px;
+  line-height:1.45;
+  color:#696159;
+}
+
+
+
+/* =========================================================
+   COMPANY
+   ========================================================= */
+
+.kropReasonsCompany{
+  padding:
+    45px 0 16px;
+  text-align:center;
+}
+
+
+.kropReasonsCompany img{
+  display:block;
+  max-width:210px;
+  max-height:90px;
+  margin:
+    0 auto 18px;
+  object-fit:contain;
+}
+
+
+.kropReasonsCompany p{
+  margin:0;
+
+  font-size:10px;
+  letter-spacing:.16em;
+  color:#777067;
+}
+
+.kropReasonsCompany p span{
+  padding:
+    0 8px;
+}
+
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(
+  max-width:700px
+){
+
+  .kropAdHero{
+    min-height:
+      100svh;
+
+    max-height:none;
+  }
+
+  .kropAdHeroImage{
+    object-position:
+      57% center;
+  }
+
+  .kropAdShade{
+    background:
+      linear-gradient(
+        0deg,
+        rgba(
+          0,
+          0,
+          0,
+          .94
+        ) 0%,
+        rgba(
+          0,
+          0,
+          0,
+          .58
+        ) 51%,
+        rgba(
+          0,
+          0,
+          0,
+          .17
+        ) 100%
+      );
+  }
+
+  .kropAdBrand{
+    top:6%;
+    left:7%;
+  }
+
+  .kropAdBrand strong{
+    font-size:57px;
+  }
+
+  .kropAdBrand span{
+    margin-top:10px;
+
+    font-size:13px;
+
+    letter-spacing:5px;
+  }
+
+  .kropAdHook{
+    left:7%;
+    bottom:10%;
+
+    width:86%;
+  }
+
+  .kropAdHook h1{
+    font-size:
+      clamp(
+        48px,
+        13vw,
+        67px
+      );
+  }
+
+
+  .kropAdHook p{
+    font-size:17px;
+
+    margin-top:18px;
+  }
+
+
+  .kropAdFindOut{
+    width:
+      min(
+        300px,
+        100%
+      );
+
+    margin-top:24px;
+  }
+
+  .kropAdFooter{
+    display:none;
+  }
+
+
+  /*
+   * REASONS MOBILE
+   */
+
+  .kropCraftHero{
+    height:440px;
+  }
+
+  .kropCraftHero > img{
+    object-position:
+      60% center;
+  }
+
+
+  .kropCraftShade{
+    background:
+      linear-gradient(
+        0deg,
+        rgba(
+          0,
+          0,
+          0,
+          .8
+        ),
+        rgba(
+          0,
+          0,
+          0,
+          .05
+        ) 72%
+      );
+  }
+
+  .kropCraftBrand{
+    top:6%;
+    left:7%;
+  }
+
+  .kropCraftBrand strong{
+    font-size:51px;
+  }
+
+
+  .kropCraftBrand span{
+    font-size:11px;
+
+    letter-spacing:4px;
+  }
+
+  .kropCraftQuote{
+    left:7%;
+    bottom:8%;
+
+    width:82%;
+  }
+
+  .kropCraftQuote p{
+    font-size:19px;
+  }
+
+  .kropReasonsContent{
+    width:
+      calc(
+        100% - 36px
+      );
+
+    padding-top:42px;
+  }
+
+  .kropReasonsIntro h1{
+    font-size:
+      clamp(
+        41px,
+        12vw,
+        57px
+      );
+  }
+
+
+  .kropReasonsIntro > p{
+    font-size:17px;
+    line-height:1.55;
+  }
+
+  .kropReasonGrid{
+    grid-template-columns:
+      1fr 1fr;
+    margin-top:42px;
+  }
+
+  .kropReason{
+    min-height:245px;
+    padding:
+      25px 18px;
+  }
+
+  .kropReasonIcon{
+    width:46px;
+    height:46px;
+    margin-bottom:16px;
+    font-size:22px;
+  }
+
+  .kropReason h2{
+    font-size:17px;
+  }
+
+  .kropReason p{
+    font-size:13px;
+  }
+
+  .kropEmotional{
+    margin-top:58px;
+
+    padding:
+      52px 0;
+  }
+
+  .kropEmotional h2{
+    font-size:
+      clamp(
+        34px,
+        9vw,
+        46px
+      );
+  }
+
+
+  .kropEmotional > p:not(
+    .kropEmotionalEyebrow
+  ){
+    font-size:16px;
+  }
+
+  .kropReasonsBuy{
+    padding-top:52px;
+  }
+
+  .kropReasonsWhatsapp{
+    grid-template-columns:
+      auto 1fr auto;
+
+    padding:
+      16px 18px;
+
+    border-radius:22px;
+  }
+
+
+  .kropReasonsWhatsappIcon{
+    font-size:28px;
+  }
+
+
+  .kropReasonsWhatsapp strong{
+    font-size:17px;
+  }
+
+
+  .kropReasonsWhatsapp small{
+    font-size:12px;
+  }
+
+
+  .kropReasonsTrust{
+    grid-template-columns:
+      1fr;
+
+    padding:0;
+  }
+
+  .kropReasonsTrust > div{
+    padding:
+      20px 10px;
+    border-right:0;
+    border-bottom:
+      1px solid
+      #d7cfc3;
+  }
+  .kropReasonsTrust > div:last-child{
+    border-bottom:0;
+  }
+}
+
+
+/* =========================================================
+   SMALL PHONE
+   ========================================================= */
+@media(
+  max-width:420px
+){
+  .kropReasonGrid{
+    grid-template-columns:
+      1fr;
+  }
+
+  .kropReason{
+    min-height:auto;
+  }
+
+  .kropCraftHero{
+    height:400px;
+  }
+}
