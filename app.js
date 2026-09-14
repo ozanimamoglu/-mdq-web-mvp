@@ -474,9 +474,7 @@ if(
             <h1>
 
               Why in earth<br>
-
-              you pay €288<br>
-
+              you pay €249.99<br>
               <em>
                 for a chopper?
               </em>
@@ -504,11 +502,8 @@ if(
               >
                 →
               </span>
-
             </button>
-
           </div>
-
 
           <div
             class="kropAdFooter"
@@ -521,11 +516,8 @@ if(
             <span>
               MORE THAN A KNIFE
             </span>
-
           </div>
-
         </section>
-
       </main>
     `;
 
@@ -558,7 +550,6 @@ if(
         }
       );
 
-
     return;
   }
 
@@ -575,9 +566,7 @@ if(
 
     <main class="kropReasonsPage">
 
-
       <!-- CRAFTSMAN HERO -->
-
       <section
         class="kropCraftHero"
       >
@@ -587,11 +576,9 @@ if(
           alt="Sinan Tansal crafting a handmade knife"
         />
 
-
         <div
           class="kropCraftShade"
         ></div>
-
 
         <div
           class="kropCraftBrand"
@@ -624,9 +611,7 @@ if(
           <span>
             CRAFTSMAN
           </span>
-
         </div>
-
       </section>
 
 
@@ -636,7 +621,6 @@ if(
       <section
         class="kropReasonsContent"
       >
-
 
         <div
           class="kropReasonsIntro"
@@ -828,7 +812,7 @@ if(
           <p
             class="kropEmotionalEyebrow"
           >
-            WHY €288?
+            WHY €249.99?
           </p>
 
 
@@ -1006,8 +990,6 @@ if(
 
   return;
 }
-
-
 
 
 
@@ -4493,13 +4475,9 @@ ${
   ){
 
     finalSummary =
-
       isSunglassesProduct
-
         ? `Recurring owner evidence indicates a serious product-integrity concern that outweighs an otherwise acceptable ownership fit for these ${vehicle.model} sunglasses.`
-
         : `Recurring owner evidence indicates a serious product-integrity concern that outweighs an otherwise acceptable ownership fit for this ${vehicle.model}.`;
-
   }
 
 
@@ -4509,13 +4487,9 @@ ${
   ){
 
     finalSummary =
-
       isSunglassesProduct
-
         ? `The wearing and ownership fit may work, but at the current market price these ${vehicle.model} sunglasses do not make sense for you.`
-
         : `The ownership fit may work, but at the current market price this ${vehicle.model} does not make sense for you.`;
-
   }
 
 
@@ -4523,9 +4497,7 @@ ${
 
     finalSummary =
       resultSummary(
-
         result,
-
         vehicle
 
       );
@@ -4545,31 +4517,19 @@ ${
     evaluation.mapped.map(
 
       a => ({
-
         ...a,
-
         level:
-
           a.impact ===
             'positive'
-
             ? 'fit'
-
             : (
-
                 a.impact ===
                   'neutral'
-
                   ? 'consider'
-
                   : 'mismatch'
-
               )
-
       })
-
     );
-
 
 
   const resultPriceFormatter =
@@ -4581,15 +4541,12 @@ ${
 
         style:
           'currency',
-
         currency:
           vehicle.marketPrice.currency,
 
         maximumFractionDigits:
           0
-
       }
-
     );
 
 
@@ -4623,11 +4580,8 @@ ${
             `How does the current ${resultPriceRange} price range feel to you?`,
 
           impactReason:
-
             isSunglassesProduct
-
               ? 'This price level feels reasonable to you for these specific sunglasses.'
-
               : `This price level feels reasonable to you for this specific ${noun}.`
 
         }
@@ -4640,22 +4594,16 @@ ${
 
             level:
               'consider',
-
             impact:
               'neutral',
-
             condition:
               'Price level',
-
             question:
               `How does the current ${resultPriceRange} price range feel to you?`,
 
             impactReason:
-
               isSunglassesProduct
-
                 ? 'You could still consider these sunglasses, but the current market price creates some purchase friction.'
-
                 : `You could still consider the ${noun}, but the current market price creates some purchase friction.`
 
           }
@@ -4678,43 +4626,29 @@ ${
             impactReason:
 
               isSunglassesProduct
-
                 ? 'At this price level, you would probably not choose these sunglasses.'
-
                 : `At this price level, you would probably not choose this ${noun}.`
-
           };
 
 
-
   const integrityReason =
-
     vehicle.productIntegrity &&
-
     vehicle.productIntegrity.level !==
       'no_meaningful_signal'
 
       ? {
 
           level:
-
             vehicle.productIntegrity
               .overrideFit
-
               ? 'mismatch'
-
               : 'consider',
 
-
           impact:
-
             vehicle.productIntegrity
               .overrideFit
-
               ? 'critical_negative'
-
               : 'neutral',
-
 
           condition:
             'Product integrity risk',
@@ -4735,7 +4669,6 @@ ${
 
 
           issues:
-
             Array.isArray(
               vehicle.productIntegrity
                 .issues
@@ -4745,9 +4678,7 @@ ${
                   .issues
 
               : []
-
         }
-
       : null;
 
 
@@ -4795,36 +4726,25 @@ ${
 
     ),
 
-
     ...reasons.filter(
-
       r =>
         r.impact ===
         'high_negative'
-
     ),
 
-
     ...reasons.filter(
-
       r =>
         r.impact ===
         'medium_negative'
-
     ),
 
-
     ...(
-
       integrityReason?.level ===
       'consider'
-
         ? [
             integrityReason
           ]
-
         : []
-
     ),
 
 
@@ -4841,15 +4761,12 @@ ${
 
     ),
 
-
     ...reasons.filter(
-
       r =>
         r.level ===
         'consider'
 
     ),
-
 
     ...(
 
@@ -4891,32 +4808,21 @@ ${
 
         return r.level ===
           'mismatch'
-
           ? 'PRODUCT INTEGRITY CONCERN'
-
           : 'PRODUCT INTEGRITY SIGNAL';
-
       }
-
 
       return r.level ===
         'fit'
-
         ? 'WORKS WELL FOR YOU'
-
         : (
-
             r.level ===
               'mismatch'
 
               ? 'POTENTIAL MISMATCH'
-
               : 'THINGS TO CONSIDER'
-
           );
-
     };
-
 
 
   /*
