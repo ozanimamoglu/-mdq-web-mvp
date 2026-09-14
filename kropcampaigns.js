@@ -38,16 +38,15 @@ const kropCampaigns = {
     whatsappNumber: '31621164080',
 
     whatsappMessage:
-      'Hi, I just took the Damascus Chef’s Knife test. I’d like to order with 10% discount.',
+      whatsappMessage:
+  'Hi, I’m interested in the KROP Handmade Damascus Chef’s Chopper and the 10% offer. I’d like to order.',
 
 
     specs: [
       'Handmade',
       '135-layer Damascus steel',
       '1,500-year-old fossilized oak'
-      
     ],
-
 
     /*
      * Q1-Q4 determine the result.
