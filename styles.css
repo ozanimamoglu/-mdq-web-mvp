@@ -3328,13 +3328,12 @@ button.categoryCard:hover{
 
 
 /* =========================================================
-   KROP TYPOGRAPHY — FINAL
-   Only 2 fonts:
+   KROP TYPOGRAPHY — 2 FONT SYSTEM
    Bebas Neue + Georgia
    ========================================================= */
 
 
-/* BRAND / LABEL / CTA FONT */
+/* KROP / LABELS / CTA */
 
 .kropAdBrand,
 .kropCraftBrand,
@@ -3348,12 +3347,11 @@ button.categoryCard:hover{
 .kropReasonsCompany{
   font-family:
     "Bebas Neue",
-    "Arial Narrow",
     sans-serif;
 }
 
 
-/* EDITORIAL / CONTENT FONT */
+/* HEADLINES / STORY / PRODUCT CONTENT */
 
 .kropAdHook h1,
 .kropAdHook p,
