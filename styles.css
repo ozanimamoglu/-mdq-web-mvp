@@ -1514,38 +1514,26 @@ button.categoryCard:hover{
 .kropFeature {
   display: flex;
   flex-direction: column;
-
   align-items: center;
-
   text-align: center;
-
   padding: 0 28px;
-
   border-right:
     1px solid #dedbd5;
 }
-
 
 .kropFeature:last-child {
   border-right: 0;
 }
 
-
 .kropFeatureIcon {
   width: 64px;
   height: 64px;
-
   display: grid;
   place-items: center;
-
   margin-bottom: 14px;
-
   border-radius: 50%;
-
   background: #efede7;
-
   color: #443d38;
-
   font-size: 27px;
   line-height: 1;
 }
@@ -1553,25 +1541,18 @@ button.categoryCard:hover{
 
 .kropFeature strong {
   display: block;
-
   font-size: 20px;
   font-weight: 700;
-
   line-height: 1.15;
-
   margin-bottom: 7px;
 }
 
-
 .kropFeature span {
   display: block;
-
   font-size: 15px;
   line-height: 1.4;
-
   color: #625a54;
 }
-
 
 /* =========================================================
    PRICE
@@ -1579,11 +1560,8 @@ button.categoryCard:hover{
 
 .kropPrice {
   margin-top: 6px;
-
   padding: 0;
-
   border: 0;
-
   text-align: center;
 }
 
@@ -1595,15 +1573,10 @@ button.categoryCard:hover{
 
 .kropPrice strong {
   display: block;
-
   font-size: clamp(54px, 6vw, 72px);
-
   font-weight: 700;
-
   line-height: 1;
-
   letter-spacing: -1.5px;
-
   color: #111;
 }
 
@@ -1615,17 +1588,11 @@ button.categoryCard:hover{
 .kropOffer {
   display: inline-flex;
   flex-direction: column;
-
   align-items: center;
-
   gap: 3px;
-
   margin: 20px auto 31px;
-
   padding: 12px 45px 13px;
-
   border-radius: 7px;
-
   background: #fff0ed;
 }
 
@@ -1633,29 +1600,20 @@ button.categoryCard:hover{
 .kropOfferLabel {
   font-size: 15px;
   font-weight: 700;
-
   letter-spacing: 3px;
-
   text-transform: uppercase;
-
   color: #bd2b23;
 }
 
 
 .kropOffer strong {
   padding: 0;
-
   background: transparent;
-
   font-size: 30px;
   font-weight: 700;
-
   line-height: 1;
-
   letter-spacing: 2px;
-
   text-transform: uppercase;
-
   color: #d62019;
 }
 
@@ -1666,26 +1624,16 @@ button.categoryCard:hover{
 
 .kropWhatsapp {
   width: min(760px, 100%);
-
   margin: 0 auto;
-
   padding: 20px 28px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   gap: 18px;
-
   background: #13b84a;
-
   color: #fff;
-
   border-radius: 32px;
-
   text-decoration: none;
-
   box-shadow:
     0 8px 22px
     rgba(18, 184, 74, .16);
@@ -1695,43 +1643,31 @@ button.categoryCard:hover{
     opacity .15s ease;
 }
 
-
 .kropWhatsapp:hover {
   transform:
     translateY(-1px);
-
   opacity: .95;
 }
-
 
 .kropWhatsappIcon {
   font-size: 39px;
   line-height: 1;
 }
 
-
 .kropWhatsapp strong {
   display: block;
-
   font-size: 26px;
   font-weight: 700;
-
   line-height: 1.08;
 }
 
-
 .kropWhatsapp small {
   display: block;
-
   margin-top: 4px;
-
   font-size: 15px;
-
   line-height: 1.2;
-
   opacity: .95;
 }
-
 
 /* =========================================================
    SHIPPING
@@ -1741,10 +1677,8 @@ button.categoryCard:hover{
   width: min(740px, 100%);
   margin: 20px auto 0;
   padding: 18px 20px;
-
   border: 1px solid #d8d8d4;
   border-radius: 8px;
-
   text-align: center;
   background: #fff;
 }
@@ -1752,14 +1686,12 @@ button.categoryCard:hover{
 .kropShipping strong {
   display: block;
   margin-bottom: 5px;
-
   font-size: 15px;
   font-weight: 700;
 }
 
 .kropShipping span {
   display: block;
-
   font-size: 14px;
   line-height: 1.4;
   color: #555;
@@ -1768,7 +1700,6 @@ button.categoryCard:hover{
 .kropShipping small {
   display: block;
   margin-top: 3px;
-
   font-size: 12px;
   line-height: 1.4;
   color: #777;
@@ -1796,12 +1727,9 @@ button.categoryCard:hover{
   display: grid;
   grid-template-columns: 48px 1fr;
   gap: 14px;
-
   align-items: start;
   text-align: left;
-
   padding: 0 24px;
-
   border-right: 1px solid #ddd;
 }
 
@@ -3395,4 +3323,50 @@ button.categoryCard:hover{
   .kropCraftHero{
     height:400px;
   }
+}
+
+
+
+/* =========================================================
+   KROP TYPOGRAPHY — FINAL
+   Only 2 fonts:
+   Bebas Neue + Georgia
+   ========================================================= */
+
+
+/* BRAND / LABEL / CTA FONT */
+
+.kropAdBrand,
+.kropCraftBrand,
+.kropAdFooter,
+.kropAdFindOut,
+.kropEmotionalEyebrow,
+.kropReasonsPrice span,
+.kropReasonsOffer,
+.kropReasonsWhatsapp,
+.kropReasonsTrust,
+.kropReasonsCompany{
+  font-family:
+    "Bebas Neue",
+    "Arial Narrow",
+    sans-serif;
+}
+
+
+/* EDITORIAL / CONTENT FONT */
+
+.kropAdHook h1,
+.kropAdHook p,
+.kropCraftQuote,
+.kropReasonsIntro h1,
+.kropReasonsIntro p,
+.kropReason h2,
+.kropReason p,
+.kropEmotional h2,
+.kropEmotional > p,
+.kropEmotional > strong{
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 }
