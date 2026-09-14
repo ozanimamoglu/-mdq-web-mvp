@@ -2391,7 +2391,7 @@ button.categoryCard:hover{
   background:#dba174;
   color:#19120e;
   font:inherit;
-  font-size:14px;
+  font-size:18px;
   font-weight:800;
   letter-spacing:.18em;
   cursor:pointer;
@@ -3027,6 +3027,10 @@ button.categoryCard:hover{
   max-width:700px
 ){
 
+.kropAdFindOut{
+  font-size:17px;
+}
+  
   .kropAdHero{
     min-height:
       100svh;
