@@ -3381,7 +3381,7 @@ button.categoryCard:hover{
    SMALL PHONE
    ========================================================= */
 @media(
-  max-width:420px
+  max-width:520px
 ){
   .kropReasonGrid{
     grid-template-columns:
