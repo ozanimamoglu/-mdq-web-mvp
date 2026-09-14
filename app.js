@@ -2829,44 +2829,31 @@ async function loadCanonicalProduct(query){
       product
     );
 
-
     state.vehicleId =
       product.id;
-
     state.step =
       0;
-
     state.answers =
       [];
-
     state.priceAnswer =
       null;
-
     state.showWhy =
       false;
-
     state.selectedIndex =
       null;
-
     state.transitioning =
       false;
-
     state.researchStatus =
       'idle';
-
     state.researchError =
       '';
 
-
     render();
-
   }
   catch(err){
 
-
     state.researchStatus =
       'error';
-
 
     state.researchError =
       err.message ||
@@ -3711,23 +3698,17 @@ const productVariant =
   const needsPriceQuestion =
 
     finished &&
-
     vehicle.marketPrice &&
-
     !state.priceAnswer;
-
-
 
   if(
     !finished
   ){
 
-
     const q =
       vehicle.questions[
         state.step
       ];
-
 
     const progressPercent =
       Math.round(
@@ -4110,24 +4091,16 @@ ${
                   btn.dataset.answer
                 )
               ],
-
               Number(
                 btn.dataset.answer
               )
-
             )
-
           );
-
         }
-
       );
 
-
     return;
-
   }
-
 
 
   /*
@@ -4141,11 +4114,8 @@ ${
     needsPriceQuestion
   ){
 
-
     const price =
       vehicle.marketPrice;
-
-
 
     const formatter =
       new Intl.NumberFormat(
@@ -4153,21 +4123,15 @@ ${
         'en-GB',
 
         {
-
           style:
             'currency',
-
           currency:
             price.currency,
 
           maximumFractionDigits:
             0
-
         }
-
       );
-
-
 
     const priceRange =
       `${formatter.format(
@@ -4206,69 +4170,48 @@ ${
 
 
             <button
-
               class="textButton"
-
               id="changeCar"
 
             >
-
               ← Change ${esc(noun)}
 
             </button>
 
 
-
             <button
-
               class="textButton"
-
               id="backQuestion"
-
             >
 
               Back
-
             </button>
 
-
           </div>
-
-
 
           <span
             class="micro"
           >
 
             PRICE CONTEXT
-
           </span>
 
-
         </div>
-
-
 
         <div
           class="progressRow"
         >
-
-
           <span>
             ${esc(
               productIdentity
             )}
           </span>
 
-
           <span>
             100%
           </span>
 
-
         </div>
-
-
 
         <div
           class="progress"
@@ -4279,15 +4222,12 @@ ${
               width:100%
             "
           ></span>
-
         </div>
-
 
 
         <section
           class="questionBlock"
         >
-
 
           <p
             class="variant"
@@ -4297,10 +4237,7 @@ ${
             )}
           </p>
 
-
-
           <h2>
-
             ${esc(
               priceProductText
             )}
@@ -4323,8 +4260,6 @@ ${
 
           </h2>
 
-
-
           <p
             class="questionClarification"
           >
@@ -4334,31 +4269,23 @@ ${
             ${esc(
               price.market
             )}.
-
           </p>
-
 
 
           <div
             class="answers"
           >
 
-
             <button
-
               class="answer"
-
               data-price-answer="comfortable"
-
             >
-
 
               <span
                 class="letter"
               >
                 A
               </span>
-
 
               <span>
 
@@ -4368,29 +4295,22 @@ ${
                     ? 'these sunglasses'
                     : `this ${esc(noun)}`
                 }.
-
               </span>
-
 
             </button>
 
 
-
             <button
-
               class="answer"
-
               data-price-answer="stretch"
 
             >
-
 
               <span
                 class="letter"
               >
                 B
               </span>
-
 
               <span>
 
@@ -4399,17 +4319,12 @@ ${
 
               </span>
 
-
             </button>
 
 
-
             <button
-
               class="answer"
-
               data-price-answer="too_high"
-
             >
 
 
@@ -4432,18 +4347,10 @@ ${
 
               </span>
 
-
             </button>
-
-
           </div>
-
-
         </section>
-
-
       </main>
-
     `;
 
 
@@ -4472,72 +4379,46 @@ ${
 
         () => {
 
-
           state.step =
             Math.max(
 
               0,
-
               vehicle.questions.length -
               1
-
             );
-
 
           state.answers =
             state.answers.slice(
 
               0,
-
               state.step
-
             );
 
-
           render();
-
         }
-
       );
-
-
 
     document
       .querySelectorAll(
         '[data-price-answer]'
       )
       .forEach(
-
         btn => {
-
-
           btn.addEventListener(
-
             'click',
-
             () => {
-
 
               state.priceAnswer =
                 btn.dataset
                   .priceAnswer;
 
-
               render();
-
             }
-
           );
-
         }
-
       );
-
-
     return;
-
   }
-
 
 
   /*
@@ -4545,8 +4426,7 @@ ${
    * RESULT EVALUATION
    * =========================================================
    */
-
-
+  
   const evaluation =
     evaluateResult(
 
@@ -4563,45 +4443,31 @@ ${
     vehicle.productIntegrity
       ?.overrideFit === true;
 
-
-
   let result =
     evaluation.result;
-
-
 
   /*
    * PRICE EFFECT
    */
 
   if(
-
     state.priceAnswer ===
       'stretch' &&
-
     result ===
       'Ideal'
-
   ){
 
     result =
       'Suitable';
-
   }
-
-
 
   if(
     state.priceAnswer ===
     'too_high'
   ){
-
     result =
       'Not suitable';
-
   }
-
-
 
   /*
    * PRODUCT INTEGRITY OVERRIDE
@@ -4613,17 +4479,13 @@ ${
 
     result =
       'Not suitable';
-
   }
-
 
 
   /*
    * FINAL SUMMARY
    */
-
   let finalSummary;
-
 
 
   if(
