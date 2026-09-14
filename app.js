@@ -473,7 +473,7 @@ if(
 
             <h1>
 
-              Why in earth<br>
+              Why on earth<br>
               you pay €249.99<br>
               <em>
                 for a chopper?
@@ -601,7 +601,7 @@ if(
 
           <p>
             “A knife is not just a tool.<br>
-            It becomes part of your kitchen.”
+            It becomes part of the way you cook.”
           </p>
 
           <strong>
