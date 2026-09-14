@@ -37,7 +37,7 @@ const kropCampaigns = {
      */
     whatsappNumber: '31621164080',
 
-    whatsappMessage:
+
       whatsappMessage:
   'Hi, I’m interested in the KROP Handmade Damascus Chef’s Chopper and the 10% offer. I’d like to order.',
 
