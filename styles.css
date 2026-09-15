@@ -4296,3 +4296,997 @@ button.categoryCard:hover{
 
 
 
+
+/* =========================================================
+   KROP VERSION C — PAGE 2 FINAL EDITORIAL DESIGN
+   Put this block at the VERY END of style.css
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   PAGE
+   --------------------------------------------------------- */
+
+.kropReasonsPage {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  background: #f6f0e5;
+  color: #171411;
+}
+
+.kropReasonsContent {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 54px 0 30px;
+}
+
+
+/* ---------------------------------------------------------
+   HERO — KEEP EXISTING PHOTO SECTION
+   --------------------------------------------------------- */
+
+.kropCraftHero {
+  position: relative;
+  width: 100%;
+  height: min(500px, 54vw);
+  min-height: 340px;
+  overflow: hidden;
+  background: #111;
+}
+
+.kropCraftHero > img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.kropCraftShade {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(0,0,0,.72) 0%,
+      rgba(0,0,0,.38) 37%,
+      rgba(0,0,0,.08) 72%,
+      rgba(0,0,0,.02) 100%
+    );
+}
+
+.kropCraftBrand {
+  position: absolute;
+  top: 48px;
+  left: max(48px, calc((100vw - 1120px) / 2));
+
+  display: flex;
+  flex-direction: column;
+
+  color: #fff;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.kropCraftBrand strong {
+  font-family: "Bebas Neue", Impact, sans-serif;
+  font-size: clamp(58px, 6vw, 88px);
+  font-weight: 400;
+  letter-spacing: .08em;
+}
+
+.kropCraftBrand span {
+  margin-top: 4px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: .32em;
+}
+
+.kropCraftQuote {
+  position: absolute;
+  left: max(48px, calc((100vw - 1120px) / 2));
+  bottom: 48px;
+
+  color: #fff;
+}
+
+.kropCraftQuote p {
+  margin: 0 0 20px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(25px, 2.5vw, 38px);
+  font-style: italic;
+  line-height: 1.28;
+}
+
+.kropCraftQuote strong {
+  display: block;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  letter-spacing: .28em;
+}
+
+.kropCraftQuote span {
+  display: block;
+  margin-top: 8px;
+  margin-left: 27px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  letter-spacing: .28em;
+}
+
+
+/* ---------------------------------------------------------
+   INTRO
+   --------------------------------------------------------- */
+
+.kropReasonsIntro {
+  margin: 0 0 48px;
+}
+
+.kropReasonsIntro h1 {
+  max-width: 950px;
+  margin: 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(48px, 6vw, 78px);
+  font-weight: 700;
+  line-height: .98;
+  letter-spacing: -.035em;
+
+  color: #171411;
+}
+
+.kropReasonsIntro h1 em {
+  display: block;
+  margin-top: 8px;
+
+  color: #9a5530;
+  font-style: normal;
+}
+
+.kropReasonsIntro p {
+  max-width: 970px;
+  margin: 24px 0 0;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 21px;
+  line-height: 1.5;
+  color: #25211d;
+}
+
+
+/* ---------------------------------------------------------
+   SIX REASONS GRID
+   --------------------------------------------------------- */
+
+.kropReasonGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: 36px;
+  border-top: 1px solid #d9d0c3;
+}
+
+.kropReason {
+  min-height: 240px;
+  padding: 30px 28px 27px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  text-align: center;
+
+  border-bottom: 1px solid #d9d0c3;
+}
+
+.kropReason:nth-child(3n + 2),
+.kropReason:nth-child(3n + 3) {
+  border-left: 1px solid #d9d0c3;
+}
+
+
+/* ---------------------------------------------------------
+   REASON ICONS
+   --------------------------------------------------------- */
+
+.kropReasonIcon {
+  width: 74px;
+  height: 74px;
+  margin: 0 auto 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  background: #ece4d7;
+}
+
+.kropReasonIcon svg {
+  width: 40px;
+  height: 40px;
+
+  overflow: visible;
+
+  fill: none;
+  stroke: #4b2a1b;
+  stroke-width: 2.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kropReason h2 {
+  margin: 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.08;
+
+  color: #171411;
+}
+
+.kropReason p {
+  margin: 8px 0 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 17px;
+  line-height: 1.3;
+
+  color: #39332d;
+}
+
+
+/* ---------------------------------------------------------
+   ELEVATE THE EVERYDAY
+   --------------------------------------------------------- */
+
+.kropCompactClose {
+  margin: 30px 0 27px;
+
+  text-align: center;
+
+  font-family:
+    "Brush Script MT",
+    "Segoe Script",
+    "Snell Roundhand",
+    cursive;
+
+  font-size: clamp(45px, 5.2vw, 67px);
+  font-weight: 400;
+  line-height: 1;
+
+  color: #171411;
+}
+
+
+/* ---------------------------------------------------------
+   WHATSAPP CTA
+   --------------------------------------------------------- */
+
+.kropReasonsWhatsapp {
+  width: 100%;
+  min-height: 110px;
+  box-sizing: border-box;
+
+  padding: 20px 30px;
+
+  display: grid;
+  grid-template-columns: 90px 1fr 55px;
+  align-items: center;
+
+  border-radius: 18px;
+
+  background: #10b94f;
+  color: #fff;
+
+  text-decoration: none;
+
+  box-shadow:
+    0 7px 22px rgba(0,0,0,.06);
+
+  transition:
+    transform .15s ease,
+    filter .15s ease;
+}
+
+.kropReasonsWhatsapp:hover {
+  transform: translateY(-2px);
+  filter: brightness(.98);
+}
+
+
+/* WhatsApp logo */
+
+.kropReasonsWhatsappIcon {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.kropReasonsWhatsappIcon svg {
+  width: 62px;
+  height: 62px;
+}
+
+.kropReasonsWhatsappIcon .waBubble {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kropReasonsWhatsappIcon .waPhone {
+  fill: #fff;
+  stroke: none;
+}
+
+
+/* CTA copy */
+
+.kropWhatsappCopy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
+}
+
+.kropWhatsappCopy strong {
+  display: block;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(24px, 2.7vw, 35px);
+  font-weight: 800;
+  line-height: 1.12;
+
+  color: #fff;
+}
+
+
+/*
+   IMPORTANT:
+   In HTML we will put 10% DISCOUNT
+   inside <span class="kropDiscountRed">
+*/
+
+.kropDiscountRed {
+  color: #e31f26;
+  font-weight: 900;
+}
+
+.kropWhatsappSub {
+  display: block;
+  margin-top: 7px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  line-height: 1.25;
+
+  color: rgba(255,255,255,.94);
+}
+
+.kropWhatsappSub strong {
+  display: inline;
+  font-size: inherit;
+  font-weight: 800;
+  color: #fff;
+}
+
+.kropReasonsWhatsappArrow {
+  justify-self: end;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 47px;
+  font-weight: 300;
+  line-height: 1;
+
+  color: #fff;
+}
+
+
+/* ---------------------------------------------------------
+   THREE TRUST ITEMS
+   --------------------------------------------------------- */
+
+.kropReasonsTrust {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  margin-top: 15px;
+  padding: 18px 0 20px;
+
+  border-bottom: 1px solid #d8cfc2;
+}
+
+.kropReasonsTrust > div {
+  min-height: 72px;
+  padding: 4px 28px;
+
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.kropReasonsTrust > div + div {
+  border-left: 1px solid #d8cfc2;
+}
+
+.kropTrustSvg {
+  flex: 0 0 48px;
+
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kropTrustSvg svg {
+  width: 42px;
+  height: 42px;
+
+  fill: none;
+  stroke: #2d1a12;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.kropReasonsTrust strong {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+
+  color: #28231f;
+}
+
+
+/* ---------------------------------------------------------
+   WINE SO EASY — TRUST / SELLER BLOCK
+   --------------------------------------------------------- */
+
+.kropSellerBlock {
+  display: grid;
+  grid-template-columns: .9fr 1.5fr 1fr;
+
+  align-items: center;
+
+  margin-top: 22px;
+  padding: 28px 0;
+
+  border-bottom: 1px solid #d8cfc2;
+}
+
+
+/* Wine So Easy logo */
+
+.kropSellerBrand {
+  min-height: 115px;
+
+  display: flex;
+  align-items: center;
+
+  padding-right: 34px;
+}
+
+.kropSellerBrand img {
+  display: block;
+
+  width: min(220px, 100%);
+  max-height: 105px;
+
+  object-fit: contain;
+  object-position: left center;
+}
+
+
+/* company information */
+
+.kropSellerInfo {
+  min-height: 115px;
+
+  padding: 0 38px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  border-left: 1px solid #d8cfc2;
+}
+
+.kropSellerInfo strong {
+  margin-bottom: 9px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+
+  color: #2d1a12;
+}
+
+.kropSellerInfo p {
+  margin: 3px 0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  line-height: 1.45;
+
+  color: #332c27;
+}
+
+.kropSellerInfo .kropSellerMeta {
+  margin-top: 4px;
+}
+
+
+/* seller reassurance */
+
+.kropSellerTrust {
+  min-height: 115px;
+
+  padding-left: 38px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+
+  border-left: 1px solid #d8cfc2;
+}
+
+.kropSellerTrust span {
+  position: relative;
+
+  padding-left: 27px;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 15px;
+  line-height: 1.25;
+
+  color: #332c27;
+}
+
+.kropSellerTrust span::before {
+  content: "✓";
+
+  position: absolute;
+  left: 0;
+  top: -2px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+
+  color: #5b2e1c;
+}
+
+
+/* ---------------------------------------------------------
+   FOOTER
+   --------------------------------------------------------- */
+
+.kropCompactFooter {
+  min-height: 80px;
+
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 34px;
+
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .34em;
+
+  color: #28231f;
+}
+
+.kropCompactFooter i {
+  display: block;
+  height: 1px;
+
+  background: #2d2925;
+}
+
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+  .kropReasonsContent {
+    width: min(100% - 32px, 720px);
+    padding-top: 38px;
+  }
+
+  .kropReasonsIntro h1 {
+    font-size: 54px;
+  }
+
+  .kropReasonsIntro p {
+    font-size: 18px;
+  }
+
+  .kropReason {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .kropReason h2 {
+    font-size: 19px;
+  }
+
+  .kropReason p {
+    font-size: 15px;
+  }
+
+  .kropReasonsWhatsapp {
+    grid-template-columns: 70px 1fr 40px;
+  }
+
+  .kropReasonsWhatsappIcon svg {
+    width: 52px;
+    height: 52px;
+  }
+
+  .kropReasonsTrust > div {
+    padding-left: 15px;
+    padding-right: 15px;
+    gap: 12px;
+  }
+
+  .kropSellerBlock {
+    grid-template-columns: 1fr 1.7fr;
+  }
+
+  .kropSellerTrust {
+    grid-column: 1 / -1;
+
+    min-height: auto;
+    margin-top: 24px;
+    padding: 22px 0 0;
+
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    border-left: 0;
+    border-top: 1px solid #d8cfc2;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .kropCraftHero {
+    height: 480px;
+    min-height: 0;
+  }
+
+  .kropCraftHero > img {
+    object-position: 62% center;
+  }
+
+  .kropCraftShade {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(0,0,0,.72) 0%,
+        rgba(0,0,0,.30) 65%,
+        rgba(0,0,0,.05) 100%
+      );
+  }
+
+  .kropCraftBrand {
+    top: 28px;
+    left: 25px;
+  }
+
+  .kropCraftBrand strong {
+    font-size: 55px;
+  }
+
+  .kropCraftBrand span {
+    font-size: 11px;
+  }
+
+  .kropCraftQuote {
+    left: 25px;
+    bottom: 30px;
+  }
+
+  .kropCraftQuote p {
+    font-size: 23px;
+  }
+
+
+  /* CONTENT */
+
+  .kropReasonsContent {
+    width: calc(100% - 30px);
+    padding-top: 33px;
+  }
+
+  .kropReasonsIntro {
+    margin-bottom: 28px;
+  }
+
+  .kropReasonsIntro h1 {
+    font-size: 43px;
+    line-height: .98;
+  }
+
+  .kropReasonsIntro h1 em {
+    margin-top: 5px;
+  }
+
+  .kropReasonsIntro p {
+    margin-top: 18px;
+
+    font-size: 16px;
+    line-height: 1.45;
+  }
+
+
+  /* SIX REASONS
+     Keep 3 columns like the reference design.
+  */
+
+  .kropReasonGrid {
+    grid-template-columns: repeat(3, 1fr);
+    margin-top: 25px;
+  }
+
+  .kropReason {
+    min-height: 205px;
+    padding: 20px 7px 18px;
+  }
+
+  .kropReason:nth-child(3n + 2),
+  .kropReason:nth-child(3n + 3) {
+    border-left: 1px solid #d9d0c3;
+  }
+
+  .kropReasonIcon {
+    width: 57px;
+    height: 57px;
+
+    margin-bottom: 12px;
+  }
+
+  .kropReasonIcon svg {
+    width: 31px;
+    height: 31px;
+    stroke-width: 2;
+  }
+
+  .kropReason h2 {
+    font-size: 15px;
+    line-height: 1.08;
+  }
+
+  .kropReason p {
+    margin-top: 6px;
+
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+
+  /* SCRIPT */
+
+  .kropCompactClose {
+    margin: 25px 0 22px;
+
+    font-size: 40px;
+    line-height: 1;
+  }
+
+
+  /* WHATSAPP */
+
+  .kropReasonsWhatsapp {
+    min-height: 94px;
+
+    padding: 15px 17px;
+
+    grid-template-columns: 55px 1fr 27px;
+
+    border-radius: 15px;
+  }
+
+  .kropReasonsWhatsappIcon svg {
+    width: 47px;
+    height: 47px;
+  }
+
+  .kropWhatsappCopy strong {
+    font-size: 19px;
+    line-height: 1.15;
+  }
+
+  .kropWhatsappSub {
+    margin-top: 5px;
+    font-size: 12px;
+  }
+
+  .kropReasonsWhatsappArrow {
+    font-size: 31px;
+  }
+
+
+  /* TRUST */
+
+  .kropReasonsTrust {
+    margin-top: 10px;
+    padding: 14px 0 17px;
+  }
+
+  .kropReasonsTrust > div {
+    min-height: 65px;
+
+    padding: 3px 8px;
+
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 7px;
+
+    text-align: center;
+  }
+
+  .kropTrustSvg {
+    width: 35px;
+    height: 35px;
+    flex-basis: 35px;
+  }
+
+  .kropTrustSvg svg {
+    width: 32px;
+    height: 32px;
+  }
+
+  .kropReasonsTrust strong {
+    font-size: 10px;
+    line-height: 1.25;
+  }
+
+
+  /* WINE SO EASY */
+
+  .kropSellerBlock {
+    grid-template-columns: 1fr;
+
+    margin-top: 14px;
+    padding: 22px 0;
+  }
+
+  .kropSellerBrand {
+    min-height: auto;
+    padding: 0 0 20px;
+
+    justify-content: center;
+  }
+
+  .kropSellerBrand img {
+    width: 180px;
+    max-height: 90px;
+
+    object-position: center;
+  }
+
+  .kropSellerInfo {
+    min-height: auto;
+
+    padding: 20px 8px;
+
+    text-align: center;
+
+    border-left: 0;
+    border-top: 1px solid #d8cfc2;
+  }
+
+  .kropSellerInfo strong {
+    font-size: 15px;
+  }
+
+  .kropSellerInfo p {
+    font-size: 13px;
+  }
+
+  .kropSellerTrust {
+    grid-column: auto;
+
+    margin-top: 0;
+    padding: 20px 15px 0;
+
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+
+    border-top: 1px solid #d8cfc2;
+  }
+
+  .kropSellerTrust span {
+    font-size: 13px;
+  }
+
+
+  /* FOOTER */
+
+  .kropCompactFooter {
+    min-height: 65px;
+    gap: 13px;
+
+    font-size: 8px;
+    letter-spacing: .22em;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 390px) {
+
+  .kropReasonsContent {
+    width: calc(100% - 22px);
+  }
+
+  .kropReasonsIntro h1 {
+    font-size: 38px;
+  }
+
+  .kropReason {
+    min-height: 190px;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .kropReasonIcon {
+    width: 51px;
+    height: 51px;
+  }
+
+  .kropReasonIcon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .kropReason h2 {
+    font-size: 13px;
+  }
+
+  .kropReason p {
+    font-size: 10.5px;
+  }
+
+  .kropCompactClose {
+    font-size: 35px;
+  }
+
+  .kropWhatsappCopy strong {
+    font-size: 16px;
+  }
+
+  .kropWhatsappSub {
+    font-size: 10px;
+  }
+}
+
