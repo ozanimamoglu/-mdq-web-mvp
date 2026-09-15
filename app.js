@@ -1048,13 +1048,22 @@ if(
                 </span>
 
 
-                <span class="kropWhatsappCopy">
+<span class="kropWhatsappCopy">
 
-                  <strong>
-                    Order NOW on WhatsApp
-                  </strong>
+  <strong>
+    Order NOW with
+    <span class="kropDiscountRed">
+      10% DISCOUNT
+    </span>
+    on WhatsApp
+  </strong>
 
-                </span>
+  <span class="kropWhatsappSub">
+    Your order is handled by
+    <strong>Wine So Easy</strong>
+  </span>
+
+</span>
 
 
                 <span
@@ -1194,6 +1203,66 @@ if(
           </div>
 
         </div>
+
+
+
+
+
+<!-- =================================================
+     WINE SO EASY — SELLER / TRUST
+     ================================================= -->
+
+<section class="kropSellerBlock">
+
+  <div class="kropSellerBrand">
+
+    <img
+      src="/wine-so-easy-logo.png"
+      alt="Wine So Easy"
+    />
+
+  </div>
+
+
+  <div class="kropSellerInfo">
+
+    <strong>
+      Order via Wine So Easy B.V.
+    </strong>
+
+    <p>
+      Cornelis Schuytstraat 37,
+      1071 JE Amsterdam
+    </p>
+
+    <p class="kropSellerMeta">
+      M: +31 6 2116 4080
+      &nbsp; | &nbsp;
+      KVK no: 81664346
+    </p>
+
+  </div>
+
+
+  <div class="kropSellerTrust">
+
+    <span>
+      Personal service
+    </span>
+
+    <span>
+      Trusted Dutch company
+    </span>
+
+    <span>
+      Safe and easy via WhatsApp
+    </span>
+
+  </div>
+
+</section>
+
+
 
 
 
