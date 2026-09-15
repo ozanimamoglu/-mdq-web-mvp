@@ -545,406 +545,687 @@ if(
             0,
             0
           );
-
           render();
         }
       );
-
     return;
   }
 
 
-
+  
   /*
    * =========================================================
    * PAGE 2 — REASONS / STORY / PRODUCT
    * =========================================================
    */
 
+  app.innerHTML = `
 
-app.innerHTML = `
+    <main class="kropReasonsPage">
 
-  <main class="kropReasonsPage">
 
+      <!-- ===================================================
+           HERO
+           =================================================== -->
 
-    <!-- HERO -->
+      <section class="kropCraftHero">
 
-    <section class="kropCraftHero">
+        <img
+          src="/sinan-tansal.jpg"
+          alt="Sinan Tansal crafting a handmade knife"
+        />
 
-      <img
-        src="/sinan-tansal.jpg"
-        alt="Sinan Tansal crafting a handmade knife"
-      />
+        <div class="kropCraftShade"></div>
 
-      <div class="kropCraftShade"></div>
 
-
-      <div class="kropCraftBrand">
-
-        <strong>
-          KROP
-        </strong>
-
-        <span>
-          CHEF KNIVES
-        </span>
-
-      </div>
-
-
-      <div class="kropCraftQuote">
-
-        <p>
-          “A knife is not just a tool.<br>
-          It becomes part of the way you cook.”
-        </p>
-
-        <strong>
-          SINAN TANSAL
-        </strong>
-
-        <span>
-          CRAFTSMAN
-        </span>
-
-      </div>
-
-    </section>
-
-
-
-    <!-- MAIN SHEET -->
-
-    <section class="kropReasonsContent">
-
-
-      <header class="kropReasonsIntro">
-
-        <h1>
-          More than a chopper.
-          <em>
-            A piece of art.
-          </em>
-        </h1>
-
-        <p>
-          Handcrafted by Turkish master craftsman Sinan Tansal,
-          this chopper brings together tradition, nature and
-          extraordinary craftsmanship — to make your cooking
-          experience truly special.
-        </p>
-
-      </header>
-
-
-
-      <!-- SIX REASONS -->
-
-      <div class="kropReasonGrid">
-
-
-        <article class="kropReason">
-
-          <div class="kropReasonIcon">
-
-            <svg viewBox="0 0 24 24">
-              <path d="M7 11V5a1 1 0 0 1 2 0v5-5a1 1 0 0 1 2 0v5-4a1 1 0 0 1 2 0v4-3a1 1 0 0 1 2 0v7c0 4-2.5 7-6.5 7S3 18.5 3 15v-3a1 1 0 0 1 2 0v2"/>
-            </svg>
-
-          </div>
-
-          <h2>
-            Handmade
-          </h2>
-
-          <p>
-            Crafted by a Turkish master artisan
-          </p>
-
-        </article>
-
-
-
-        <article class="kropReason">
-
-          <div class="kropReasonIcon">
-
-            <svg viewBox="0 0 24 24">
-              <path d="M12 3 3 8l9 5 9-5-9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5"/>
-            </svg>
-
-          </div>
-
-          <h2>
-            135-layer<br>
-            Damascus steel
-          </h2>
-
-          <p>
-            Exceptional beauty and lasting performance
-          </p>
-
-        </article>
-
-
-
-        <article class="kropReason">
-
-          <div class="kropReasonIcon">
-
-            <svg viewBox="0 0 24 24">
-              <path d="M12 21V9M12 9 8 5M12 9l4-4M6 21h12M7 11c-3 0-4-2-4-4 3 0 5 1 6 4M17 11c3 0 4-2 4-4-3 0-5 1-6 4"/>
-            </svg>
-
-          </div>
-
-          <h2>
-            1,500-year-old<br>
-            fossilized oak
-          </h2>
-
-          <p>
-            A unique handle with a story
-          </p>
-
-        </article>
-
-
-
-        <article class="kropReason">
-
-          <div class="kropReasonIcon">
-
-            <svg viewBox="0 0 24 24">
-              <path d="M12 21S4 16 4 9a4 4 0 0 1 7-2.6A4 4 0 0 1 18 9c0 7-6 12-6 12Z"/>
-            </svg>
-
-          </div>
-
-          <h2>
-            More joy in cooking
-          </h2>
-
-          <p>
-            Turns everyday cooking into a ritual
-          </p>
-
-        </article>
-
-
-
-        <article class="kropReason">
-
-          <div class="kropReasonIcon">
-
-            <svg viewBox="0 0 24 24">
-              <path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.8 1-6.1-4.4-4.3 6.1-.9L12 3Z"/>
-            </svg>
-
-          </div>
-
-          <h2>
-            Unique character
-          </h2>
-
-          <p>
-            No two knives are ever the same
-          </p>
-
-        </article>
-
-
-
-        <article class="kropReason">
-
-          <div class="kropReasonIcon">
-
-            <svg viewBox="0 0 24 24">
-              <path d="M7 9c2.2-2.6 4.1-2.6 5.5 0 1.4-2.6 3.3-2.6 5.5 0 2.1 2.5.7 6-2.1 6-1.5 0-2.6-1-3.4-2.2C11.7 14 10.6 15 9.1 15 6.3 15 4.9 11.5 7 9Z"/>
-            </svg>
-
-          </div>
-
-          <h2>
-            Built to last
-          </h2>
-
-          <p>
-            A lifetime companion in your kitchen
-          </p>
-
-        </article>
-
-
-      </div>
-
-
-
-      <!-- CLOSING LINE -->
-
-      <div class="kropCompactClose">
-        Elevate the everyday.
-      </div>
-
-
-
-      <!-- OFFER -->
-
-      <div class="kropReasonsOffer">
-
-        <small>
-          SPECIAL OFFER
-        </small>
-
-        <strong>
-          10% DISCOUNT
-        </strong>
-
-      </div>
-
-
-
-      <!-- WHATSAPP -->
-
-      ${
-        whatsappUrl
-
-          ? `
-
-            <a
-              class="kropReasonsWhatsapp"
-              href="${esc(
-                whatsappUrl
-              )}"
-              target="_blank"
-              rel="noopener"
-              onclick="
-                trackEvent(
-                  'whatsapp_clicked',
-                  {
-                    campaign:
-                      '${esc(
-                        campaign.id
-                      )}'
-                  }
-                )
-              "
-            >
-              <span class="kropReasonsWhatsappIcon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M20.5 11.7A8.5 8.5 0 0 1 8 19.2L3 20.5l1.3-4.8A8.5 8.5 0 1 1 20.5 11.7Z"/>
-                  <path d="M8.5 7.5c.3-.7.7-.7 1-.7h.5c.2 0 .4.1.5.4l.8 2c.1.3.1.5-.1.7l-.6.8c-.2.2-.2.4 0 .7.6 1 1.5 1.8 2.5 2.4.3.2.5.2.7 0l.9-1c.2-.2.4-.3.7-.2l1.9.9"/>
-
-                </svg>
-              </span>
-
-              <span>
-
-                <strong>
-                  Order NOW with 10% Discount
-                </strong>
-
-                <small>
-                  on WhatsApp
-                </small>
-
-              </span>
-
-
-              <span class="kropReasonsWhatsappArrow">
-                →
-              </span>
-            </a>
-
-          `
-          : ''
-      }
-
-
-      <!-- TRUST -->
-
-      <div class="kropReasonsTrust">
-
-        <div>
-          <span class="kropTrustSvg">
-            <svg viewBox="0 0 24 24">
-              <path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6l-7-3Z"/>
-            </svg>
-
-          </span>
+        <div class="kropCraftBrand">
 
           <strong>
-            Secure & direct ordering
-          </strong>
-        </div>
-
-        <div>
-
-          <span class="kropTrustSvg">
-
-            <svg viewBox="0 0 24 24">
-              <path d="M3 6h11v10H3zM14 10h4l3 3v3h-7z"/>
-              <circle cx="7" cy="18" r="2"/>
-              <circle cx="18" cy="18" r="2"/>
-            </svg>
-
-          </span>
-
-          <strong>
-            PostNL registered shipping
+            KROP
           </strong>
 
           <span>
-            NL
+            CHEF KNIVES
           </span>
 
         </div>
 
 
+        <div class="kropCraftQuote">
 
-        <div>
-
-          <span class="kropTrustSvg">
-
-            <svg viewBox="0 0 24 24">
-              <path d="m4 12 8-8h7l1 1v7l-8 8-8-8Z"/>
-              <circle cx="16" cy="8" r="1"/>
-            </svg>
-
-          </span>
+          <p>
+            “A knife is not just a tool.<br>
+            It’s a companion in<br>
+            the kitchen.”
+          </p>
 
           <strong>
-            Estimated shipping €12
+            — &nbsp; SINAN TANSAL
           </strong>
 
           <span>
-            NL
+            CRAFTSMAN
           </span>
+
         </div>
-      </div>
+
+      </section>
 
 
-      <!-- FOOTER -->
 
-      <footer class="kropCompactFooter">
+      <!-- ===================================================
+           MAIN CONTENT
+           =================================================== -->
 
-        <span>
-          KROP CHEF KNIVES
-        </span>
-        <i></i>
-
-        <span>
-          MORE THAN A KNIFE
-        </span>
-
-      </footer>
-    </section>
-  </main>
-`;
+      <section class="kropReasonsContent">
 
 
-return;
-}
+        <!-- INTRO -->
+
+        <header class="kropReasonsIntro">
+
+          <h1>
+            More than a chopper.
+            <em>
+              A piece of art.
+            </em>
+          </h1>
+
+          <p>
+            Handcrafted by Turkish master craftsman Sinan Tansal,
+            this chopper brings together tradition, nature and
+            extraordinary craftsmanship — to make your cooking
+            experience truly special.
+          </p>
+
+        </header>
+
+
+
+        <!-- =================================================
+             SIX REASONS
+             ================================================= -->
+
+        <div class="kropReasonGrid">
+
+
+          <!-- HANDMADE -->
+
+          <article class="kropReason">
+
+            <div class="kropReasonIcon">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M23 31
+                  V15
+                  C23 12 27 12 27 15
+                  V27
+
+                  V11
+                  C27 8 31 8 31 11
+                  V27
+
+                  V13
+                  C31 10 35 10 35 13
+                  V28
+
+                  V17
+                  C35 14 39 14 39 17
+                  V35
+
+                  C39 46 33 53 25 53
+
+                  C18 53 14 48 14 41
+                  V32
+
+                  C14 29 18 28 20 31
+                  L23 35
+                "/>
+              </svg>
+
+            </div>
+
+            <h2>
+              Handmade
+            </h2>
+
+            <p>
+              Crafted by a Turkish<br>
+              master artisan
+            </p>
+
+          </article>
+
+
+
+          <!-- DAMASCUS -->
+
+          <article class="kropReason">
+
+            <div class="kropReasonIcon">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M32 12
+                  L14 22
+                  L32 32
+                  L50 22
+                  Z
+                "/>
+
+                <path d="
+                  M14 31
+                  L32 41
+                  L50 31
+                "/>
+
+                <path d="
+                  M14 40
+                  L32 50
+                  L50 40
+                "/>
+              </svg>
+
+            </div>
+
+            <h2>
+              135-layer<br>
+              Damascus steel
+            </h2>
+
+            <p>
+              Exceptional beauty<br>
+              and lasting performance
+            </p>
+
+          </article>
+
+
+
+          <!-- OAK -->
+
+          <article class="kropReason">
+
+            <div class="kropReasonIcon">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M32 52
+                  V29
+                "/>
+
+                <path d="
+                  M32 30
+                  C25 29 22 24 23 18
+                  C29 18 33 21 32 30
+                "/>
+
+                <path d="
+                  M32 27
+                  C38 26 42 21 41 15
+                  C35 15 31 19 32 27
+                "/>
+
+                <path d="
+                  M25 52
+                  H39
+                "/>
+
+                <path d="
+                  M19 32
+                  C14 29 13 24 15 20
+                  C21 21 24 25 24 31
+                "/>
+
+                <path d="
+                  M40 32
+                  C46 29 49 24 47 19
+                  C41 20 38 25 39 31
+                "/>
+              </svg>
+
+            </div>
+
+            <h2>
+              1,500-year-old<br>
+              fossilized oak
+            </h2>
+
+            <p>
+              A unique handle<br>
+              with a story
+            </p>
+
+          </article>
+
+
+
+          <!-- JOY -->
+
+          <article class="kropReason">
+
+            <div class="kropReasonIcon">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M32 51
+                  C27 46 16 39 16 28
+
+                  C16 21 21 17 27 17
+
+                  C30 17 32 19 32 22
+
+                  C34 19 37 17 41 17
+
+                  C47 17 51 21 51 28
+
+                  C51 39 39 47 32 51
+                  Z
+                "/>
+              </svg>
+
+            </div>
+
+            <h2>
+              More joy in cooking
+            </h2>
+
+            <p>
+              Turns everyday<br>
+              cooking into a ritual
+            </p>
+
+          </article>
+
+
+
+          <!-- CHARACTER -->
+
+          <article class="kropReason">
+
+            <div class="kropReasonIcon">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M32 12
+                  L38 25
+                  L52 27
+                  L42 37
+                  L44 51
+                  L32 44
+                  L20 51
+                  L22 37
+                  L12 27
+                  L26 25
+                  Z
+                "/>
+              </svg>
+
+            </div>
+
+            <h2>
+              Unique character
+            </h2>
+
+            <p>
+              No two knives<br>
+              are ever the same
+            </p>
+
+          </article>
+
+
+
+          <!-- BUILT TO LAST -->
+
+          <article class="kropReason">
+
+            <div class="kropReasonIcon">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M28 32
+
+                  C24 24 19 21 14 21
+
+                  C7 21 4 26 4 32
+
+                  C4 38 8 43 14 43
+
+                  C20 43 25 39 28 32
+
+                  C31 25 36 21 42 21
+
+                  C49 21 53 26 53 32
+
+                  C53 38 49 43 42 43
+
+                  C36 43 31 39 28 32
+                  Z
+                "/>
+              </svg>
+
+            </div>
+
+            <h2>
+              Built to last
+            </h2>
+
+            <p>
+              A lifetime companion<br>
+              in your kitchen
+            </p>
+
+          </article>
+
+        </div>
+
+
+
+        <!-- =================================================
+             CLOSING
+             ================================================= -->
+
+        <div class="kropCompactClose">
+          Elevate the everyday.
+        </div>
+
+
+
+        <!-- =================================================
+             WHATSAPP
+             ================================================= -->
+
+        ${
+          whatsappUrl
+
+            ? `
+
+              <a
+                class="kropReasonsWhatsapp"
+                href="${esc(
+                  whatsappUrl
+                )}"
+                target="_blank"
+                rel="noopener"
+                onclick="
+                  trackEvent(
+                    'whatsapp_clicked',
+                    {
+                      campaign:
+                        '${esc(
+                          campaign.id
+                        )}'
+                    }
+                  )
+                "
+              >
+
+                <span
+                  class="kropReasonsWhatsappIcon"
+                  aria-hidden="true"
+                >
+
+                  <svg
+                    viewBox="0 0 64 64"
+                  >
+
+                    <path
+                      class="waBubble"
+                      d="
+                        M32 8
+                        C18.8 8 8 18.4 8 31.2
+
+                        C8 36.1 9.5 40.7 12.2 44.5
+
+                        L8.5 56
+                        L20.5 52.5
+
+                        C24 54.4 27.9 55.4 32 55.4
+
+                        C45.2 55.4 56 45 56 32.2
+
+                        C56 19.4 45.2 8 32 8
+                        Z
+                      "
+                    />
+
+                    <path
+                      class="waPhone"
+                      d="
+                        M23.5 20.5
+
+                        C22.2 20.5 20.4 22.2 20.4 24.5
+
+                        C20.4 32.2 27.3 40.5 36.7 44.1
+
+                        C39.4 45.1 42.4 43.8 43.6 41.3
+
+                        L45 38.3
+
+                        C45.5 37.2 45 36.3 44 35.8
+
+                        L38.8 33.3
+
+                        C37.9 32.9 37.2 33.1 36.5 34
+
+                        L34.4 36.6
+
+                        C30.4 34.8 27.3 31.8 25.4 28
+
+                        L27.2 25.8
+
+                        C27.8 25 27.8 24.3 27.4 23.4
+
+                        L25.4 19.1
+
+                        C25 18.2 24.2 18 23.5 20.5
+                        Z
+                      "
+                    />
+
+                  </svg>
+
+                </span>
+
+
+                <span class="kropWhatsappCopy">
+
+                  <strong>
+                    Order NOW on WhatsApp
+                  </strong>
+
+                </span>
+
+
+                <span
+                  class="kropReasonsWhatsappArrow"
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+
+              </a>
+
+            `
+
+            : ''
+        }
+
+
+
+        <!-- =================================================
+             TRUST
+             ================================================= -->
+
+        <div class="kropReasonsTrust">
+
+
+          <div>
+
+            <span class="kropTrustSvg">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M32 7
+                  L13 14
+                  V28
+                  C13 40 20 49 32 56
+                  C44 49 51 40 51 28
+                  V14
+                  Z
+                "/>
+              </svg>
+
+            </span>
+
+            <strong>
+              Secure & direct<br>
+              ordering
+            </strong>
+
+          </div>
+
+
+
+          <div>
+
+            <span class="kropTrustSvg">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M8 16
+                  H39
+                  V43
+                  H8
+                  Z
+                "/>
+
+                <path d="
+                  M39 26
+                  H49
+                  L57 35
+                  V43
+                  H39
+                  Z
+                "/>
+
+                <circle
+                  cx="19"
+                  cy="47"
+                  r="5"
+                />
+
+                <circle
+                  cx="48"
+                  cy="47"
+                  r="5"
+                />
+              </svg>
+
+            </span>
+
+            <strong>
+              PostNL registered<br>
+              shipping (NL)
+            </strong>
+
+          </div>
+
+
+
+          <div>
+
+            <span class="kropTrustSvg">
+
+              <svg
+                viewBox="0 0 64 64"
+                aria-hidden="true"
+              >
+                <path d="
+                  M9 31
+                  L31 9
+                  H51
+                  L56 14
+                  V34
+                  L34 56
+                  Z
+                "/>
+
+                <circle
+                  cx="44"
+                  cy="20"
+                  r="3"
+                />
+              </svg>
+
+            </span>
+
+            <strong>
+              Estimated shipping<br>
+              €12 (NL)
+            </strong>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             FOOTER
+             ================================================= -->
+
+        <footer class="kropCompactFooter">
+
+          <span>
+            KROP CHEF KNIVES
+          </span>
+
+          <i></i>
+
+          <span>
+            MORE THAN A KNIFE
+          </span>
+
+        </footer>
+
+
+      </section>
+
+    </main>
+
+  `;
+
+  return;
+
+
+  
 
 
 
