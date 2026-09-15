@@ -1224,9 +1224,7 @@ if(
 
   return;
 
-
-  
-
+} // END: if (campaign.id === 'krop')
 
 
   
